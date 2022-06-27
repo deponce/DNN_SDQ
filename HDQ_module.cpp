@@ -66,7 +66,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float W_swx2rgb[3][3];
   float bias_rgb2swx = 128.;
   string Model = "Alexnet";
-  LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+  // LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
   // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
   rgb2YUV(Vect_img);
   

@@ -63,10 +63,10 @@ def main(args):
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         BPP+=data_BPP['BPP']
-        # if (cnt+1) %1000 ==0:
-        #     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-        #     print(BPP/num_tests)
-        # cnt += 1
+        if (cnt+1) %1000 ==0:
+            print(num_correct/num_tests,"=",num_correct,"/",num_tests)
+            print(BPP/num_tests)
+        cnt += 1
     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
     print(BPP/num_tests)
 if '__main__' == __name__:

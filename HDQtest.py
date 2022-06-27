@@ -10,7 +10,7 @@ from utils import load_model
 from Compress import HDQ_transforms
 import argparse
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a
@@ -38,7 +38,7 @@ def main(args):
                                     HDQ_transforms(QF_Y, QF_C, J, a, b),
                                     ])
     dataset = datasets.ImageNet(root="~/data/ImageNet/2012", split='val', transform=transform)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=6)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=8)
 
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     num_correct = 0
@@ -48,16 +48,16 @@ def main(args):
     for dt in tqdm.tqdm(test_loader):
         data_BPP, labels = dt
         labels = labels.to(device)
-        resizedimg = data_BPP.to(device)/255.
+        resizedimg = data_BPP['image'].to(device)/255.
         normdata = normalize(resizedimg)
         pred = pretrained_model(normdata)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        # BPP+=data_BPP['BPP']
-        # if (cnt+1) %1000 ==0:
-        #     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-        #     print(BPP/num_tests)
-        # cnt += 1
+        BPP+=data_BPP['BPP']
+        if (cnt+1) %1000 ==0:
+            print(num_correct/num_tests,"=",num_correct,"/",num_tests)
+            print(BPP/num_tests)
+        cnt += 1
     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
     print(BPP/num_tests)
 if '__main__' == __name__:
