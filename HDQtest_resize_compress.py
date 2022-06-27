@@ -18,6 +18,7 @@ def main(args):
     QF_Y = args.QF_Y
     QF_C = args.QF_C
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = "cuda:1"
     print(device)
     print("Model: ", model)
     print("J =", J)

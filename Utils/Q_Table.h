@@ -24,8 +24,15 @@
 
 #include <math.h>
 using namespace std;
+
+// YUV
 const float MINQVALUE = 1.;
 const float MAXQVALUE = 255.;
+
+// SWX
+// const float MINQVALUE = 2.;
+// const float MAXQVALUE = 422.;
+
 
 void quantizationTable(int QF, bool Luminance, float Q_Table[64]){
     QF = max(min(QF, 100),0);
