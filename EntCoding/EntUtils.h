@@ -43,7 +43,7 @@ void DPCM(float blockified_channel[][64], float differ[], int size){
     return;
 }
 
-void cal_P_from_DIFF(float differ[], std::map<int, float> & P, int size){
+void cal_P_from_DIFF(float differ[], std::map<int, float> &P, int size){
     /*
     :Fn  cal_P_from_DIFF: Count the size group of DPCM coding sequence in P
     :param float differ[]: the DPCM coding sequence
@@ -62,6 +62,7 @@ void cal_P_from_DIFF(float differ[], std::map<int, float> & P, int size){
         else{
             P[sizeGroup] = 1;
         }
+        P[TOTAL_KEY] += 1;  // for normalization
     }
     return;
 }
