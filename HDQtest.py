@@ -37,7 +37,7 @@ def main(args):
                                     transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.]),
                                     HDQ_transforms(QF_Y, QF_C, J, a, b),
                                     ])
-    dataset = datasets.ImageNet(root="~/project/data", split='val', transform=transform)
+    dataset = datasets.ImageNet(root="~/data/ImageNet/2012", split='val', transform=transform)
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=6)
 
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
