@@ -44,15 +44,15 @@ def main(args):
                                     # transforms.Resize((256, 256)),
                                     transforms.Scale(256),
                                     transforms.CenterCrop(224),
-                                    # transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.]),
                                     transforms.ToTensor(),
-                                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                                    # SDQ_transforms(QF_Y, QF_C, J, a, b),
+                                    transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.]),
+                                    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                                    SDQ_transforms(model, QF_Y, QF_C, J, a, b, Lmbd, Beta_S, Beta_W, Beta_X)
                                     ])
     dataset = datasets.ImageNet(root="~/data/ImageNet/2012", split='val', transform=transform)
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=8)
 
-    # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     num_correct = 0
     num_tests = 0
     BPP = 0
@@ -60,19 +60,19 @@ def main(args):
     for dt in tqdm.tqdm(test_loader):
         data_BPP, labels = dt
         labels = labels.to(device)
-        normdata = data_BPP.to(device)
-        # resizedimg = data_BPP['image'].to(device)/255.
-        # normdata = normalize(resizedimg)
+        # normdata = data_BPP.to(device)
+        resizedimg = data_BPP['image'].to(device)/255.
+        normdata = normalize(resizedimg)
         pred = pretrained_model(normdata)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        # BPP+=data_BPP['BPP']
+        BPP+=data_BPP['BPP']
         if (cnt+1) %1000 ==0:
             print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-            # print(BPP/num_tests)
+            print(BPP/num_tests)
         cnt += 1
     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-    # print(BPP/num_tests)
+    print(BPP/num_tests)
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="SDQ")
     parser.add_argument('--Model', type=str, default="Alexnet", help='Subsampling b')
