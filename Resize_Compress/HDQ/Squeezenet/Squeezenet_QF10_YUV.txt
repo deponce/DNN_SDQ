@@ -1,0 +1,29 @@
+cuda:0
+Model:  Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+0.2986 = 1493 / 5000
+tensor(0.3898, dtype=torch.float64)
+0.2834 = 2834 / 10000
+tensor(0.3845, dtype=torch.float64)
+0.2680666666666667 = 4021 / 15000
+tensor(0.3806, dtype=torch.float64)
+0.26905 = 5381 / 20000
+tensor(0.3841, dtype=torch.float64)
+0.26912 = 6728 / 25000
+tensor(0.3853, dtype=torch.float64)
+0.2691 = 8073 / 30000
+tensor(0.3863, dtype=torch.float64)
+0.2677428571428571 = 9371 / 35000
+tensor(0.3857, dtype=torch.float64)
+0.26255 = 10502 / 40000
+tensor(0.3853, dtype=torch.float64)
+0.26304444444444447 = 11837 / 45000
+tensor(0.3854, dtype=torch.float64)
+0.26168 = 13084 / 50000
+tensor(0.3860, dtype=torch.float64)
+0.26168 = 13084 / 50000
+tensor(0.3860, dtype=torch.float64)

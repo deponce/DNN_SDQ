@@ -182,6 +182,31 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     P_DC_C.erase(TOTAL_KEY);
     EntDCC = calHuffmanCodeSize(P_DC_C);            // cal huffman size
 
+///////////////////////////////////////////////////////////////////////////
+
+    //without DC opt
+    // map<int, float> DC_P;
+    // DC_P.clear();
+    // float EntDCY=0;
+    // float EntDCC=0;
+    // DPCM(seq_dct_idxs_Y, DC_idxs_Y, SDQ::seq_len_Y);
+    // cal_P_from_DIFF(DC_idxs_Y, DC_P, SDQ::seq_len_Y);
+    // DC_P.erase(TOTAL_KEY);
+    // EntDCY = calHuffmanCodeSize(DC_P);
+    // // cout<<"EntDCY:"<<EntDCY<<endl;
+    // DC_P.clear();
+    // DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, SDQ::seq_len_C);
+    // cal_P_from_DIFF(DC_idxs_Cb, DC_P, SDQ::seq_len_C);
+    // DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, SDQ::seq_len_C);
+    // cal_P_from_DIFF(DC_idxs_Cr, DC_P, SDQ::seq_len_C);
+    // DC_P.erase(TOTAL_KEY);
+    // EntDCC = calHuffmanCodeSize(DC_P);
+    // // cout<<"EntDCC:"<<EntDCC<<endl;
+    // DC_P.clear();
+
+/////////////////////////////////////////////////
+
+
     // AC optimization
     // Y channel
     for(i=0; i<3; i++){

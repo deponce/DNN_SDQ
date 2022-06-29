@@ -1,0 +1,7 @@
+cuda:0
+Model:  Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 26
+QF_C = 26

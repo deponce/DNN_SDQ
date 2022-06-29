@@ -1,0 +1,36 @@
+cuda:1
+Model:  VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 26
+QF_C = 26
+cuda:0
+Model:  VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 26
+QF_C = 26
+0.6516 = 3258 / 5000
+tensor(0.7683, dtype=torch.float64)
+0.6589 = 6589 / 10000
+tensor(0.7614, dtype=torch.float64)
+0.6538666666666667 = 9808 / 15000
+tensor(0.7517, dtype=torch.float64)
+0.65495 = 13099 / 20000
+tensor(0.7585, dtype=torch.float64)
+0.62992 = 15748 / 25000
+tensor(0.7560, dtype=torch.float64)
+0.6171 = 18513 / 30000
+tensor(0.7544, dtype=torch.float64)
+0.6079428571428571 = 21278 / 35000
+tensor(0.7507, dtype=torch.float64)
+0.59755 = 23902 / 40000
+tensor(0.7481, dtype=torch.float64)
+0.5893555555555555 = 26521 / 45000
+tensor(0.7475, dtype=torch.float64)
+0.5883 = 29415 / 50000
+tensor(0.7498, dtype=torch.float64)
+0.5883 = 29415 / 50000
+tensor(0.7498, dtype=torch.float64)

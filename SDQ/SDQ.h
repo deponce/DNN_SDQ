@@ -24,6 +24,7 @@
 
 #include "SDQ_Class.h"
 
+
 void SDQ::opt_RS_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
     int i;
     // C channel
