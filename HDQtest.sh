@@ -9,3 +9,4 @@ do
 		python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} -resize_compress >> ${file}
 	done
 done
+

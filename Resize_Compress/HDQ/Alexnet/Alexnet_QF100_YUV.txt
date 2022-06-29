@@ -1,0 +1,29 @@
+cuda:1
+Model:  Alexnet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+0.6482 = 3241 / 5000
+tensor(10.6091, dtype=torch.float64)
+0.6403 = 6403 / 10000
+tensor(10.5903, dtype=torch.float64)
+0.6339333333333333 = 9509 / 15000
+tensor(10.3826, dtype=torch.float64)
+0.6374 = 12748 / 20000
+tensor(10.3717, dtype=torch.float64)
+0.60912 = 15228 / 25000
+tensor(10.2544, dtype=torch.float64)
+0.5935666666666667 = 17807 / 30000
+tensor(10.1804, dtype=torch.float64)
+0.5810571428571428 = 20337 / 35000
+tensor(10.1021, dtype=torch.float64)
+0.57045 = 22818 / 40000
+tensor(10.0491, dtype=torch.float64)
+0.5616888888888889 = 25276 / 45000
+tensor(10.0441, dtype=torch.float64)
+0.56486 = 28243 / 50000
+tensor(10.1047, dtype=torch.float64)
+0.56486 = 28243 / 50000
+tensor(10.1047, dtype=torch.float64)

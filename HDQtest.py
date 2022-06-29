@@ -10,7 +10,7 @@ from utils import load_model
 from Compress import HDQ_transforms
 import argparse
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a
@@ -40,8 +40,8 @@ def main(args):
                                     # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                                     HDQ_transforms(QF_Y, QF_C, J, a, b),
                                     ])
-    dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=36)
+    dataset = datasets.ImageNet(root="~/data/ImageNet/2012", split='val', transform=transform)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=8)
 
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     num_correct = 0
@@ -62,23 +62,19 @@ def main(args):
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         BPP+=torch.sum(data_BPP['BPP'])
-        if (cnt+1) %100 ==0:
+        if (cnt+1) %1000 ==0:
             print(num_correct/num_tests,"=",num_correct,"/",num_tests)
             print(BPP/num_tests)
         cnt += 1
     print(num_correct/num_tests,"=",num_correct,"/",num_tests)
     print(BPP/num_tests)
 if '__main__' == __name__:
-    parser = argparse.ArgumentParser(description="SDQ")
+    parser = argparse.ArgumentParser(description="HDQ")
     parser.add_argument('--Model', type=str, default="Alexnet", help='Subsampling b')
     parser.add_argument('--J', type=int, default=4, help='Subsampling J')
     parser.add_argument('--a', type=int, default=4, help='Subsampling a')
     parser.add_argument('--b', type=int, default=4, help='Subsampling b')
     parser.add_argument('--QF_Y', type=int, default=50, help='Quality factor of Y channel')
     parser.add_argument('--QF_C', type=int, default=50, help='Quality factor of Cb & Cr channel')
-    parser.add_argument('--Beta_S', type=float, default=100, help='Subsampling b')
-    parser.add_argument('--Beta_W', type=float, default=100, help='Subsampling b')
-    parser.add_argument('--Beta_X', type=float, default=100, help='Subsampling b')
-    parser.add_argument('--L', type=float, default=1, help='Subsampling b')
     args = parser.parse_args()
     main(args)

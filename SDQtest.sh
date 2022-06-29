@@ -1,9 +1,9 @@
 for model in VGG11
 do
 	# for QF_YC in `seq 15 5 100`
-	for QF_YC in 80
+	for QF_YC in 25
 	do
-		for beta in 10e4
+		for beta in 10e5
 		do
 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_YUV.txt
 			echo ${file}
@@ -11,3 +11,4 @@ do
 		done	
 	done
 done
+
