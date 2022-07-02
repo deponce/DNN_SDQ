@@ -1,0 +1,36 @@
+cuda:1
+Model: VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 75
+QF_C = 75
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 75
+QF_C = 75
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 75
+QF_C = 75
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+--> 99
+0.89 = 89 / 100
+1.787773702442646

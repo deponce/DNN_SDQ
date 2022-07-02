@@ -6,10 +6,16 @@ import torch
 import matplotlib.pyplot as plt
 from torchvision import models
 # from PIL import Image
-from utils import load_model
+from utils import load_model, print_file, print_exp_details
 from Compress import HDQ_transforms
 from Utils.loader import HDQ_loader 
 import argparse
+
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
 def main(args):
     Batch_size = 50
     model = args.Model
@@ -19,15 +25,15 @@ def main(args):
     QF_Y = args.QF_Y
     QF_C = args.QF_C
     resize_compress = args.resize_compress
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = "cuda:1"
-    print(device)
+    device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+    print_exp_details(args)
     print("Model: ", model)
     print("J =", J)
     print("a =", a)
     print("b =", b)
     print("QF_Y =",QF_Y)
     print("QF_C =",QF_C)
+
     # pretrained_model = models.vgg11(pretrained=True)
     # pretrained_model = models.resnet18(pretrained=True)
     # pretrained_model = models.squeezenet1_0(pretrained=True)
@@ -60,11 +66,20 @@ def main(args):
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         if (cnt+1) %100 ==0:
-            print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-            print(BPP/num_tests)
+            l0 = "--> " + str(cnt) + "\n"
+            l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+            l2 = str(BPP.numpy()/num_tests) + "\n"
+            l = l0 + l1 + l2
+            print_file(l, args.output_txt)
         cnt += 1
-    print(num_correct/num_tests, "=",num_correct,"/",num_tests)
-    print(BPP/num_tests)
+
+    l0 = "#"* 30 + "\n"
+    l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+    l2 = str(BPP.numpy()/num_tests) + "\n"
+    l = l0 + l1 + l2
+    print_file(l, args.output_txt)
+
+
 
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="HDQ")
@@ -75,5 +90,7 @@ if '__main__' == __name__:
     parser.add_argument('--QF_Y', type=int, default=50, help='Quality factor of Y channel')
     parser.add_argument('--QF_C', type=int, default=50, help='Quality factor of Cb & Cr channel')
     parser.add_argument('-resize_compress', action='store_true', help='For Resize --> Compress set True')
+    parser.add_argument('--output_txt', type=str, help='output txt file')
+    parser.add_argument('--device', type=str, default="cuda:0", help='cpu or cuda:0')
     args = parser.parse_args()
     main(args)

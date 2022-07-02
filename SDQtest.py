@@ -6,7 +6,7 @@ import torch
 import matplotlib.pyplot as plt
 from torchvision import models
 # from PIL import Image
-from utils import load_model
+from utils import load_model, print_file, print_exp_details_SDQ
 from Compress import SDQ_transforms
 import argparse
 def main(args):
@@ -22,8 +22,9 @@ def main(args):
     Beta_X = args.Beta_X
     Lmbd = args.L
     eps = 10
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     print(device)
+    print_exp_details_SDQ(args)
     print("Model: ", model)
     print("J =", J)
     print("a =", a)
@@ -67,11 +68,17 @@ def main(args):
         num_tests += len(labels)
         BPP+=data_BPP['BPP']
         if (cnt+1) %1000 ==0:
-            print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-            print(BPP/num_tests)
+            l0 = "--> " + str(cnt) + "\n"
+            l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+            l2 = str(BPP.numpy()/num_tests) + "\n"
+            l = l0 + l1 + l2
+            print_file(l, args.output_txt)
         cnt += 1
-    print(num_correct/num_tests,"=",num_correct,"/",num_tests)
-    print(BPP/num_tests)
+    l0 = "#"* 30 + "\n"
+    l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+    l2 = str(BPP.numpy()/num_tests) + "\n"
+    l = l0 + l1 + l2
+    print_file(l, args.output_txt)
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="SDQ")
     parser.add_argument('--Model', type=str, default="Alexnet", help='Subsampling b')
@@ -84,5 +91,7 @@ if '__main__' == __name__:
     parser.add_argument('--Beta_W', type=float, default=100, help='Subsampling b')
     parser.add_argument('--Beta_X', type=float, default=100, help='Subsampling b')
     parser.add_argument('--L', type=float, default=1, help='Subsampling b')
+    parser.add_argument('--output_txt', type=str, help='output txt file')
+    parser.add_argument('--device', type=str, default="cuda:1", help='cpu or cuda:1')
     args = parser.parse_args()
     main(args)

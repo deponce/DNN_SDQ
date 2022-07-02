@@ -1,0 +1,111 @@
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+--> 99
+0.81 = 81 / 100
+5.794242327213287
+--> 199
+0.735 = 147 / 200
+4.608571603596211
+--> 299
+0.71 = 213 / 300
+4.263191366195679
+--> 399
+0.685 = 274 / 400
+4.7677375108003615

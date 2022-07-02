@@ -62,15 +62,35 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   vector<float> pos(array.size());
   vector<vector<vector<float>>> Vect_img(3, vector<vector<float>>(size[0], vector<float>(size[1], 0)));
   // copy py::array -> std::vector
+  float BPP =0;
+  vector<float> result(array.size());
   memcpy(pos.data(), array.data(),array.size()*sizeof(float));
   //delete [] &array;
   // call pure C++ function
   //TODO::
-  float BPP =0;
-  vector<float> result(array.size());
   seq2img(pos, Vect_img, size[0], size[1]);
   float Sen_Map[3][64]={0};
-  memcpy(Sen_Map, SenMap.data(), 3*64*sizeof(float));
+  try
+  {
+    memcpy(Sen_Map, SenMap.data(), 3*64*sizeof(float));
+  }
+  catch (std::exception& e)
+  {
+      std::cerr << "Exception caught : " << e.what() << std::endl;
+      // int ndim_ = 3;
+      // vector<unsigned long> shape_   = { 3, size[0], size[1]};
+      // vector<unsigned long> strides_ = { size[0]*size[1]*sizeof(float),
+      //                                   size[1]*sizeof(float), sizeof(float)};
+      // return std::make_pair(py::array(py::buffer_info(
+      //   result.data(),                           /* data as contiguous array */
+      //   sizeof(float),                           /* size of one scalar       */
+      //   py::format_descriptor<float>::format(),  /* data type                */
+      //   ndim_,                                    /* number of dimensions     */
+      //   shape,                                   /* shape of the matrix      */
+      //   strides_                                  /* strides for each axis    */
+      //   )), BPP);
+  }
+
   // LoadSenMap(Model, Sen_Map);
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];

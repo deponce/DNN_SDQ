@@ -28,10 +28,12 @@ using namespace std;
 // YUV
 const float MINQVALUE = 1.;
 const float MAXQVALUE = 255.;
+const float QUANTIZATION_SCALE = 1.;
 
 // SWX
-// const float MINQVALUE = 2.;
+// const float MINQVALUE = 2.; 
 // const float MAXQVALUE = 422.;
+// const float QUANTIZATION_SCALE = 3.;
 
 
 void quantizationTable(int QF, bool Luminance, float Q_Table[64]){
@@ -61,13 +63,13 @@ void quantizationTable(int QF, bool Luminance, float Q_Table[64]){
     if (Luminance == true){
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_Y[i])/100;
-            Q_Table[i] = MinMaxClip(floor(q), MINQVALUE, MAXQVALUE);
+            Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
         }
     }
     else{
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_C[i])/100;
-            Q_Table[i] = MinMaxClip(floor(q), MINQVALUE, MAXQVALUE);
+            Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
         }
     }
 }

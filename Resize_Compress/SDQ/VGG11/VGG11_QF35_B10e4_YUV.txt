@@ -1,0 +1,11 @@
+cuda:1
+Model: VGG11
+J = 4
+a = 4
+b = 4
+QF_Y = 35
+QF_C = 35
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
