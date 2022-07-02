@@ -80,7 +80,7 @@ class HDQ_transforms(torch.nn.Module):
         img = img.detach().cpu().numpy()
         compressed_img, BPP = HDQ.__call__(img, self.J, self.a, self.b,
                                            self.Q,self.q)
-        compressed_img = torch.tensor(compressed_img)
+        compressed_img = torch.tensor(compressed_img) #--> /255
         return {'image': compressed_img, 'BPP': BPP}
 
 class HDQ_transforms_raw(torch.nn.Module):

@@ -117,29 +117,32 @@ class SDQ_loader(datasets.ImageNet):
         sample = self.normalize_0(sample)
         sample = self.SDQ_transforms(sample)
         BPP = sample['BPP']
-        sample = sample['image']/255.
-
-        # sample = sample/255.
-        # BPP = 0
-
-        
+        sample = sample['image']/255.        
         sample = self.normalize_1(sample)
         return sample, BPP
 
     def compression_resize(self, sample, index):    
-        if (np.shape(sample)[0] > 1000 or np.shape(sample)[1] > 1000):
-            sample = TF.to_tensor(sample)
-            sample = self.normalize_0(sample)
-            sample = self.SDQ_transforms(sample)
-            BPP    = sample['BPP']
-            sample = np.round(sample['image'])    
-            sample = np.uint8(sample) 
-            sample = np.transpose(sample, (1,2,0))
-            sample = transforms.ToPILImage()(sample)
-        else:
-            # print("Image is skipped --> ", np.shape(sample))
-            BPP = 0
+        # if (np.shape(sample)[0] > 1000 or np.shape(sample)[1] > 1000):
+        #     sample = TF.to_tensor(sample)
+        #     sample = self.normalize_0(sample)
+        #     sample = self.SDQ_transforms(sample)
+        #     BPP    = sample['BPP']
+        #     sample = np.round(sample['image'])    
+        #     sample = np.uint8(sample) 
+        #     sample = np.transpose(sample, (1,2,0))
+        #     sample = transforms.ToPILImage()(sample)
+        # else:
+        #     # print("Image is skipped --> ", np.shape(sample))
+        #     BPP = 0
 
+        sample = TF.to_tensor(sample)
+        sample = self.normalize_0(sample)
+        sample = self.SDQ_transforms(sample)
+        BPP    = sample['BPP']
+        sample = np.round(sample['image'])    
+        sample = np.uint8(sample) 
+        sample = np.transpose(sample, (1,2,0))
+        sample = transforms.ToPILImage()(sample)
         sample = transforms.Scale(256)(sample)
         sample = transforms.CenterCrop([224, 224])(sample)
         sample = TF.to_tensor(sample)

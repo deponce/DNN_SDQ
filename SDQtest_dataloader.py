@@ -71,24 +71,25 @@ def main(args):
         image, image_BPP, labels = dt
         labels = labels.to(device)
         image = image.to(device)
-        # BPP+=torch.sum(image_BPP)
+        BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        if (cnt+1) %100 ==0:
+        if (cnt+1) %1000 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-            # l2 = str(BPP.numpy()/num_tests) + "\n"
-            l2 = ""
+            l2 = str(BPP.numpy()/num_tests) + "\n"
+            # l2 = ""
             l = l0 + l1 + l2
             print_file(l, args.output_txt)
         cnt += 1
 
     l0 = "#"* 30 + "\n"
     l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-    # l2 = str(BPP.numpy()/num_tests) + "\n"
+    l2 = str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1 + l2
     print_file(l, args.output_txt)
+
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="SDQ")
     parser.add_argument('--Model', type=str, default="Alexnet", help='Subsampling b')

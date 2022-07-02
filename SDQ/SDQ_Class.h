@@ -22,12 +22,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#define DC_OPT 1
+
 #include <map>
 #include "block.h"
 #include <ctime>
 #include <chrono>
 #include "../Utils/Q_Table.h"
 #include "../EntCoding/Huffman.h"
+
 using namespace std;
 
 class SDQ{
@@ -150,6 +153,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
              SDQ::Q_table_C,SDQ::seq_len_C);
     
 /////////////////////////////////////////////////////////////////////////////
+#if DC_OPT > 0
     // DC optimization
     // Y channel
     DPCM(seq_dct_idxs_Y, DC_idxs_Y, seq_len_Y);
@@ -183,27 +187,28 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     EntDCC = calHuffmanCodeSize(P_DC_C);            // cal huffman size
 
 ///////////////////////////////////////////////////////////////////////////
-
+#else
     //without DC opt
-    // map<int, float> DC_P;
-    // DC_P.clear();
-    // float EntDCY=0;
-    // float EntDCC=0;
-    // DPCM(seq_dct_idxs_Y, DC_idxs_Y, SDQ::seq_len_Y);
-    // cal_P_from_DIFF(DC_idxs_Y, DC_P, SDQ::seq_len_Y);
-    // DC_P.erase(TOTAL_KEY);
-    // EntDCY = calHuffmanCodeSize(DC_P);
-    // // cout<<"EntDCY:"<<EntDCY<<endl;
-    // DC_P.clear();
-    // DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, SDQ::seq_len_C);
-    // cal_P_from_DIFF(DC_idxs_Cb, DC_P, SDQ::seq_len_C);
-    // DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, SDQ::seq_len_C);
-    // cal_P_from_DIFF(DC_idxs_Cr, DC_P, SDQ::seq_len_C);
-    // DC_P.erase(TOTAL_KEY);
-    // EntDCC = calHuffmanCodeSize(DC_P);
-    // // cout<<"EntDCC:"<<EntDCC<<endl;
-    // DC_P.clear();
+    map<int, float> DC_P;
+    DC_P.clear();
+    float EntDCY=0;
+    float EntDCC=0;
+    DPCM(seq_dct_idxs_Y, DC_idxs_Y, SDQ::seq_len_Y);
+    cal_P_from_DIFF(DC_idxs_Y, DC_P, SDQ::seq_len_Y);
+    DC_P.erase(TOTAL_KEY);
+    EntDCY = calHuffmanCodeSize(DC_P);
+    // cout<<"EntDCY:"<<EntDCY<<endl;
+    DC_P.clear();
+    DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, SDQ::seq_len_C);
+    cal_P_from_DIFF(DC_idxs_Cb, DC_P, SDQ::seq_len_C);
+    DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, SDQ::seq_len_C);
+    cal_P_from_DIFF(DC_idxs_Cr, DC_P, SDQ::seq_len_C);
+    DC_P.erase(TOTAL_KEY);
+    EntDCC = calHuffmanCodeSize(DC_P);
+    // cout<<"EntDCC:"<<EntDCC<<endl;
+    DC_P.clear();
 
+#endif
 /////////////////////////////////////////////////
 
 

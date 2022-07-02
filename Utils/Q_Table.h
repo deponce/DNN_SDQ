@@ -25,7 +25,7 @@
 #include <math.h>
 using namespace std;
 
-// YUV
+// // YUV
 const float MINQVALUE = 1.;
 const float MAXQVALUE = 255.;
 const float QUANTIZATION_SCALE = 1.;
