@@ -191,9 +191,9 @@ void SDQ::opt_DC_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
     }
 
     // DC trellis
-    float v[seq_len_Y][33];
-    float cost_mini[seq_len_Y][33];
-    int opt_pre[seq_len_Y][33];     // store the j value of the optimal predecessor
+    auto v = new float[seq_len_Y][33];
+    auto cost_mini = new float[seq_len_Y][33];
+    auto opt_pre = new int[seq_len_Y][33];     // store the j value of the optimal predecessor
     // set v values
     for(int i=0; i<seq_len_Y; i++){
         v[i][16] = round(seq_dct_coefs_Y[i][0]/Q_table_Y[0]);   // HDQ DC index
@@ -229,6 +229,9 @@ void SDQ::opt_DC_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
         seq_dct_idxs_Y[i-1][0] = v[i-1][opt_pre[i][flag]];
         flag = opt_pre[i][flag];
     }
+    delete []v;
+    delete []cost_mini;
+    delete []opt_pre;
 }
 
 void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64], 
@@ -239,9 +242,9 @@ void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64],
         ent[s] = min(-log2(P_DC_C[s]/P_DC_C[TOTAL_KEY])+s,float(1e10));
     }
 
-    float v[seq_len_C][33];
-    float cost_mini[seq_len_C][33];
-    int opt_pre[seq_len_C][33];
+    auto v = new float[seq_len_C][33];
+    auto cost_mini = new float[seq_len_C][33];
+    auto opt_pre = new int[seq_len_C][33];
 
     // Cb channel
     for(int i=0; i<seq_len_C; i++){
@@ -311,4 +314,7 @@ void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64],
         seq_dct_idxs_Cr[i-1][0] = v[i-1][opt_pre[i][flag]];
         flag = opt_pre[i][flag];
     }
+    delete []v;
+    delete []cost_mini;
+    delete []opt_pre;
 }

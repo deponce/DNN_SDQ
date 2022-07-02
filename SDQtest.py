@@ -9,6 +9,7 @@ from torchvision import models
 from utils import load_model, print_file, print_exp_details_SDQ
 from Compress import SDQ_transforms
 import argparse
+torch.manual_seed(0)
 def main(args):
     Batch_size = 1
     model = args.Model
@@ -49,8 +50,8 @@ def main(args):
                                     # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                                     SDQ_transforms(model, QF_Y, QF_C, J, a, b, Lmbd, Beta_S, Beta_W, Beta_X)
                                     ])
-    dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=36)
+    dataset = datasets.ImageNet(root="~/data/ImageNet/2012", split='val', transform=transform)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=8)
 
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     num_correct = 0
@@ -67,7 +68,7 @@ def main(args):
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         BPP+=data_BPP['BPP']
-        if (cnt+1) %1000 ==0:
+        if (cnt+1) %100 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
             l2 = str(BPP.numpy()/num_tests) + "\n"

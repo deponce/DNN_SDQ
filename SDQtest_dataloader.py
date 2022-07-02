@@ -11,6 +11,8 @@ from Compress import SDQ_transforms
 from Utils.loader import SDQ_loader 
 import argparse
 
+torch.manual_seed(0)
+
 def warn(*args, **kwargs):
     pass
 import warnings
@@ -60,9 +62,9 @@ def main(args):
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
 
-    dataset = SDQ_loader(model, root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
+    dataset = SDQ_loader(model, root="~/data/ImageNet/2012", QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=36)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=8)
     num_correct = 0
     num_tests = 0
     BPP = 0
