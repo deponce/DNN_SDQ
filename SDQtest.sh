@@ -9,7 +9,7 @@
 # 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_YUV.txt
 # 			echo ${file}
 # 			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1 \
-# 					-resize_compress --output_txt ${file} --device "cuda:1"	
+# 					-resize_compress --output_txt ${file} --device "cpu"	
 # 		done	
 # 	done
 # done
@@ -21,12 +21,12 @@ do
 	# for QF_YC in `seq 70 -5 10`
 	for QF_YC in 10
 	do
-		for beta in 10e4
+		for beta in 1e4
 		do
 			export file=./Compress_Resize/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_YUV.txt
 			echo ${file}
 			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1 \
-					--output_txt ${file} --device "cuda:1"	
+					--output_txt ${file} --device "cpu"	
 		done	
 	done
 done

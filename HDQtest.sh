@@ -8,7 +8,7 @@ do
 		export file=./Resize_Compress/HDQ/YUV/${model}/${model}_QF${QF_YC}_YUV.txt
 		echo ${file}
 		python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-									  -resize_compress --output_txt ${file} --device "cuda:0"
+									  -resize_compress --output_txt ${file} --device "cpu"
 	done
 done
 
@@ -21,7 +21,7 @@ done
 # 		export file=./Compress_Resize/HDQ/${model}/${model}_QF${QF_YC}_YUV.txt
 # 		echo ${file}
 # 				python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-# 									  --output_txt ${file} --device "cuda:1"
+# 									  --output_txt ${file} --device "cpu"
 # 	done
 # done
 

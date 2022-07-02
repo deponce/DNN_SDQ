@@ -184,7 +184,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
 
 ///////////////////////////////////////////////////////////////////////////
 
-    //without DC opt
+    // // without DC opt
     // map<int, float> DC_P;
     // DC_P.clear();
     // float EntDCY=0;

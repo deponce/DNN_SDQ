@@ -17,7 +17,7 @@ import warnings
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a
@@ -51,8 +51,8 @@ def main(args):
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     
-    dataset = HDQ_loader(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=36)
+    dataset = HDQ_loader(root="~/data/ImageNet/2012", QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, split="val", resize_compress=resize_compress)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=8)
     num_correct = 0
     num_tests = 0
     BPP = 0
@@ -65,7 +65,7 @@ def main(args):
         pred = pretrained_model(image)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        if (cnt+1) %100 ==0:
+        if (cnt+1) %1000 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
             l2 = str(BPP.numpy()/num_tests) + "\n"
