@@ -35,7 +35,7 @@ using namespace std;
 // Setting 1
 const float MINQVALUE = 2.; 
 const float MAXQVALUE = 422.;
-const float QUANTIZATION_SCALE = 3.;
+const float QUANTIZATION_SCALE = 1.;
 
 // Setting 2
 // const float MINQVALUE = 1.; 

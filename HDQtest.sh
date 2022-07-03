@@ -1,4 +1,5 @@
-export root="~/data/ImageNet/2012"
+# export root="~/data/ImageNet/2012"
+export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 # Resize then Compress
 for model in VGG11

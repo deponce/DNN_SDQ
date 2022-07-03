@@ -63,6 +63,7 @@ def main(args):
     
 
     dataset = SDQ_loader(model, root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
+                                ,SenMap_dir=args.SenMap_dir,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=8)
     num_correct = 0
@@ -108,6 +109,8 @@ if '__main__' == __name__:
     parser.add_argument('--device', type=str, default="cuda:1", help='cpu or cuda:1')
     parser.add_argument('-resize_compress', action='store_true', help='For Resize --> Compress set True')
     parser.add_argument('--root', type=str, default="/home/h2amer/AhmedH.Salamah/ilsvrc2012", 
-                            help='root to ImageNet Driectory')
+                            help='root to ImageNet Directory')
+    parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
+                            help='Senstivity Directory')
     args = parser.parse_args()
     main(args)
