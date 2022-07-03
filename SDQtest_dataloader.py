@@ -62,10 +62,10 @@ def main(args):
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
 
-    dataset = SDQ_loader(model, root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
-                                ,SenMap_dir=args.SenMap_dir,
+    dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
+                                
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=8)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=32)
     num_correct = 0
     num_tests = 0
     BPP = 0

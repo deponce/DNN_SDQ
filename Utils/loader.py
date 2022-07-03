@@ -81,7 +81,7 @@ class HDQ_loader(datasets.ImageNet):
 
 class SDQ_loader(datasets.ImageNet):
     """docstring for loader"""
-    def __init__(self, model, root, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X, split="val", resize_compress=True):
+    def __init__(self, model, SenMap_dir, root, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X, split="val", resize_compress=True):
         # self.transforms =  transforms.Compose([
   #                                   # transforms.Resize((256, 256)),
   #                                   transforms.Scale(256),
@@ -98,10 +98,10 @@ class SDQ_loader(datasets.ImageNet):
 
         if resize_compress:
             self.SDQ_preprocess = self.resize_compression
-            self.SDQ_transforms = SDQ_transforms(model, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
+            self.SDQ_transforms = SDQ_transforms(model, SenMap_dir, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
         else:
             self.SDQ_preprocess = self.compression_resize
-            self.SDQ_transforms = SDQ_transforms_raw(model, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
+            self.SDQ_transforms = SDQ_transforms_raw(model, SenMap_dir, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
 
   #       classes (list): List of the class name tuples.
   #       class_to_idx (dict): Dict with items (class_name, class_index).

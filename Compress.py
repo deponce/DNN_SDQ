@@ -45,7 +45,7 @@ class SDQ_transforms(torch.nn.Module):
         return{'image': compressed_img, 'BPP': BPP}
 
 class SDQ_transforms_raw(torch.nn.Module):
-    def __init__(self, model="NoModel",, SenMap_dir="./SenMap/", Q=50, q=50, J=4, a=4, b=4,
+    def __init__(self, model="NoModel", SenMap_dir="./SenMap/", Q=50, q=50, J=4, a=4, b=4,
                  Lambda=1, Beta_S=1,Beta_W=1,Beta_X=1,):
 
         self.model = model
