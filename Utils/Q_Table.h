@@ -26,14 +26,21 @@
 using namespace std;
 
 // // YUV
-const float MINQVALUE = 1.;
-const float MAXQVALUE = 255.;
-const float QUANTIZATION_SCALE = 1.;
+// const float MINQVALUE = 1.;
+// const float MAXQVALUE = 255.;
+// const float QUANTIZATION_SCALE = 1.;
 
 // SWX
+
+// Setting 1
 // const float MINQVALUE = 2.; 
 // const float MAXQVALUE = 422.;
 // const float QUANTIZATION_SCALE = 3.;
+
+// Setting 2
+const float MINQVALUE = 1.; 
+const float MAXQVALUE = 255.;
+const float QUANTIZATION_SCALE = 3.;
 
 
 void quantizationTable(int QF, bool Luminance, float Q_Table[64]){
