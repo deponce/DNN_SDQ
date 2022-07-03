@@ -837,3 +837,70 @@ Beta_S = 100000.0
 Beta_W = 100000.0
 Beta_X = 100000.0
 Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0
+--> 999
+0.571 = 571 / 1000
+--> 1999
+0.5725 = 1145 / 2000
+--> 2999
+0.5783333333333334 = 1735 / 3000
+--> 3999
+0.57675 = 2307 / 4000
+--> 4999
+0.5756 = 2878 / 5000
+--> 5999
+0.5785 = 3471 / 6000
+cuda:1
+Model: Squeezenet
+J = 4
+a = 4
+b = 4
+QF_Y = 10
+QF_C = 10
+Beta_S = 100000.0
+Beta_W = 100000.0
+Beta_X = 100000.0
+Lambda = 1.0

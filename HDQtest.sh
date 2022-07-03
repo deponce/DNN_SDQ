@@ -1,3 +1,5 @@
+export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+
 # Resize then Compress
 # for model in VGG11
 # do
@@ -8,7 +10,7 @@
 # 		# export file=./Resize_Compress/HDQ/YUV/${model}/${model}_QF${QF_YC}_YUV.txt
 # 		echo ${file}
 # 		python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-# 									  -resize_compress --output_txt ${file} --device "cuda:0"
+# 									  -resize_compress --output_txt ${file} --device "cuda:0"  --root ${root}
 # 	done
 # done
 
@@ -22,7 +24,7 @@ do
 		export file=./Compress_Resize/HDQ/SWX/${model}/${model}_QF${QF_YC}_SWX.txt
 		echo ${file}
 				python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-									  --output_txt ${file} --device "cuda:0"
+									  --output_txt ${file} --device "cuda:0" --root ${root}
 	done
 done
 
