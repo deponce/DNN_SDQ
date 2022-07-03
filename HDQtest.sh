@@ -1,4 +1,4 @@
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+export root="~/data/ImageNet/2012"
 
 # Resize then Compress
 # for model in Squeezenet
@@ -24,7 +24,7 @@ do
 		export file=./Compress_Resize/HDQ/SWX/${model}/${model}_QF${QF_YC}_SWX.txt
 		echo ${file}
 				python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-									  --output_txt ${file} --device "cuda:0" --root ${root}
+									  --output_txt ${file} --device "cpu" --root ${root}
 	done
 done
 

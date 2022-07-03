@@ -17,7 +17,7 @@ import warnings
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a
@@ -52,7 +52,7 @@ def main(args):
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     
     dataset = HDQ_loader(root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=32)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=8)
     num_correct = 0
     num_tests = 0
     BPP = 0
