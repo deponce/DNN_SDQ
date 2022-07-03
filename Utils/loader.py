@@ -8,7 +8,7 @@ import numpy as np
 
 class HDQ_loader(datasets.ImageNet):
     """docstring for loader"""
-    def __init__(self, root, QF_Y, QF_C, J, a, b, split="val", resize_compress=True):
+    def __init__(self, model, root, QF_Y, QF_C, J, a, b, split="val", resize_compress=True):
         # self.transforms =  transforms.Compose([
   #                                   # transforms.Resize((256, 256)),
   #                                   transforms.Scale(256),
@@ -25,10 +25,10 @@ class HDQ_loader(datasets.ImageNet):
 
         if resize_compress:
             self.HDQ_preprocess = self.resize_compression
-            self.HDQ_transforms = HDQ_transforms(QF_Y, QF_C, J, a, b)
+            self.HDQ_transforms = HDQ_transforms(model, QF_Y, QF_C, J, a, b)
         else:
             self.HDQ_preprocess = self.compression_resize
-            self.HDQ_transforms = HDQ_transforms_raw(QF_Y, QF_C, J, a, b)
+            self.HDQ_transforms = HDQ_transforms_raw(model, QF_Y, QF_C, J, a, b)
 
   #       classes (list): List of the class name tuples.
   #       class_to_idx (dict): Dict with items (class_name, class_index).

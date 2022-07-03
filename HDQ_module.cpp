@@ -48,7 +48,7 @@ namespace py = pybind11;
 
 // wrap C++ function with NumPy array IO
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
-                                       int J, int a, int b, int QF_Y, int QF_C){
+                                       string Model, int J, int a, int b, int QF_Y, int QF_C){
   unsigned long size[2];
   size[0] = (unsigned long)array.shape()[1];
   size[1] = (unsigned long)array.shape()[2];
@@ -65,7 +65,6 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
   float bias_rgb2swx = 128.;
-  string Model = "Alexnet";
   LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
   rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
   // rgb2YUV(Vect_img);
