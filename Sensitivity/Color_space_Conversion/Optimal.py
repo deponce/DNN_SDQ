@@ -22,7 +22,7 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
             [transforms.ToTensor(),
              transforms.Resize((224, 224)),
              transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])])
-    dataset = torchvision.datasets.ImageNet(root="~/project/data", split='train',
+    dataset = torchvision.datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='train',
                                             transform=transform)
     Scale2One = transforms.Normalize(mean=[0, 0, 0], std=[255., 255., 255.])
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True)
@@ -45,7 +45,6 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
         cnt += Batch_size
         if cnt >= thr:
             break
-
     sen_list = sen_list - torch.mean(sen_list, 1)[:, None]
     eigmat = torch.real(torch.linalg.eig(sen_list@sen_list.transpose(1, 0)).eigenvectors.transpose(1, 0))
     print("Optimal color space conversion matrix for", model_name, "is: ")

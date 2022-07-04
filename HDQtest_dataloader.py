@@ -50,9 +50,10 @@ def main(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    
-    dataset = HDQ_loader(root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, split="val", resize_compress=resize_compress)
+    dataset = HDQ_loader(model=model, root=args.root, colorspace=args.colorspace, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, 
+                            split="val", resize_compress=resize_compress)
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=16)
+    
     num_correct = 0
     num_tests = 0
     BPP = 0
@@ -94,5 +95,6 @@ if '__main__' == __name__:
     parser.add_argument('--device', type=str, default="cuda:0", help='cpu or cuda:0')
     parser.add_argument('--root', type=str, default="/home/h2amer/AhmedH.Salamah/ilsvrc2012", 
                             help='root to ImageNet Driectory')
+    parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
     args = parser.parse_args()
     main(args)

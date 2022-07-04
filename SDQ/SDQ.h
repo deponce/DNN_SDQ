@@ -124,6 +124,7 @@ void SDQ::opt_Q_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
             val = round(MinMaxClip(val, MINQVALUE, MAXQVALUE));
             SDQ::Q_table_Y[j] = val;
         }
+        else    Q_table_Y[j] = MAXQVALUE;
         divisor=0; denominator=0; 
     }
 }
@@ -146,6 +147,7 @@ void SDQ::opt_Q_C(float seq_dct_idxs_Cb[][64], float seq_dct_coefs_Cb[][64],
             val = round(MinMaxClip(val, MINQVALUE, MAXQVALUE));
             SDQ::Q_table_C[j] = val;
         }    
+        else    Q_table_C[j] = MAXQVALUE;
         divisor=0;denominator=0; 
     }
 }
@@ -163,6 +165,7 @@ void SDQ::opt_Q_Y_DC(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
         val = MinMaxClip(val, MINQVALUE, MAXQVALUE);
         Q_table_Y[0] = val;
     }
+    else    Q_table_Y[0] = MAXQVALUE;
 }
 
 void SDQ::opt_Q_C_DC(float seq_dct_idxs_Cb[][64], float seq_dct_coefs_Cb[][64],
@@ -180,7 +183,8 @@ void SDQ::opt_Q_C_DC(float seq_dct_idxs_Cb[][64], float seq_dct_coefs_Cb[][64],
         val = round(numerator/denominator);
         val = MinMaxClip(val, MINQVALUE, MAXQVALUE);
         Q_table_C[0] = val;
-    }    
+    }
+    else    Q_table_C[0] = MAXQVALUE;
 }
 
 void SDQ::opt_DC_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
@@ -197,8 +201,8 @@ void SDQ::opt_DC_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
     // set v values
     for(int i=0; i<seq_len_Y; i++){
         v[i][16] = round(seq_dct_coefs_Y[i][0]/Q_table_Y[0]);   // HDQ DC index
-        for(int j=0; j<16; j++){v[i][j] = v[i][16]-16+j;}
-        for(int j=17; j<33; j++){v[i][j] = v[i][16]-16+j;}
+        for(int j=0; j<16; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
+        for(int j=17; j<33; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
     }
     // initialize cost_mini[0][:]
     for(int j=0; j<33; j++){
@@ -249,8 +253,8 @@ void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64],
     // Cb channel
     for(int i=0; i<seq_len_C; i++){
         v[i][16] = round(seq_dct_coefs_Cb[i][0]/Q_table_C[0]);
-        for(int j=0; j<16; j++){v[i][j] = v[i][16]-16+j;}
-        for(int j=17; j<33; j++){v[i][j] = v[i][16]-16+j;}
+        for(int j=0; j<16; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
+        for(int j=17; j<33; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
     }
 
     for(int j=0; j<33; j++){
@@ -283,8 +287,8 @@ void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64],
     // Cr channel
     for(int i=0; i<seq_len_C; i++){
         v[i][16] = round(seq_dct_coefs_Cr[i][0]/Q_table_C[0]);
-        for(int j=0; j<16; j++){v[i][j] = v[i][16]-16+j;}
-        for(int j=17; j<33; j++){v[i][j] = v[i][16]-16+j;}
+        for(int j=0; j<16; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
+        for(int j=17; j<33; j++){v[i][j] = MinMaxClip(v[i][16]-16+j,-1023,1023);}
     }
 
     for(int j=0; j<33; j++){

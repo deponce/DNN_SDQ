@@ -31,6 +31,7 @@ const float WG = 0.587;
 const float WB = 0.114;
 const float MAX_PXL_VAL = 255.;
 const float MIN_PXL_VAL = 0.;
+
 void rgb2swx(std::vector<std::vector<std::vector<float>>>& rgb_img, float W_matrix[3][3], float bias){
     int i, j, k;
     float r_ch, g_ch, b_ch;

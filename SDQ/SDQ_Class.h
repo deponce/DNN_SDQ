@@ -61,10 +61,11 @@ class SDQ{
         float EntACC = 0;
         float EntDCY = 0;
         float EntDCC = 0;
+        float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
         void __init__(float eps, float Beta_S, float Beta_W, float Beta_X,
-                      float Lmbda, float Sen_Map[3][64], int QF_Y, int QF_C, 
+                      float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                       int J, int a, int b);
         void opt_Q_Y_DC(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]);
         void opt_Q_C_DC(float seq_dct_idxs_Cb[][64], float seq_dct_coefs_Cb[][64],
@@ -82,8 +83,10 @@ class SDQ{
 };
 
 void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
-                   float Lmbda, float Sen_Map[3][64], int QF_Y, int QF_C, 
+                   float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                    int J, int a, int b){
+
+    minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
     SDQ::RSlst.reserve(64);
     SDQ::IDlst.reserve(64);
     SDQ::RSlst.clear();
@@ -91,14 +94,15 @@ void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
     SDQ::Beta_S = Beta_S;
     SDQ::Beta_W = Beta_W;
     SDQ::Beta_X = Beta_X;
-    quantizationTable(QF_Y, true, SDQ::Q_table_Y);
-    quantizationTable(QF_C, false, SDQ::Q_table_C);
+    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, SDQ::Q_table_Y);
+    quantizationTable(MINQVALUE, MAXQVALUE,  QUANTIZATION_SCALE, QF_C, false, SDQ::Q_table_C);
     SDQ::Block.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbda, Sen_Map);
     SDQ::J_Y = 10e10;
     SDQ::J_C = 10e10;
     SDQ::J = J;
     SDQ::a = a;
     SDQ::b = b;
+
 }
 
 float SDQ::__call__(vector<vector<vector<float>>>& image){

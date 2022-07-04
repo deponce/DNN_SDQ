@@ -55,21 +55,23 @@ class HDQ{
         float EntACC = 0;
         float EntDCY = 0;
         float EntDCC = 0;
+        float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
-        void __init__(int QF_Y, int QF_C, 
+        void __init__(int colorspace, int QF_Y, int QF_C, 
                       int J, int a, int b);
         float __call__(vector<vector<vector<float>>>& image);
 };
 
-void HDQ::__init__(int QF_Y, int QF_C, 
+void HDQ::__init__(int colorspace, int QF_Y, int QF_C, 
                    int J, int a, int b){
+    minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
     HDQ::RSlst.reserve(64);
     HDQ::IDlst.reserve(64);
     HDQ::RSlst.clear();
     HDQ::IDlst.clear();
-    quantizationTable(QF_Y, true, HDQ::Q_table_Y);
-    quantizationTable(QF_C, false, HDQ::Q_table_C);
+    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, HDQ::Q_table_Y);
+    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_C, false, HDQ::Q_table_C);
     HDQ::J_Y = 10e10;
     HDQ::J_C = 10e10;
     HDQ::J = J;

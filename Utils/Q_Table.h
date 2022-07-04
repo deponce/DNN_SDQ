@@ -25,25 +25,36 @@
 #include <math.h>
 using namespace std;
 
-// // YUV
-// const float MINQVALUE = 1.;
-// const float MAXQVALUE = 255.;
-// const float QUANTIZATION_SCALE = 1.;
-
-// SWX
-
-// Setting 1
-const float MINQVALUE = 2.; 
-const float MAXQVALUE = 422.;
-const float QUANTIZATION_SCALE = 3.;
-
-// Setting 2
-// const float MINQVALUE = 1.; 
-// const float MAXQVALUE = 255.;
-// const float QUANTIZATION_SCALE = 3.;
 
 
-void quantizationTable(int QF, bool Luminance, float Q_Table[64]){
+void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, float &QUANTIZATION_SCALE)
+{
+    if(colorspace == 0)
+    { 
+        // YUV
+        MINQVALUE = 1.;
+        MAXQVALUE = 255.;
+        QUANTIZATION_SCALE = 1.;   
+    }
+    else if(colorspace == 1)
+    {
+        // Setting 1
+        MINQVALUE = 2.; 
+        MAXQVALUE = 422.;
+        QUANTIZATION_SCALE = 3.;
+    }
+    else
+    {
+        // Setting 2
+        MINQVALUE = 1.; 
+        MAXQVALUE = 255.;
+        QUANTIZATION_SCALE = 3.;
+
+    }
+}
+
+void quantizationTable(float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
+{
     QF = max(min(QF, 100),0);
     if(QF==0){
         QF=1;

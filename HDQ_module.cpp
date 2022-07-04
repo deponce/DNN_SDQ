@@ -48,7 +48,7 @@ namespace py = pybind11;
 
 // wrap C++ function with NumPy array IO
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
-                                       int J, int a, int b, int QF_Y, int QF_C){
+                                       string Model, int colorspace, int J, int a, int b, int QF_Y, int QF_C){
   unsigned long size[2];
   size[0] = (unsigned long)array.shape()[1];
   size[1] = (unsigned long)array.shape()[2];
@@ -65,16 +65,42 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
   float bias_rgb2swx = 128.;
+<<<<<<< HEAD
   string Model = "Alexnet";
   // LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
   // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
   rgb2YUV(Vect_img);
+=======
+>>>>>>> 6170f49df757ad2dbe5f8cdaed647e6a9b248710
   
+  if(colorspace == 0)
+  {
+    rgb2YUV(Vect_img);
+  }
+  else
+  {
+    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+    rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
+  }
+
   HDQ hdq;
-  hdq.__init__(QF_Y, QF_C, J, a ,b);
+  hdq.__init__(colorspace, QF_Y, QF_C, J, a ,b);
   BPP = hdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
+<<<<<<< HEAD
   YUV2rgb(Vect_img);
   // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
+=======
+  
+  if(colorspace == 0)
+  {
+    YUV2rgb(Vect_img);
+  }
+  else
+  {
+    swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
+  }
+
+>>>>>>> 6170f49df757ad2dbe5f8cdaed647e6a9b248710
   img2seq(Vect_img, result, size[0], size[1]);
   int ndim = 3;
   vector<unsigned long> shape   = { 3, size[0], size[1]};
