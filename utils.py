@@ -8,6 +8,8 @@ def load_model(Model):
         pretrained_model = models.vgg11(pretrained=True).eval()
     elif Model=="Squeezenet":
         pretrained_model = models.squeezenet1_0(pretrained=True).eval()
+    elif Model=="NoModel":
+        pretrained_model = models.vgg11(pretrained=True).eval()
     return pretrained_model
 
 
