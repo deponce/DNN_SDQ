@@ -1,12 +1,13 @@
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+export root="/home/h2amer/work/workspace/ML_TS/"
 
 # Resize then Compress
-for model in VGG11
+for model in Squeezenet
 do
-	for QF_YC in `seq 100 -5 55`
+	for QF_YC in `seq 100 -10 60`
 	# for QF_YC in 70
 	do
-		for beta in 10e6
+		for beta in 10e5
 		do
 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_YUV.txt
 			echo ${file}

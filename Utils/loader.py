@@ -22,6 +22,7 @@ class HDQ_loader(datasets.ImageNet):
         self.normalize_0 = transforms.Normalize(mean=[0, 0, 0]            , std=[1/255., 1/255., 1/255.])
         self.normalize_1 = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         super().__init__(self.root, split="val")
+        # super().__init__(self.root)
 
         if resize_compress:
             self.HDQ_preprocess = self.resize_compression
