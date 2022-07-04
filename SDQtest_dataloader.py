@@ -62,8 +62,7 @@ def main(args):
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
 
-    dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
-                                
+    dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=32)
     num_correct = 0
@@ -112,5 +111,6 @@ if '__main__' == __name__:
                             help='root to ImageNet Directory')
     parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
                             help='Senstivity Directory')
+    parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
     args = parser.parse_args()
     main(args)

@@ -53,7 +53,7 @@ def main(args):
     
     dataset = HDQ_loader(model=model, root=args.root, colorspace=args.colorspace, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, 
                             split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=16)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=32)
 
     num_correct = 0
     num_tests = 0
