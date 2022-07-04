@@ -26,6 +26,7 @@
 using namespace std;
 
 
+
 void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, float &QUANTIZATION_SCALE)
 {
     if(colorspace == 0)

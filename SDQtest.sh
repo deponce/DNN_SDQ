@@ -1,5 +1,7 @@
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+
 
 export beta=1
 export QF_YC=80
@@ -23,7 +25,7 @@ done
 export beta=1
 
 # Resize then Compress
-for model in VGG11
+for model in Squeezenet
 do
 	for QF_YC in 80
 	# for QF_YC in 70

@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <opencv2/highgui.hpp>
+// #include <opencv2/highgui.hpp>
 #include <unistd.h>
 #include <getopt.h>
 #include <iostream>
@@ -30,7 +30,7 @@
 #include "./SDQ/SDQ.h"
 #include "./SDQ/load.h"
 
-using namespace cv;
+// using namespace cv;
 using namespace std;
 
 int main(int argc, char* argv[]) {

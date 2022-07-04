@@ -1,5 +1,7 @@
+export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+
 
 # Resize then Compress
 for model in VGG11
@@ -19,7 +21,8 @@ do
 done
 
 # --> Compress_Resize
-# for model in Alexnet
+
+# for model in Alexnet Squeezenet Resnet18
 # do
 # 	# for QF_YC in `seq 100 -5 10`
 # 	for QF_YC in 100
@@ -32,4 +35,19 @@ done
 # 									  --device "cuda:0" --root ${root}
 # 	done
 # done
+
+
+# for model in Alexnet Squeezenet Resnet18
+# do
+# 	for QF_YC in `seq 100 -5 10`
+# 	# for QF_YC in 100
+# 	do
+# 		# export file=./Compress_Resize/YUV/HDQ/${model}/${model}_QF${QF_YC}_YUV.txt
+# 		export file=./Compress_Resize/HDQ/SWX420/${model}/${model}_QF${QF_YC}_SWX.txt
+# 		echo ${file}
+# 				python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+# 									  --output_txt ${file} --device "cuda:0" --root ${root}
+# 	done
+# done
+
 
