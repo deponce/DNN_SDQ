@@ -38,7 +38,7 @@ namespace py = pybind11;
 
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
                      py::array_t<float, py::array::c_style | py::array::forcecast> SenMap,
-                     string Model, int J, int a, int b, int QF_Y, int QF_C, float Beta_S, float Beta_W,
+                     string Model, int colorspace, int J, int a, int b, int QF_Y, int QF_C, float Beta_S, float Beta_W,
                      float Beta_X, float Lmbd, float eps){
   /*
   :Fn  py__call__: 
@@ -94,26 +94,31 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   // LoadSenMap(Model, Sen_Map);
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
-  // LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
   float bias_rgb2swx = 128;
   
-  rgb2YUV(Vect_img);
-  // if(Model=="NoModel"){
-  //   rgb2YUV(Vect_img);
-  // }
-  // else{
-  //   rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
-  // }
+  // rgb2YUV(Vect_img);
+  if(Model=="NoModel" || colorspace == 0)
+  {
+    rgb2YUV(Vect_img);
+  }
+  else
+  {
+    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+    rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
+  }
+
   SDQ sdq;
-  sdq.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbd, Sen_Map, QF_Y, QF_C, J, a ,b);
+  sdq.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbd, Sen_Map, colorspace, QF_Y, QF_C, J, a ,b);
   BPP = sdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
-  YUV2rgb(Vect_img);
-  // if(Model=="NoModel"){
-  //   YUV2rgb(Vect_img);
-  // }
-  // else{
-  //   swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
-  // }
+  
+  // YUV2rgb(Vect_img);
+  if(Model=="NoModel" || colorspace == 0)
+  {
+    YUV2rgb(Vect_img);
+  }
+  else{
+    swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
+  }
   img2seq(Vect_img, result, size[0], size[1]);
   int ndim = 3;
   vector<unsigned long> shape   = { 3, size[0], size[1]};

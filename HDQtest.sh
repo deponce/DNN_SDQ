@@ -11,7 +11,8 @@ do
 		# export file=./Resize_Compress/HDQ/YUV/${model}/${model}_QF${QF_YC}_YUV.txt
 		echo ${file}
 		python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-									  -resize_compress --output_txt ${file} --device "cuda:0"  --root ${root}
+									  -resize_compress --colorspace 1 \
+									  --output_txt ${file} --device "cuda:0"  --root ${root}
 	done
 done
 
