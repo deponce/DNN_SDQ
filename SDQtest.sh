@@ -25,7 +25,7 @@ done
 export beta=1
 
 # Resize then Compress
-for model in Squeezenet
+for model in VGG11
 do
 	for QF_YC in 80
 	# for QF_YC in 70

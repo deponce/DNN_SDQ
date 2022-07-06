@@ -27,23 +27,31 @@ using namespace std;
 
 
 
+
 void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, float &QUANTIZATION_SCALE)
 {
-    if(colorspace == 0)
+    if(colorspace == 0) // HDQ
     { 
         // YUV
         MINQVALUE = 1.;
         MAXQVALUE = 255.;
         QUANTIZATION_SCALE = 1.;   
     }
-    else if(colorspace == 1)
+    else if(colorspace == -1) // SDQ
+    { 
+        // YUV
+        MINQVALUE = 5.;
+        MAXQVALUE = 255.;
+        QUANTIZATION_SCALE = 1.;   
+    }
+    else if(colorspace == 1) // SWX
     {
         // Setting 1
         MINQVALUE = 2.; 
         MAXQVALUE = 422.;
         QUANTIZATION_SCALE = 3.;
     }
-    else
+    else if(colorspace == 2)  // SWX
     {
         // Setting 2
         MINQVALUE = 1.; 

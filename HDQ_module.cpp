@@ -65,13 +65,12 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
   float bias_rgb2swx = 128.;
-<<<<<<< HEAD
-  string Model = "Alexnet";
+
+  // string Model = "Alexnet";
   // LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
   // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
-  rgb2YUV(Vect_img);
-=======
->>>>>>> 6170f49df757ad2dbe5f8cdaed647e6a9b248710
+  // rgb2YUV(Vect_img);
+
   
   if(colorspace == 0)
   {
@@ -86,10 +85,10 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   HDQ hdq;
   hdq.__init__(colorspace, QF_Y, QF_C, J, a ,b);
   BPP = hdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
-<<<<<<< HEAD
-  YUV2rgb(Vect_img);
+
+  // YUV2rgb(Vect_img);
   // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
-=======
+
   
   if(colorspace == 0)
   {
@@ -100,7 +99,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
     swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
   }
 
->>>>>>> 6170f49df757ad2dbe5f8cdaed647e6a9b248710
+
   img2seq(Vect_img, result, size[0], size[1]);
   int ndim = 3;
   vector<unsigned long> shape   = { 3, size[0], size[1]};
