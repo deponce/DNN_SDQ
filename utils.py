@@ -10,7 +10,8 @@ def load_model(Model):
         pretrained_model = models.squeezenet1_0(pretrained=True).eval()
     elif Model=="NoModel":
         pretrained_model = models.vgg11(pretrained=True).eval()
-    return pretrained_model
+        Model = "VGG11"
+    return pretrained_model, Model
 
 
 def print_file(l1, output_txt):

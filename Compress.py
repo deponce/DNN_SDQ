@@ -35,9 +35,13 @@ class SDQ_transforms(torch.nn.Module):
         # print("Lambda=",Lambda)
         # exit(0)
         self.sen_map = np.ones((3,64))
-        self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
+        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
+        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
     def __call__(self, img):
         img = np.asarray(img)
         img = np.transpose(img, (2,0,1))
@@ -47,7 +51,6 @@ class SDQ_transforms(torch.nn.Module):
         compressed_img = np.uint8(compressed_img) 
         compressed_img = np.transpose(compressed_img, (1,2,0))
         return {'image': compressed_img, 'BPP': BPP}
-        return{'image': compressed_img, 'BPP': BPP}
 
 class HDQ_transforms(torch.nn.Module):
     def __init__(self, model="VGG11", colorspace=0, Q=50, q=50, J=4, a=4, b=4):

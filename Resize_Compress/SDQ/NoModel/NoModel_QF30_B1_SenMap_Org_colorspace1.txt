@@ -1,0 +1,12 @@
+cuda:0
+Model: NoModel
+ColorSpace: 1
+J = 4
+a = 4
+b = 4
+QF_Y = 30
+QF_C = 30
+Beta_S = 1.0
+Beta_W = 1.0
+Beta_X = 1.0
+Lambda = 30.0

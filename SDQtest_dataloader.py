@@ -33,6 +33,7 @@ def main(args):
     resize_compress = args.resize_compress
     eps = 10
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+    pretrained_model, _ = load_model(model)
     print(device)
     print_exp_details_SDQ(args)
     print("Model: ", model)
@@ -49,7 +50,7 @@ def main(args):
     # pretrained_model = models.resnet18(pretrained=True)
     # pretrained_model = models.squeezenet1_0(pretrained=True)
     # pretrained_model = models.alexnet(pretrained=True)
-    pretrained_model = load_model(model) 
+    # pretrained_model, model = load_model(model) 
     _ = pretrained_model.to(device)
     # transform = transforms.Compose([
     #                                 transforms.Scale(256),

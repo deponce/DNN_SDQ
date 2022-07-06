@@ -78,7 +78,8 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float bias_rgb2swx = 128;
   
   // rgb2YUV(Vect_img);
-  if(Model=="NoModel" || colorspace == 0)
+  // if(Model=="NoModel" || colorspace == 0)
+  if(colorspace == 0)
   {
     rgb2YUV(Vect_img);
   }
@@ -93,7 +94,8 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   BPP = sdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
   
   // YUV2rgb(Vect_img);
-  if(Model=="NoModel" || colorspace == 0)
+  // if(Model=="NoModel" || colorspace == 0)
+  if(colorspace == 0)
   {
     YUV2rgb(Vect_img);
   }

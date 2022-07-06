@@ -1,0 +1,8 @@
+cuda:0
+Model: NoModel
+ColorSpace: 1
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
