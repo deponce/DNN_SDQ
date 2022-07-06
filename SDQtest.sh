@@ -1,3 +1,4 @@
+
 export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 # export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
@@ -45,10 +46,31 @@ done
 # done
 
 
+# export beta=1
+# export QF_YC=80
+# # Resize then Compress [ Deafult SDQ with SWX]
+# for model in NoModel
+# do
+# 	for colorspace in 1 2
+# 	do
+# 		for sens in "SenMap_Scale"
+# 		do
+# 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}_colorspace${colorspace}.txt
+# 			export sens_dir=./SenMap_All/${sens}/
+# 			echo ${file}
+# 			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 30 \
+# 					-resize_compress  --colorspace ${colorspace} \
+# 					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
+# 		done	
+# 	done
+# done
+
+# export beta=1
 
 # export QF_YC = 80
 # export sens="SenMap_Resize_Normalized"
 # export beta=1
+
 
 # # Resize then Compress
 # for model in VGG11
