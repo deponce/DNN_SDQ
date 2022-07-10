@@ -1,28 +1,48 @@
 
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
-# export root="/home/h2amer/work/workspace/ML_TS/"
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
 
-
-export beta=1
-export QF_YC=80
-export sens="NoModel"
-# Resize then Compress [ Deafult SDQ with SWX] No senstivity
-for model in VGG11
+# export beta=50
+# Resize then Compress
+for model in Alexnet
 do
-	for QF_YC in `seq 70 -10 10`
+	for QF_YC in 80
 	do
-		for colorspace in 1
+		for beta in 0.1 #10 7.5 5 2.5 1 0.75 0.5 0.25 0.1
 		do
-			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}_colorspace${colorspace}.txt
-			export sens_dir=./SenMap_All/${sens}/
-			echo ${file}
-			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 30 \
-					-resize_compress  --colorspace ${colorspace} \
-					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
+			for sens in "SenMap_Normalized"
+			do
+				export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}.txt
+				export sens_dir=./SenMap_All/${sens}/${model}
+				echo ${file}
+				python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1 \
+						-resize_compress  --colorspace -1 \
+						--output_txt ${file} --device "cuda:1" --root ${root} --SenMap_dir ${sens_dir} 
+			done
 		done	
 	done
 done
+
+# export beta=1
+# export QF_YC=80
+# export sens="NoModel"
+# # Resize then Compress [ Deafult SDQ with SWX] No senstivity
+# for model in VGG11
+# do
+# 	for QF_YC in `seq 70 -10 10`
+# 	do
+# 		for colorspace in 1
+# 		do
+# 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}_colorspace${colorspace}.txt
+# 			export sens_dir=./SenMap_All/${sens}/
+# 			echo ${file}
+# 			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 30 \
+# 					-resize_compress  --colorspace ${colorspace} \
+# 					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
+# 		done	
+# 	done
+# done
 
 # export beta=1
 

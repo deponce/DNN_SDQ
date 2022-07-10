@@ -62,7 +62,6 @@ void cal_P_from_DIFF(float differ[], std::map<int, float> &P, int size){
         else{
             P[sizeGroup] = 1;
         }
-        P[TOTAL_KEY] += 1;  // for normalization
     }
     return;
 }

@@ -191,7 +191,8 @@ void SDQ::opt_DC_Y(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]){
     // calculate entropy rate for different size groups
     float ent[12];
     for(int s=0; s<12; s++){
-        ent[s] = min(-log2(P_DC_Y[s]/P_DC_Y[TOTAL_KEY])+s,float(1e10));
+        if(P_DC_Y[s]==0)    ent[s] = -log2(1/seq_len_Y)+s;
+        else    ent[s] = -log2(P_DC_Y[s]/seq_len_Y)+s;
     }
 
     // DC trellis
@@ -243,7 +244,8 @@ void SDQ::opt_DC_C(float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64],
     // calculate entropy rate for different size groups
     float ent[12];
     for(int s=0; s<12; s++){
-        ent[s] = min(-log2(P_DC_C[s]/P_DC_C[TOTAL_KEY])+s,float(1e10));
+        if(P_DC_C[s]==0)    ent[s] = -log2(1/seq_len_C)+s;
+        else    ent[s] = -log2(P_DC_C[s]/seq_len_C)+s;
     }
 
     auto v = new float[seq_len_C][33];

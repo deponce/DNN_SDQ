@@ -78,7 +78,7 @@ def main(args):
         pred = pretrained_model(image)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        if (cnt+1) %1000 ==0:
+        if (cnt+1) %100 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
             l2 = str(BPP.numpy()/num_tests) + "\n"
