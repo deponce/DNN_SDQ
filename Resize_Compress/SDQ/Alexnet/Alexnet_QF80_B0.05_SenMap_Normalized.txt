@@ -1,0 +1,45 @@
+cuda:1
+Model: Alexnet
+ColorSpace: -1
+J = 4
+a = 4
+b = 4
+QF_Y = 80
+QF_C = 80
+Beta_S = 0.05
+Beta_W = 0.05
+Beta_X = 0.05
+Lambda = 1.0
+--> 99
+0.41 = 41 / 100
+nan
+cuda:1
+Model: Alexnet
+ColorSpace: -1
+J = 4
+a = 4
+b = 4
+QF_Y = 80
+QF_C = 80
+Beta_S = 0.05
+Beta_W = 0.05
+Beta_X = 0.05
+Lambda = 1.0
+--> 99
+0.47 = 47 / 100
+1.5193526804447175
+cuda:1
+Model: Alexnet
+ColorSpace: -1
+J = 4
+a = 4
+b = 4
+QF_Y = 80
+QF_C = 80
+Beta_S = 0.05
+Beta_W = 0.05
+Beta_X = 0.05
+Lambda = 1.0
+--> 99
+0.41 = 41 / 100
+nan

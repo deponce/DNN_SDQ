@@ -2,9 +2,10 @@ export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 # export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
 
-export sens=SenMap_Scale_Norm
+# export sens=SenMap_Scale_Norm
+export snes=SenMap_Normalized
 
-for model in Squeezenet
+for model in Sqeezenet
 do
 	# for QF_YC in 80
 	for QF_YC in `seq 100 -10 70`

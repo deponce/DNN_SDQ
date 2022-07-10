@@ -169,7 +169,6 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     DPCM(seq_dct_idxs_Y, DC_idxs_Y, seq_len_Y);
     cal_P_from_DIFF(DC_idxs_Y, P_DC_Y, seq_len_Y);  // update P_DC_Y
     }
-    P_DC_Y.erase(TOTAL_KEY);
     EntDCY = calHuffmanCodeSize(P_DC_Y);            // cal huffman size
     // Cb Cr channels
     DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, seq_len_C);
@@ -187,7 +186,6 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, seq_len_C);
     cal_P_from_DIFF(DC_idxs_Cr, P_DC_C, seq_len_C); // update P_DC_C
     }
-    P_DC_C.erase(TOTAL_KEY);
     EntDCC = calHuffmanCodeSize(P_DC_C);            // cal huffman size
 
 ///////////////////////////////////////////////////////////////////////////
