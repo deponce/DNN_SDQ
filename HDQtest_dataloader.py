@@ -39,7 +39,7 @@ def main(args):
     # pretrained_model = models.resnet18(pretrained=True)
     # pretrained_model = models.squeezenet1_0(pretrained=True)
     # pretrained_model = models.alexnet(pretrained=True)
-    pretrained_model, model = load_model(model) 
+    pretrained_model = load_model(model) 
     _ = pretrained_model.to(device)
     # transform = transforms.Compose([
     #                                 HDQ_transforms(QF_Y, QF_C, J, a, b),

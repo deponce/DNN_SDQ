@@ -80,11 +80,11 @@ void LoadColorConvW(string model, float W_rgb2swx[3][3], float W_swx2rgb[3][3]){
         readData3x3("./color_conv_W/"+model+"_W_OPT.txt", W_swx2rgb);
         Tanspose(W_swx2rgb);
     }
-    else
-    {
-        model = "VGG11";
-        readData3x3("./color_conv_W/"+model+"_W_OPT.txt", W_rgb2swx);
-        readData3x3("./color_conv_W/"+model+"_W_OPT.txt", W_swx2rgb);
-        Tanspose(W_swx2rgb); 
-    }
+    // else
+    // {
+    //     model = "VGG11";
+    //     readData3x3("./color_conv_W/"+model+"_W_OPT.txt", W_rgb2swx);
+    //     readData3x3("./color_conv_W/"+model+"_W_OPT.txt", W_swx2rgb);
+    //     Tanspose(W_swx2rgb); 
+    // }
 }

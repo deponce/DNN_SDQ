@@ -11,7 +11,7 @@ def load_model(Model):
     elif Model=="NoModel":
         pretrained_model = models.vgg11(pretrained=True).eval()
         Model = "VGG11"
-    return pretrained_model, Model
+    return pretrained_model
 
 
 def print_file(l1, output_txt):

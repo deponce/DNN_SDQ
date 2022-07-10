@@ -33,7 +33,7 @@ def main(args):
     resize_compress = args.resize_compress
     eps = 10
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
-    pretrained_model, _ = load_model(model)
+    pretrained_model = load_model(model)
     print(device)
     print_exp_details_SDQ(args)
     print("Model: ", model)
