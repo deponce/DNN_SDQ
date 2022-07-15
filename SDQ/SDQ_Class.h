@@ -94,8 +94,8 @@ void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
     SDQ::Beta_S = Beta_S;
     SDQ::Beta_W = Beta_W;
     SDQ::Beta_X = Beta_X;
-    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, SDQ::Q_table_Y);
-    quantizationTable(MINQVALUE, MAXQVALUE,  QUANTIZATION_SCALE, QF_C, false, SDQ::Q_table_C);
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, SDQ::Q_table_Y);
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE,  QUANTIZATION_SCALE, QF_C, false, SDQ::Q_table_C);
     SDQ::Block.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbda, Sen_Map);
     SDQ::J_Y = 10e10;
     SDQ::J_C = 10e10;

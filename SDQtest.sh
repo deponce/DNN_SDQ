@@ -3,19 +3,23 @@ export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 # export root="~/data/ImageNet/2012"
 
 # export sens=SenMap_Scale_Norm
-export snes=SenMap_Normalized
+export sens=SenMap_Normalized
 
-for model in Sqeezenet
+# export addText="_wo_DC"
+
+for model in  VGG11 
 do
-	# for QF_YC in 80
-	for QF_YC in `seq 100 -10 70`
+	# for QF_YC in `seq 90 -10 80`
+	for QF_YC in 80
 	do
-		for beta in 1 100 1000
+		# for beta in 7.5 5 2.5 1 0.75 0.5 0.25 0.1
+		for beta in 15 20 25 30
+		# for beta in 0.5 
 		do
-			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}.txt
+			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}${addText}.txt
 			export sens_dir=./SenMap_All/${sens}/${model}
 			echo ${file}
-			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1 \
+			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1.0 \
 					-resize_compress  --colorspace 0 \
 					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
 		done	

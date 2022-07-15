@@ -10,12 +10,22 @@ from utils import load_model, print_file, print_exp_details_SDQ
 from Compress import SDQ_transforms
 from Utils.loader import SDQ_loader 
 import argparse
+import random
+import warnings
 
-torch.manual_seed(0)
+
+num_workers=24
+
+def seed_worker(worker_id):
+    worker_seed = torch.initial_seed() % 2**num_workers
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+g = torch.Generator()
+g.manual_seed(0)
 
 def warn(*args, **kwargs):
     pass
-import warnings
 warnings.warn = warn
 
 def main(args):
@@ -65,7 +75,11 @@ def main(args):
 
     dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=32)
+
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
+
+
+    
     num_correct = 0
     num_tests = 0
     BPP = 0
@@ -74,11 +88,13 @@ def main(args):
         image, image_BPP, labels = dt
         labels = labels.to(device)
         image = image.to(device)
+        if torch.sum(image_BPP) < 0:
+           break
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        if (cnt+1) %100 ==0:
+        if (cnt+1) %500 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
             l2 = str(BPP.numpy()/num_tests) + "\n"
@@ -91,6 +107,10 @@ def main(args):
     l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
     l2 = str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1 + l2
+    print_file(l, args.output_txt)
+    l0 = "*"* 30 + "\n"
+    l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
+    l = l0 + l1
     print_file(l, args.output_txt)
 
 if '__main__' == __name__:

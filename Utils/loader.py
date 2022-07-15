@@ -5,6 +5,7 @@ import torchvision.transforms.functional as TF
 import torch
 from PIL import Image
 import numpy as np
+import matplotlib.pyplot as plt
 
 class HDQ_loader(datasets.ImageNet):
     """docstring for loader"""
@@ -44,6 +45,8 @@ class HDQ_loader(datasets.ImageNet):
         sample = self.HDQ_transforms(sample)
         BPP = sample['BPP']
         sample = sample['image']
+        # imgplot = plt.imshow(sample)
+        # plt.show()
         sample = transforms.ToTensor()(sample)
         sample = self.normalize_1(sample)
         return sample, BPP
@@ -137,6 +140,7 @@ class SDQ_loader(datasets.ImageNet):
     
     def __getitem__(self, index):
         sample, target = super().__getitem__(index)
+        # print(str(index) + "\t"+self.imgs[index][0])
         sample, BPP = self.SDQ_preprocess(sample)
         return sample, BPP, target
 

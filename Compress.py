@@ -64,6 +64,7 @@ class HDQ_transforms(torch.nn.Module):
     def __call__(self, sample):
         sample = np.asarray(sample)
         sample = np.transpose(sample, (2,0,1))
+        # compressed_img, BPP  = sample, 0.0
         compressed_img, BPP = HDQ.__call__(sample, self.model, self.colorspace, self.J, self.a, self.b,
                                            self.Q,self.q)
         compressed_img = np.round(compressed_img)    

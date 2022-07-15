@@ -10,10 +10,21 @@ from utils import load_model, print_file, print_exp_details
 from Compress import HDQ_transforms
 from Utils.loader import HDQ_loader 
 import argparse
+import random
+import warnings
+
+num_workers=28
+
+def seed_worker(worker_id):
+    worker_seed = torch.initial_seed() % 2**num_workers
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+g = torch.Generator()
+g.manual_seed(0)
 
 def warn(*args, **kwargs):
     pass
-import warnings
 warnings.warn = warn
 
 def main(args):
@@ -54,13 +65,15 @@ def main(args):
     dataset = HDQ_loader(model=model, root=args.root, colorspace=args.colorspace, QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, 
                             split="val", resize_compress=resize_compress)
 
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=32)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers)
+    # test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
     num_correct = 0
     num_tests = 0
     BPP = 0
     cnt = 0
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
+        # exit(0)
         labels = labels.to(device)
         image = image.to(device)
         BPP+=torch.sum(image_BPP)
@@ -80,7 +93,10 @@ def main(args):
     l2 = str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1 + l2
     print_file(l, args.output_txt)
-
+    l0 = "*"* 30 + "\n"
+    l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
+    l = l0 + l1
+    print_file(l, args.output_txt)
 
 
 if '__main__' == __name__:

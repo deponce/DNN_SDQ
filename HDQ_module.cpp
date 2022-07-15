@@ -64,6 +64,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   seq2img(pos, Vect_img, size[0], size[1]);
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
+  float biasPerImage[3] = {0,0,0};
   float bias_rgb2swx = 128.;
 
   // string Model = "Alexnet";
@@ -75,6 +76,12 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   if(colorspace == 0)
   {
     rgb2YUV(Vect_img);
+  }
+  else if(colorspace == 3)
+  {
+    // remove the mean for each image
+    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+    rgb2swx_PerImage(Vect_img, W_rgb2swx, biasPerImage);
   }
   else
   {
@@ -93,6 +100,10 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   if(colorspace == 0)
   {
     YUV2rgb(Vect_img);
+  }
+  else if(colorspace == 3)
+  {
+    swx2rgb_PerImage(Vect_img, W_swx2rgb, biasPerImage);
   }
   else
   {

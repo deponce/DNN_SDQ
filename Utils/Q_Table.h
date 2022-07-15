@@ -50,6 +50,7 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
         MINQVALUE = 2.; 
         MAXQVALUE = 422.;
         QUANTIZATION_SCALE = 3.;
+
     }
     else if(colorspace == 2)  // SWX
     {
@@ -59,9 +60,28 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
         QUANTIZATION_SCALE = 3.;
 
     }
+    else if(colorspace == 3)  // SWX remove the mean form each image
+    {
+        QUANTIZATION_SCALE = 3.;
+        MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
+        MINQVALUE = 1.;
+
+        // Setting 2
+        // MAXQVALUE = 422.;
+        // QUANTIZATION_SCALE = 3.;
+        // MINQVALUE = sqrt(QUANTIZATION_SCALE); 
+
+    }
+    else 
+    {
+        MINQVALUE = 1.; 
+        MAXQVALUE = 255.;
+        QUANTIZATION_SCALE = 1.;
+
+    }
 }
 
-void quantizationTable(float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
+void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
 {
     QF = max(min(QF, 100),0);
     if(QF==0){
@@ -89,13 +109,31 @@ void quantizationTable(float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE
     if (Luminance == true){
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_Y[i])/100;
-            Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            
+            if (colorspace == 0) // JPEG
+            {
+                Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // No Round
+            {
+                Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+
+        
         }
     }
     else{
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_C[i])/100;
-            Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            
+            if (colorspace == 0) // JPEG
+            {
+                Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // No Round
+            {
+                Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
         }
     }
 }

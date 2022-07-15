@@ -70,8 +70,8 @@ void HDQ::__init__(int colorspace, int QF_Y, int QF_C,
     HDQ::IDlst.reserve(64);
     HDQ::RSlst.clear();
     HDQ::IDlst.clear();
-    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, HDQ::Q_table_Y);
-    quantizationTable(MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_C, false, HDQ::Q_table_C);
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, HDQ::Q_table_Y);
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_C, false, HDQ::Q_table_C);
     HDQ::J_Y = 10e10;
     HDQ::J_C = 10e10;
     HDQ::J = J;

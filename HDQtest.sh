@@ -4,10 +4,10 @@ export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 
 # Resize then Compress
-for model in Alexnet
+for model in VGG11
 do
-	for QF_YC in 100
-	# for QF_YC in `seq 68 1 69`
+	for QF_YC in 85
+	# for QF_YC in `seq 81 1 84`
 	do
 		for colorspace in 0
 		do
@@ -16,7 +16,7 @@ do
 			echo ${file}
 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
 										  -resize_compress --colorspace ${colorspace} \
-										  --output_txt ${file} --device "cuda:0" --root ${root}
+										  --output_txt ${file} --device "cuda:1" --root ${root}
 		done
 	done
 done
@@ -51,7 +51,7 @@ done
 # 		echo ${file}
 # 		python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
 # 									  --output_txt ${file} --colorspace 1 \
-# 									  --device "cuda:0" --root ${root}
+# 									  --device "cuda:1" --root ${root}
 # 	done
 # done
 
@@ -65,7 +65,7 @@ done
 # 		export file=./Compress_Resize/HDQ/SWX420/${model}/${model}_QF${QF_YC}_SWX.txt
 # 		echo ${file}
 # 				python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-# 									  --output_txt ${file} --device "cuda:0" --root ${root}
+# 									  --output_txt ${file} --device "cuda:1" --root ${root}
 # 	done
 # done
 
