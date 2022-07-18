@@ -110,13 +110,13 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_Y[i])/100;
             
-            if (colorspace == 0) // JPEG
-            {
-                Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-            else // No Round
+            if (colorspace == 3) // No Round
             {
                 Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // JPEG Standard
+            {
+                Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
 
         
@@ -126,13 +126,13 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
         for(int i=0; i<64; i++){
             q = (50+S*quantizationTableData_C[i])/100;
             
-            if (colorspace == 0) // JPEG
-            {
-                Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-            else // No Round
+            if (colorspace == 3) // No Round
             {
                 Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // JPEG
+            {
+                Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
         }
     }

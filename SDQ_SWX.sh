@@ -1,6 +1,7 @@
 export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 # export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
+# export root="/datashare/ImageNet/ILSVRC2012/validation/"
 
 
 export beta=1
@@ -44,7 +45,7 @@ do
 				export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_L${lamda}_${sens}_colorspace${colorspace}${addText}.txt
 				export sens_dir=./SenMap_All/${sens}/${model}
 				echo ${file}
-				python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L ${lamda} \
+				python3 SDQtest_dataloader_4models.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L ${lamda} \
 						-resize_compress  --colorspace ${colorspace} \
 						--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
 			done

@@ -13,9 +13,9 @@ for model in  VGG11
 do
 	# for QF_YC in `seq 90 -10 80`
 	# for QF_YC in `seq 70 -5 30`
-	for QF_YC in 95
+	for QF_YC in 10
 	do
-		for beta in 100 50 30 20 10 5 3 1 0.75 0.5
+		for beta in 30 20 10 5 3 1 0.75 0.5
 		# for beta in 1 0.75 0.5 
 		do
 			echo "Beta : "${beta}
