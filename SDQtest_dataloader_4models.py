@@ -29,7 +29,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a
@@ -68,10 +68,6 @@ def main(args):
         pretrained_model_buff = load_model(nm)
         _ = pretrained_model_buff.to(device)
         pretrained_model.append(pretrained_model_buff)
-    # pretrained_model = models.resnet18(pretrained=True)
-    # pretrained_model = models.squeezenet1_0(pretrained=True)
-    # pretrained_model = models.alexnet(pretrained=True)
-    # pretrained_model, model = load_model(model) 
     
     # transform = transforms.Compose([
     #                                 transforms.Scale(256),
@@ -83,13 +79,13 @@ def main(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
+    # The Colorspace will be always 0 .... as it is the vanila SDQ with YUV only that will be similar for all networks.
     model = "VGG11"
+    args.colorspace = 0
+    args.sens_dir="./SenMap_All/NoModel/VGG11"
     dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
-
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
-
-    
     num_correct = [0] * len(pretrained_model)
     num_tests = 0
     BPP = 0
