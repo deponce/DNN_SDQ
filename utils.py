@@ -1,4 +1,6 @@
+import torch 
 from torchvision import models
+
 def load_model(Model):
     if Model=="Alexnet":
         pretrained_model = models.alexnet(pretrained=True).eval()
@@ -47,3 +49,18 @@ def print_exp_details_SDQ(args):
     f.write("Beta_X = "+ str(args.Beta_X) + "\n")
     f.write("Lambda = "+ str(args.L) + "\n")
     f.close()
+
+# def accuracy(output: torch.Tensor, target: torch.Tensor, topk=(1,)) -> List[torch.FloatTensor]:
+#     list_topk_accs = []  # idx is topk1, topk2, ... etc
+    
+#     for k in topk:
+#         # get tensor of which topk answer was right
+#         ind_which_topk_matched_truth = correct[:k]  # [maxk, B] -> [k, B]
+#         # flatten it to help compute if we got it correct for each example in batch
+#         flattened_indicator_which_topk_matched_truth = ind_which_topk_matched_truth.reshape(-1).float()  # [k, B] -> [kB]
+#         # get if we got it right for any of our top k prediction for each example in batch
+#         tot_correct_topk = flattened_indicator_which_topk_matched_truth.float().sum(dim=0, keepdim=True)  # [kB] -> [1]
+#         # compute topk accuracy - the accuracy of the mode's ability to get it right within it's top k guesses/preds
+#         topk_acc = tot_correct_topk / batch_size  # topk accuracy for entire batch
+#         list_topk_accs.append(topk_acc)
+#     return list_topk_accs  # list of topk accuracies for entire batch [topk1, topk2, ... etc]

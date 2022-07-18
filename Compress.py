@@ -42,10 +42,10 @@ class SDQ_transforms(torch.nn.Module):
         self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
         self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
         self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
-    def __call__(self, img):
-        img = np.asarray(img)
-        img = np.transpose(img, (2,0,1))
-        compressed_img, BPP = SDQ.__call__(img, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b, 
+    def __call__(self, compressed_img):
+        compressed_img = np.asarray(compressed_img)
+        compressed_img = np.transpose(compressed_img, (2,0,1))
+        compressed_img, BPP = SDQ.__call__(compressed_img, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b, 
                                            self.Q, self.q, self.Beta_S, self.Beta_W, self.Beta_X, self.Lambda, 0.)
         compressed_img = np.round(compressed_img)    
         compressed_img = np.uint8(compressed_img) 

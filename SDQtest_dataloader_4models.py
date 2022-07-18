@@ -29,7 +29,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 1
+    Batch_size = 50
     model = args.Model
     J = args.J
     a = args.a
@@ -56,16 +56,23 @@ def main(args):
     print("Beta_W=",Beta_W)
     print("Beta_X=",Beta_X)
     print("Lambda=",Lmbd)
-    pretrained_name = ["VGG11", "Resnet18", "SqueezeNet", "Alexnet"]
-    pretrained_model = []
-    pretrained_model.append(models.vgg11(pretrained=True))
-    pretrained_model.append(models.resnet18(pretrained=True))
-    pretrained_model.append(models.squeezenet1_0(pretrained=True))
-    pretrained_model.append(models.alexnet(pretrained=True))
 
+    pretrained_model = []
+    pretrained_name = [
+                        "VGG11", 
+                        "Resnet18", 
+                        "Squeezenet", "Alexnet"
+    ]
+
+    for nm in pretrained_name: 
+        pretrained_model_buff = load_model(nm)
+        _ = pretrained_model_buff.to(device)
+        pretrained_model.append(pretrained_model_buff)
+    # pretrained_model = models.resnet18(pretrained=True)
+    # pretrained_model = models.squeezenet1_0(pretrained=True)
+    # pretrained_model = models.alexnet(pretrained=True)
     # pretrained_model, model = load_model(model) 
-    for model in pretrained_model:
-        _ = model.to(device)
+    
     # transform = transforms.Compose([
     #                                 transforms.Scale(256),
     #                                 transforms.CenterCrop(224),
@@ -76,47 +83,46 @@ def main(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
-
+    model = "VGG11"
     dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
                                 Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
 
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
 
-
     
+    num_correct = [0] * len(pretrained_model)
     num_tests = 0
     BPP = 0
-    cnt = [0] * len(pretrained_model)
-    num_correct = [0] * len(pretrained_model)
-    
+    cnt = 0
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
         labels = labels.to(device)
         image = image.to(device)
         if torch.sum(image_BPP) < 0:
            break
-        
-        num_tests += len(labels)
         BPP+=torch.sum(image_BPP)
-        for idx , model in enumerate(pretrained_model):
-            pred = model(image)
+        num_tests += len(labels)
+        for idx , model in enumerate(pretrained_model): 
+            pred = pretrained_model[idx](image)
             num_correct[idx] += (pred.argmax(1) == labels).sum().item()
             if (cnt+1) %500 ==0:
-                l0 = pretrained_name[idx] + "--> " + str(cnt) + "\n"
+                l0 = pretrained_name[idx] + " --> " + str(cnt) + "\n"
                 l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
                 l2 = str(BPP.numpy()/num_tests) + "\n"
                 # l2 = ""
                 l = l0 + l1 + l2
                 print_file(l, args.output_txt)
-            cnt[idx] += 1
+        cnt += 1
 
-    for idx in range(len(pretrained_model)):
-        l0 = "#"* 30 + "\n"
-        l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
-        l2 = str(BPP.numpy()/num_tests) + "\n"
-        l = l0 + l1 + l2
-        print_file(l, args.output_txt)
+    for idx , model in enumerate(pretrained_model): 
+        # l0 = "#"* 30 + "\n"
+        # l0 = l0 + pretrained_name[idx] + "\n"
+        # l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
+        # l2 = str(BPP.numpy()/num_tests) + "\n"
+        # l = l0 + l1 + l2
+        # print_file(l, args.output_txt)
         l0 = "*"* 30 + "\n"
+        l0 = l0 + pretrained_name[idx] + "\n"
         l1 = str((num_correct[idx]/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
         l = l0 + l1
         print_file(l, args.output_txt)

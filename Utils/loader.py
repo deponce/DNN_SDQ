@@ -142,6 +142,7 @@ class SDQ_loader(datasets.ImageNet):
         sample, target = super().__getitem__(index)
         # print(str(index) + "\t"+self.imgs[index][0])
         sample, BPP = self.SDQ_preprocess(sample)
+        # sample, BPP = self.normal(sample)
         return sample, BPP, target
 
     def __len__(self):

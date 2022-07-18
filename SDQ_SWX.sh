@@ -33,21 +33,23 @@ export lamda=10
 
 for model in VGG11
 do
-	for slop in 25 29
+	# for slop in 25 29
+	# for QF_YC in 95 80 75 70 65 60 50
+	for QF_YC in 40
 	do
-		for QF_YC in 95 80 75 70 65 60 50
+		for lamda in 1
 		do
-			lamda=$(echo "scale = 2; $QF_YC * -0.25 + $slop" | bc)
+			# lamda=$(echo "scale = 2; $QF_YC * -0.25 + $slop" | bc)
 			lamda=${lamda%.*}
 			echo "Lamdha : "${lamda}
-			for colorspace in 3
+			for colorspace in 0
 			do
 				export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_L${lamda}_${sens}_colorspace${colorspace}${addText}.txt
 				export sens_dir=./SenMap_All/${sens}/${model}
 				echo ${file}
 				python3 SDQtest_dataloader_4models.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L ${lamda} \
 						-resize_compress  --colorspace ${colorspace} \
-						--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
+						--output_txt ${file} --device "cuda:1" --root ${root} --SenMap_dir ${sens_dir} 
 			done
 		done
 	done
