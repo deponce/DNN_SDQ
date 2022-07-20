@@ -29,7 +29,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 50
+    Batch_size = 1
     model = args.Model
     J = args.J
     a = args.a

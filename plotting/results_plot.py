@@ -89,20 +89,21 @@ def concave(vgg_jpeg_acc, vgg_jpeg_bpp):
 
 # VGG11
 
-min_rate = 60
+
 
 vgg_qf10_acc = [ 44.48, 44.47, 44.59, 44.69, 44.69, 44.71, 43.60, 44.76, 44.75 ]
-vgg_qf10_bpp = [
-0.4119690306,
-0.4130215107,
-0.4134972066,
-0.4142955344,
-0.4144311961,
-0.4145250497,
-0.4133868283,
-0.4145745133,
-0.4145897884,
-]
+vgg_qf10_bpp = [ 0.4119690306, 0.4130215107, 0.4134972066, 0.4142955344, 0.4144311961, 0.4145250497, 0.4133868283, 0.4145745133, 0.4145897884]
+
+vgg_qf20_acc = [ 58.56, 58.72, 58.81, 58.95, 58.98, 59.03, 58.93, 59.05, 59.04, ]
+vgg_qf20_bpp = [0.6374945486,0.6411679886,0.6428768442,0.6459511444,0.6465059695,0.6468959535,0.6463232788,0.6470938073,0.6471572735]
+
+vgg_qf30_acc = [62.69, 62.77, 62.84, 62.94,62.95,62.98,62.97,63.05,63.05]
+vgg_qf30_bpp = [0.8244920081,0.8323519132,0.8360503137,0.8428691575,0.8441221724,0.8450161348,0.844750973,0.8454606814,0.8456096253,]
+
+
+vgg_qf40_acc = [64.34,64.48,64.55,64.62,64.61,64.63,64.59,64.71,64.70]
+vgg_qf40_bpp = [0.9681530276, 0.9811291111, 0.9873023153, 0.9988062033, 1.000929118, 1.002481208, 1.002383173, 1.003240749, 1.003490961]
+
 
 vgg_qf50_acc = [56.93, 65.26, 65.50, 65.59, 65.55, 65.62]
 vgg_qf50_bpp = [0.8717956941, 1.08562427, 1.113521173, 1.130422168, 1.133574012, 1.135881871]
@@ -111,10 +112,8 @@ vgg_qf60_acc = [55.73, 65.84, 66.324, 66.438, 66.402, 66.38]
 vgg_qf60_bpp = [0.9356502687, 1.233955427, 1.277982205, 1.304607234, 1.309606448, 1.313290951]
 
 
-vgg_qf70_acc = [30.63, 54.29, 64.81, 66.39, 67.28]
-vgg_qf70_bpp = [0.7822936323, 0.9985315958, 1.26752342, 1.40752254, 1.541578649]
-
-
+vgg_qf70_acc = [30.63, 54.29, 64.81, 66.39, 67.28, 67.22, 67.19, ]
+vgg_qf70_bpp = [0.7822936323, 0.9985315958, 1.26752342, 1.40752254, 1.541578649, 1.546480943, 1.547095791]
 
 
 vgg_qf80_acc=[51.586, 64.14, 66.59, 67.14 ,67.38 ,67.73 ,67.85 ,67.82 ,67.87 ,67.87 , 67.88, 67.87, 67.86, 67.89 ]
@@ -129,9 +128,14 @@ vgg_qf100_bpp = [1.820553424, 3.348418722, 5.187747278, 6.085728048, 6.319634313
 
 # SDQ_acc
 
+min_rate = 60
+# criterial = maxRate
 criterial = maxAcc
 
 vgg_qf10_acc, vgg_qf10_bpp = criterial(vgg_qf10_acc, vgg_qf10_bpp, min_rate)
+vgg_qf20_acc, vgg_qf20_bpp = criterial(vgg_qf20_acc, vgg_qf20_bpp, min_rate)
+vgg_qf30_acc, vgg_qf30_bpp = criterial(vgg_qf30_acc, vgg_qf30_bpp, min_rate)
+vgg_qf40_acc, vgg_qf40_bpp = criterial(vgg_qf40_acc, vgg_qf40_bpp, min_rate)
 vgg_qf50_acc, vgg_qf50_bpp = criterial(vgg_qf50_acc, vgg_qf50_bpp, min_rate)
 vgg_qf60_acc, vgg_qf60_bpp = criterial(vgg_qf60_acc, vgg_qf60_bpp, min_rate)
 vgg_qf70_acc, vgg_qf70_bpp = criterial(vgg_qf70_acc, vgg_qf70_bpp, min_rate)
@@ -150,6 +154,9 @@ SDQ_acc, SDQ_bpp = criterial(SDQ_acc, SDQ_bpp, min_rate)
 # vgg_jpeg_bpp = [ 1.586540155, 2.024759671, 2.96028335, 10.10468878]
 
 plt.plot(vgg_qf10_bpp,vgg_qf10_acc,label="SDQ_QF10", marker=".")
+plt.plot(vgg_qf20_bpp,vgg_qf20_acc,label="SDQ_QF20", marker=".")
+plt.plot(vgg_qf30_bpp,vgg_qf30_acc,label="SDQ_QF30", marker=".")
+plt.plot(vgg_qf40_bpp,vgg_qf40_acc,label="SDQ_QF40", marker=".")
 plt.plot(vgg_qf50_bpp,vgg_qf50_acc,label="SDQ_QF50", marker=".")
 plt.plot(vgg_qf60_bpp,vgg_qf60_acc,label="SDQ_QF60", marker=".")
 plt.plot(vgg_qf70_bpp,vgg_qf70_acc,label="SDQ_QF70", marker=".")
@@ -279,4 +286,4 @@ plt.title("VGG11")
 plt.xlabel("rate(bpp)")
 plt.ylabel("accuracy(%)")
 plt.legend()
-# plt.show()
+plt.show()

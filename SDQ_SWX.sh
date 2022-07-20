@@ -35,7 +35,7 @@ for model in VGG11
 do
 	# for slop in 25 29
 	# for QF_YC in 95 80 75 70 65 60 50
-	for QF_YC in 40
+	for QF_YC in 20
 	do
 		for lamda in 1
 		do
