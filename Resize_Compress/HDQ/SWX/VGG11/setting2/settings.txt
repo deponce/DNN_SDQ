@@ -1,0 +1,4 @@
+        // Setting 2
+        // MAXQVALUE = 422.;
+        // QUANTIZATION_SCALE = 3.;
+        // MINQVALUE = sqrt(QUANTIZATION_SCALE); 

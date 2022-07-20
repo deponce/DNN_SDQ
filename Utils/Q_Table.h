@@ -62,14 +62,21 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
     }
     else if(colorspace == 3)  // SWX remove the mean form each image
     {
-        QUANTIZATION_SCALE = 3.;
-        MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        MINQVALUE = 1.;
+        // Setting 1
+        // QUANTIZATION_SCALE = 3.;
+        // MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
+        // MINQVALUE = 1.;
 
         // Setting 2
         // MAXQVALUE = 422.;
         // QUANTIZATION_SCALE = 3.;
         // MINQVALUE = sqrt(QUANTIZATION_SCALE); 
+
+
+        // Setting 3
+        QUANTIZATION_SCALE = 3.;
+        MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
+        MINQVALUE = 1./(sqrt(QUANTIZATION_SCALE));;
 
     }
     else 

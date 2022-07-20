@@ -1,0 +1,8 @@
+cuda:1
+Model: VGG11
+ColorSpace: 3
+J = 4
+a = 4
+b = 4
+QF_Y = 15
+QF_C = 15

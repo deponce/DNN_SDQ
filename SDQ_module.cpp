@@ -76,12 +76,19 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
   float bias_rgb2swx = 128;
+  float biasPerImage[3] = {0,0,0};
   
   // rgb2YUV(Vect_img);
   // if(Model=="NoModel" || colorspace == 0)
   if(colorspace == 0)
   {
     rgb2YUV(Vect_img);
+  }
+  else if(colorspace == 3)
+  {
+    // remove the mean for each image
+    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+    rgb2swx_PerImage(Vect_img, W_rgb2swx, biasPerImage);
   }
   else
   {
@@ -99,9 +106,15 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   {
     YUV2rgb(Vect_img);
   }
-  else{
+  else if(colorspace == 3)
+  {
+    swx2rgb_PerImage(Vect_img, W_swx2rgb, biasPerImage);
+  }
+  else
+  {
     swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
   }
+
   img2seq(Vect_img, result, size[0], size[1]);
   int ndim = 3;
   vector<unsigned long> shape   = { 3, size[0], size[1]};
