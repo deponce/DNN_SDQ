@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// #include <opencv2/highgui.hpp>
+#include <opencv2/highgui.hpp>
 #include <unistd.h>
 #include <getopt.h>
 #include <iostream>
@@ -93,6 +93,7 @@ int main(int argc, char* argv[]) {
   float Beta_S = Beta;
   float Beta_W = Beta;
   float Beta_X = Beta;
+  int colorspace = 0;
 
 
   
@@ -107,15 +108,15 @@ int main(int argc, char* argv[]) {
   Mat2Vector(image, ori_img);
   // cout<<Model;
     
-  rgb2YUV(Vect_img, W_rgb2swx, bias_rgb2swx);
+  rgb2YUV(Vect_img);
   // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
   
   HDQ hdq;
-  hdq.__init__(QF_Y , QF_C, J, a, b);
+  hdq.__init__(colorspace, QF_Y , QF_C, J, a, b);
   float BPP = hdq.__call__(Vect_img); //Vect_img is the compressed dequantilzed image after sdq.__call__()
   cout<<"BPP: "<<BPP<<endl;
 
-  YUV2rgb(Vect_img, W_rgb2swx, bias_rgb2swx);
+  YUV2rgb(Vect_img);
 
   // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
   float psnrVal = PSNRY(Vect_img, ori_img);

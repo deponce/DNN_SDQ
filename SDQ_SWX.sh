@@ -12,9 +12,9 @@ export lamda=10
 # Resize then Compress [ Deafult SDQ with SWX] No senstivity
 # for model in VGG11
 # do
-# 	for QF_YC in 100 95 80 75 70 65 60
+# 	for QF_YC in 100 
 # 	do
-# 		for lamda in 10 
+# 		for lamda in 2.5
 # 		# for QF_YC in `seq 100 -10 40`
 # 		do
 # 			for colorspace in 3
@@ -57,20 +57,39 @@ export lamda=10
 
 
 # export addText="_Subt_meanPerImage"
-export addText=""
-for model in VGG11
+# export addText=""
+# for model in VGG11
+
+for model in VGG11 Resnet18 Squeezenet
 do
-	# for QF_YC in `seq 100 -5 10`
-	for QF_YC in 100
+	for QF_YC in `seq 100 -5 10`
+	# for QF_YC in 100
 	do
-			for colorspace in 3
+			for colorspace in 1
 		do
-			export file=./Resize_Compress/HDQ/SWX/${model}/${model}_QF${QF_YC}_${sens}_colorspace${colorspace}${addText}.txt
+			export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_colorspace${colorspace}${addText}.txt
 			# export file=./Resize_Compress/HDQ/YUV/${model}/${model}_QF${QF_YC}_YUV.txt
 			echo ${file}
 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
 										  -resize_compress --colorspace ${colorspace} \
-										  --output_txt ${file} --device "cuda:1"  --root ${root}
+										  --output_txt ${file} --device "cuda:0"  --root ${root}
+		done
+	done
+done
+
+for model in VGG11 Resnet18 Squeezenet
+do
+	for QF_YC in `seq 100 -5 10`
+	# for QF_YC in 100
+	do
+			for colorspace in 1
+		do
+			export file=./Resize_Compress/HDQ/SWX420/${model}/${model}_QF${QF_YC}_colorspace${colorspace}${addText}.txt
+			# export file=./Resize_Compress/HDQ/YUV/${model}/${model}_QF${QF_YC}_YUV.txt
+			echo ${file}
+			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+										  -resize_compress --colorspace ${colorspace} \
+										  --output_txt ${file} --device "cuda:0"  --root ${root}
 		done
 	done
 done

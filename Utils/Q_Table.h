@@ -47,9 +47,9 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
     else if(colorspace == 1) // SWX
     {
         // Setting 1
-        MINQVALUE = 2.; 
-        MAXQVALUE = 422.;
         QUANTIZATION_SCALE = 3.;
+        MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
+        MINQVALUE = 1.;
 
     }
     else if(colorspace == 2)  // SWX
@@ -62,6 +62,7 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
     }
     else if(colorspace == 3)  // SWX remove the mean form each image
     {
+
         // Setting 1
         // QUANTIZATION_SCALE = 3.;
         // MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
@@ -72,11 +73,10 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
         // QUANTIZATION_SCALE = 3.;
         // MINQVALUE = sqrt(QUANTIZATION_SCALE); 
 
-
         // Setting 3
         QUANTIZATION_SCALE = 3.;
         MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        MINQVALUE = 1./(sqrt(QUANTIZATION_SCALE));;
+        MINQVALUE = 1./sqrt(QUANTIZATION_SCALE);;
 
     }
     else 
@@ -87,6 +87,129 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
 
     }
 }
+
+   // for(i = 0; i < 5; ++i)
+   // variance += pow(val[i] - mean, 2);
+   // variance=variance/5;
+   // stdDeviation = sqrt(variance);
+
+
+void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
+{
+    auto dct_coefs_zeroMean = new float[N_block][64];
+    for (int i = 1; i < 64; i++ )
+    {
+        float variance = 0, mean = 0, lambda = 0;
+
+        for (int j=0;j<N_block; j++)
+        {
+            mean += seq_dct_coefs[j][i];
+        }
+        mean /= N_block;
+
+        for (int j=0;j<N_block; j++)
+        {
+            variance += pow(seq_dct_coefs[j][i] - mean, 2);
+        }
+        variance /= N_block;
+        
+        for (int j=0;j<N_block; j++)
+        {
+            dct_coefs_zeroMean[j][i] = seq_dct_coefs[j][i] - mean;
+            lambda += abs(dct_coefs_zeroMean[j][i]);
+        }
+        varianceData[i] = variance;
+        lambdaData[i] = lambda/N_block;
+
+        // cout << varianceData[i] << "\t" << lambdaData[i] << "\n";
+    }
+    // cout << endl;
+}
+
+// int binarySearch(float arr, int l, int r, int x)
+// {
+//     if (r >= l) {
+//         int mid = l + (r - l) / 2;
+  
+//         // If the element is present at the middle
+//         // itself
+//         if (arr[mid] == x)
+//             return mid;
+  
+//         // If element is smaller than mid, then
+//         // it can only be present in left subarray
+//         if (arr[mid] > x)
+//             return binarySearch(arr, l, mid - 1, x);
+  
+//         // Else the element can only be present
+//         // in right subarray
+//         return binarySearch(arr, mid + 1, r, x);
+//     }
+  
+//     // We reach here when element is not
+//     // present in array
+//     return -1;
+// }
+
+void quantizationTable_OptD(float seq_dct_coefs[][64], bool Luminance, float Q_Table[64], int N_block)
+{
+    const int QMAX_Y = 46;
+    float varianceData[64]; // No need for DC 
+    float lambdaData[64];
+    auto Dlap = new float[64][QMAX_Y+1];
+    parameterCal(varianceData, lambdaData , seq_dct_coefs ,N_block);
+    float si, q_lambda;
+    float p1, p2, p3;
+    float d_waterLevel;
+    d_waterLevel = 350.0;
+    for (int i = 1; i < 64; i++)
+    {
+        Dlap[i][0] = 0.0;
+        for (int q = 1; q <= QMAX_Y; q++)
+        {
+            q_lambda = q / lambdaData[i];
+            si = (q - lambdaData[i]) + ( q / (exp(q_lambda) - 1) );
+            p1 = 2 * pow(lambdaData[i], 2);
+            p2 = 2 * q * (lambdaData[i] + si -0.5 * q);
+            p3 = exp(si/lambdaData[i]) * (1 - exp(-1 * q_lambda));
+            Dlap[i][q] = p1 - (p2/p3);
+            // cout << Dlap[i][q]  << "\n";
+            // break;
+        }
+        // Q_Table[i] = binarySearch(Dlap[i], 0, N_block - 1, d_waterLevel);
+    }
+
+    for (int i = 0; i < 64; i++)
+    {
+        if(varianceData[i] < d_waterLevel)
+        {
+            Q_Table[i] = QMAX_Y;
+        }
+        else
+        {
+            if (i == 0) 
+            {
+                Q_Table[i] = min(floor(sqrt(12*d_waterLevel)), (float)QMAX_Y);
+            }
+            else
+            {
+
+               for (int q = QMAX_Y; q >= 1 ; q--)
+               {
+                    // cout << Dlap[i][q] << "\t" << d_waterLevel;
+                    if (Dlap[i][q] <= d_waterLevel)
+                    {
+                        Q_Table[i] = q;
+                        break;
+                    }
+               }
+            }      
+        }
+        cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
+    }
+
+}
+
 
 void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
 {
@@ -115,9 +238,8 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
     }
     if (Luminance == true){
         for(int i=0; i<64; i++){
-            q = (50+S*quantizationTableData_Y[i])/100;
-            
-            if (colorspace == 3) // No Round
+            q = (50.+S*quantizationTableData_Y[i])/100.;
+            if ((colorspace == 3) ||( colorspace == 1)) // No Round
             {
                 Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
@@ -131,9 +253,9 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
     }
     else{
         for(int i=0; i<64; i++){
-            q = (50+S*quantizationTableData_C[i])/100;
+            q = (50.+S*quantizationTableData_C[i])/100.;
             
-            if (colorspace == 3) // No Round
+            if ((colorspace == 3) ||( colorspace == 1)) // No Round
             {
                 Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
