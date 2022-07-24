@@ -123,15 +123,6 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cb, seq_dct_coefs_Cb, HDQ::seq_len_C);
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ::seq_len_C);
 
-    // Customized Quantization Table
-    // quantizationTable_OptD(seq_dct_coefs_Y, true, HDQ::Q_table_Y, HDQ::seq_len_Y);
-    // quantizationTable_OptD(seq_dct_coefs_Cb, true, HDQ::Q_table_C, HDQ::seq_len_C);
-    // quantizationTable_OptD(seq_dct_coefs_Cr, true, HDQ::Q_table_C, HDQ::seq_len_C);
-
-
-
-    //
-
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ::Q_table_Y, HDQ::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
