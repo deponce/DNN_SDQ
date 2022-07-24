@@ -14,7 +14,7 @@ import random
 import warnings
 
 
-num_workers=24
+num_workers=16
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers

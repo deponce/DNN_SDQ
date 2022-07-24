@@ -59,7 +59,7 @@ vgg_jpeg_acc = [33.282, 48.716, 54.762, 60.49, 62.736, 64.004, 65.352, 66.354, 6
 vgg_jpeg_bpp = [0.3822962079, 0.5091492985, 0.6160215632, 0.821426690715998, 0.987924535, 1.131426451, 1.327681325, 1.586540155, 2.024759671, 2.96028335, 5.382353456, 6.507102903, 10.10468878]
 
 
-def maxRate(acc, bpp, th):
+def minRate(acc, bpp, th):
     new_acc = []
     new_bpp = []
     for idx, b in enumerate(bpp):
@@ -68,11 +68,29 @@ def maxRate(acc, bpp, th):
             new_bpp.append(bpp[idx])
     return new_acc, new_bpp
 
-def maxAcc(acc, bpp, th):
+def maxRate(acc, bpp, th):
+    new_acc = []
+    new_bpp = []
+    for idx, b in enumerate(bpp):
+        if b < th:
+            new_acc.append(acc[idx])
+            new_bpp.append(bpp[idx])
+    return new_acc, new_bpp
+
+def minAcc(acc, bpp, th):
     new_acc = []
     new_bpp = []
     for idx, Acc in enumerate(acc):
         if Acc > th:
+            new_acc.append(acc[idx])
+            new_bpp.append(bpp[idx])
+    return new_acc, new_bpp
+
+def maxAcc(acc, bpp, th):
+    new_acc = []
+    new_bpp = []
+    for idx, Acc in enumerate(acc):
+        if Acc < th:
             new_acc.append(acc[idx])
             new_bpp.append(bpp[idx])
     return new_acc, new_bpp
@@ -126,10 +144,15 @@ vgg_qf100_acc = [48.10, 66.90, 68.84, 69.04, 68.99]
 vgg_qf100_bpp = [1.820553424, 3.348418722, 5.187747278, 6.085728048, 6.319634313]
 
 # SDQ_acc
+# criterial = minRate
+# criterial = minAcc
+
+
+# min_rate = 2.03
+# criterial = maxRate
 
 min_rate = 65
-# criterial = maxRate
-criterial = maxAcc
+criterial = minAcc
 
 vgg_qf10_acc, vgg_qf10_bpp = criterial(vgg_qf10_acc, vgg_qf10_bpp, min_rate)
 vgg_qf20_acc, vgg_qf20_bpp = criterial(vgg_qf20_acc, vgg_qf20_bpp, min_rate)
@@ -141,7 +164,7 @@ vgg_qf70_acc, vgg_qf70_bpp = criterial(vgg_qf70_acc, vgg_qf70_bpp, min_rate)
 vgg_qf80_acc, vgg_qf80_bpp = criterial(vgg_qf80_acc, vgg_qf80_bpp, min_rate)
 vgg_qf90_acc, vgg_qf90_bpp = criterial(vgg_qf90_acc, vgg_qf90_bpp, min_rate)
 vgg_qf100_acc, vgg_qf100_bpp = criterial(vgg_qf100_acc, vgg_qf100_bpp, min_rate)
-vgg_jpeg_acc, vgg_jpeg_bpp = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
+vgg_jpeg_acc1, vgg_jpeg_bpp1 = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
 SDQ_acc, SDQ_bpp = criterial(SDQ_acc, SDQ_bpp, min_rate)
 
 
@@ -163,7 +186,7 @@ plt.plot(vgg_qf70_bpp,vgg_qf70_acc,label="SDQ_QF70", marker=".")
 plt.plot(vgg_qf80_bpp,vgg_qf80_acc,label="SDQ_QF80", marker=".")
 plt.plot(vgg_qf90_bpp,vgg_qf90_acc,label="SDQ_QF90", marker=".")
 plt.plot(vgg_qf100_bpp,vgg_qf100_acc,label="SDQ_QF100", marker=".")
-plt.plot(vgg_jpeg_bpp,vgg_jpeg_acc,label="HDQ", marker=".", linestyle= '--')
+plt.plot(vgg_jpeg_bpp1,vgg_jpeg_acc1,label="HDQ", marker=".", linestyle= '--')
 # plt.scatter(SDQ_bpp,SDQ_acc,label="SDQ_YUV", marker=".",  c='pink')
 
 plt.title("VGG11")
@@ -171,38 +194,13 @@ plt.xlabel("rate(bpp)")
 plt.ylabel("accuracy(%)")
 plt.legend()
 # plt.show()
-plt.savefig("VGG11_SDQ.png",dpi=600)
+plt.savefig("VGG11_SDQ_highRate.png",dpi=600)
 
 
 
 # SWX vs JPEG
 
-SDQ_SWX_acc = [
-68.392,
-68.986,
-68.854,
-68.768,
-65.158,
-65.188,
-66.086,
-66.032,
-66.118,
-66.454,
-66.45,
-66.46,
-66.828,
-66.81,
-66.874,
-67.214,
-67.238,
-67.204,
-67.596,
-67.544,
-67.56,
-68.754,
-68.71,
-68.688,
-]
+SDQ_SWX_acc = [68.392,68.986,68.854,68.768,65.158,65.188,66.086,66.032,66.118,66.454,66.45,66.46,66.828,66.81,66.874,67.214,67.238,67.204,67.596,67.544,67.56,68.754,68.71,68.688,]
 
 SDQ_SWX_bpp = [
 7.011797518,
@@ -231,19 +229,157 @@ SDQ_SWX_bpp = [
 3.90582086,
 ]
 
-HDQ_SWX_acc = [ 27.862,44.596,52.35,56.558,58.93,60.612,61.848,62.686,63.3,64.028,64.688,65.316,65.854,66.516,67.192,67.694,68.34,68.702,69.008]
-HDQ_SWX_bpp = [ 0.3850757139, 0.5154650346,0.6342837216,0.7448789272,0.8508629177, 0.9503689111,1.039074576,1.127665517,1.210340339, 1.298283244,1.401957989,1.526531158,1.680283832, 1.877234094,2.143470584,2.5327036,3.176413875, 4.547688356,13.52919593]
+HDQ_SWX_acc444 = [ 27.862,44.596,52.35,56.558,58.93,60.612,61.848,62.686,63.3,64.028,64.688,65.316,65.854,66.516,67.192,67.694,68.34,68.702,69.008]
+HDQ_SWX_bpp444 = [ 0.3850757139, 0.5154650346,0.6342837216,0.7448789272,0.8508629177, 0.9503689111,1.039074576,1.127665517,1.210340339, 1.298283244,1.401957989,1.526531158,1.680283832, 1.877234094,2.143470584,2.5327036,3.176413875, 4.547688356,13.52919593]
 
 
 plt.figure()
-plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp), colors='r', label="Top-1 Acc",alpha=0.5)
+plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp444), colors='r', label="Top-1 Acc",alpha=0.5)
 plt.plot(vgg_jpeg_bpp,vgg_jpeg_acc,label="HDQ_YUV", marker=".", linestyle= '--')
-# plt.plot(HDQ_SWX_bpp,HDQ_SWX_acc,label="HDQ_SWX", marker=".", linestyle= '--')
-plt.scatter(SDQ_SWX_bpp,SDQ_SWX_acc,label="SDQ_SWX", marker=".",  c='red')
-# plt.scatter(SDQ_bpp,SDQ_acc,label="SDQ_YUV", marker=".",  c='pink')
+plt.plot(HDQ_SWX_bpp444,HDQ_SWX_acc444,label="HDQ_SWX", marker=".", linestyle= '--')
+# plt.scatter(SDQ_SWX_bpp,SDQ_SWX_acc,label="SDQ_SWX", marker=".",  c='red')
 plt.title("VGG11")
 plt.xlabel("rate(bpp)")
 plt.ylabel("accuracy(%)")
 plt.legend()
 # plt.show()
 plt.savefig("VGG11_SWX.png",dpi=600)
+
+
+
+vgg_jpeg_acc = [33.282, 37.91, 48.716, 54.762, 60.49, 62.736, 64.004, 65.352, 66.354, 67.41, 68.412, 68.884, 68.956, 68.986]
+vgg_jpeg_bpp = [0.3822962079, 0.4107381354, 0.5091492985, 0.6160215632, 0.821426690715998, 0.987924535, 1.131426451, 1.327681325, 1.586540155, 2.024759671, 2.96028335, 5.382353456, 6.507102903, 10.10468878]
+
+SDQ_acc_concave = [ 44.76, 59.05, 63.05, 64.71, 65.62, 
+			66.43, 67.28, 67.88, 68.22, 68.54,
+			68.80, 69.04
+		  ]
+
+SDQ_bpp_concave  = [ 0.4145745133, 0.6470938073, 0.8454606814, 1.003240749, 1.137005278,
+			1.316159884 , 1.539455124, 1.92656210598051, 2.209310748, 2.699888647,
+			3.637135701 , 6.085728048
+		  ]
+
+
+plt.figure()
+min_rate = 0
+# criterial = minRate
+# criterial = maxAcc
+criterial = minAcc
+
+SDQ_acc_concave1 , SDQ_bpp_concave1  = criterial(SDQ_acc_concave , SDQ_bpp_concave , min_rate)
+vgg_jpeg_acc1, vgg_jpeg_bpp1 = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
+SDQ_acc1, SDQ_bpp1 = criterial(SDQ_acc, SDQ_bpp, min_rate)
+
+plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp444), label="Top-1 Acc",alpha=0.5)
+plt.plot(vgg_jpeg_bpp1,vgg_jpeg_acc1,label="HDQ", marker=".", linestyle= '--')
+plt.plot(SDQ_bpp_concave1 , SDQ_acc_concave1 ,label="SDQ_wDNN", marker=".")
+# plt.scatter(SDQ_bpp1, SDQ_acc1,label="SDQ", marker=".")
+
+plt.title("VGG11")
+plt.xlabel("rate(bpp)")
+plt.ylabel("accuracy(%)")
+plt.legend()
+plt.grid(linestyle='--', linewidth=0.5)
+plt.savefig("VGG11_SDQ_concave.png",dpi=600)
+
+
+plt.figure()
+min_rate = 65
+# criterial = minRate
+# criterial = maxAcc
+criterial = minAcc
+
+SDQ_acc_concave1 , SDQ_bpp_concave1  = criterial(SDQ_acc_concave , SDQ_bpp_concave , min_rate)
+vgg_jpeg_acc1, vgg_jpeg_bpp1 = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
+SDQ_acc1, SDQ_bpp1 = criterial(SDQ_acc, SDQ_bpp, min_rate)
+
+plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp444), label="Top-1 Acc",alpha=0.5)
+plt.plot(vgg_jpeg_bpp1,vgg_jpeg_acc1,label="HDQ", marker=".", linestyle= '--')
+plt.plot(SDQ_bpp_concave1, SDQ_acc_concave1,label="SDQ_wDNN", marker=".")
+# plt.scatter(SDQ_bpp1, SDQ_acc1,label="SDQ", marker=".")
+plt.title("VGG11")
+plt.xlabel("rate(bpp)")
+plt.ylabel("accuracy(%)")
+plt.legend()
+plt.grid(linestyle='--', linewidth=0.5)
+plt.savefig("VGG11_SDQ_concave_HighRate.png",dpi=600)
+
+
+
+
+plt.figure()
+min_rate = 65
+# criterial = minRate
+criterial = maxAcc
+# criterial = minAcc
+
+SDQ_acc_concave1 , SDQ_bpp_concave1 = criterial(SDQ_acc_concave , SDQ_bpp_concave , min_rate)
+vgg_jpeg_acc1, vgg_jpeg_bpp1 = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
+SDQ_acc1, SDQ_bpp1 = criterial(SDQ_acc, SDQ_bpp, min_rate)
+
+# plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp444), label="Top-1 Acc",alpha=0.5)
+plt.plot(vgg_jpeg_bpp1,vgg_jpeg_acc1,label="HDQ", marker=".", linestyle= '--')
+plt.plot(SDQ_bpp_concave1 , SDQ_acc_concave1 ,label="SDQ_wDNN", marker=".")
+# plt.scatter(SDQ_bpp1, SDQ_acc1,label="SDQ", marker=".")
+plt.title("VGG11")
+plt.xlabel("rate(bpp)")
+plt.ylabel("accuracy(%)")
+plt.legend()
+plt.grid(linestyle='--', linewidth=0.5)
+plt.savefig("VGG11_SDQ_concave_lowRate.png",dpi=600)
+
+
+plt.figure()
+
+vgg_jpeg_acc = [33.282, 48.716, 54.762, 60.49, 62.736, 64.004, 65.352, 66.354, 67.41,  68.61, 68.634, 68.884, 68.956, 68.986]
+vgg_jpeg_bpp = [0.3822962079, 0.5091492985, 0.6160215632, 0.821426690715998, 0.987924535, 1.131426451, 1.327681325, 1.586540155, 2.024759671, 3.376191378,3.595531285, 5.382353456, 6.507102903, 10.10468878]
+
+
+SDQ_SWX_bpp = [ 1.377071772
+, 1.487139215
+, 1.603963163
+, 1.624076599
+, 1.7596777
+, 1.786688067
+, 1.964497829
+, 2.004444473
+, 2.044358149
+, 2.064439016
+, 3.715847245
+, 3.904901005
+
+]
+
+SDQ_SWX_acc =[
+66.028,
+66.47,
+66.694,
+66.778,
+67.03,
+67.138,
+67.364,
+67.496,
+67.528,
+67.59,
+68.564,
+68.72,
+]
+
+
+min_rate = 65
+# criterial = minRate
+criterial = minAcc
+vgg_jpeg_acc1, vgg_jpeg_bpp1 = criterial(vgg_jpeg_acc, vgg_jpeg_bpp, min_rate)
+
+
+plt.hlines(y=69.02, xmin=0, xmax=max(HDQ_SWX_bpp444), label="Top-1 Acc",alpha=0.5)
+plt.plot(vgg_jpeg_bpp1,vgg_jpeg_acc1,label="HDQ", marker=".", linestyle= '--')
+plt.plot(SDQ_SWX_bpp , SDQ_SWX_acc ,label="SDQ_SWX", marker=".")
+
+plt.title("VGG11")
+plt.xlabel("rate(bpp)")
+plt.ylabel("accuracy(%)")
+plt.legend()
+plt.grid(linestyle='--', linewidth=0.5)
+plt.savefig("VGG11_SDQ_SWX_new.png",dpi=600)

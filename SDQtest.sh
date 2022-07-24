@@ -9,13 +9,16 @@ export sens=SenMap_Normalized
 
 export min_beta=0.5
 
+
+
+
 for model in  VGG11 
 do
 	# for QF_YC in `seq 90 -10 80`
 	# for QF_YC in `seq 70 -5 30`
-	for QF_YC in 60
+	for QF_YC in 100
 	do
-		for beta in 50 30 20 
+		for beta in 30
 		# for beta in 20 10 7.5 5 3 1 
 		do
 			echo "Beta : "${beta}
