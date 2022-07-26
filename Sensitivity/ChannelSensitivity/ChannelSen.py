@@ -25,6 +25,8 @@ Batch_size = 1
 from model import get_model
 import argparse
 
+from loader_sampler import *
+
 def plot_confidence_interval(x, top, bottom, mean, horizontal_line_width=0.25, color='#2187bb',label=None,alpha=1):
     left = x - horizontal_line_width / 2
     right = x + horizontal_line_width / 2
@@ -35,23 +37,33 @@ def plot_confidence_interval(x, top, bottom, mean, horizontal_line_width=0.25, c
     return mean
 from matplotlib.pyplot import figure
 
+
 def main(model = 'Alexnet', Batch_size = 100, Nexample= 10000):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    Batch_size = 1
+    Batch_size = 128
     thr = Nexample
     model_name = model
     print("code run on", device)
-    Trans = [transforms.ToTensor(),
-             transforms.Resize((256, 256)),
-             transforms.CenterCrop(224),
-             transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
-    transform = transforms.Compose(Trans)
-    dataset = torchvision.datasets.ImageNet(root="~/project/data", split='val',
-                                            transform=transform)
+    # Trans = [transforms.ToTensor(),
+    #          transforms.Resize((256, 256)),
+    #          transforms.CenterCrop(224),
+    #          transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
+    # transform = transforms.Compose(Trans)
+    samples_count = load_dict(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012")
+    transform = transforms.Compose([
+                                     transforms.Resize(256),
+                                     transforms.CenterCrop(224),
+                                     transforms.ToTensor(),
+                                     transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])
+                                   ])
+
+    dataset = random_sampler(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", t_split='train',transform=transform)
+    # dataset = torchvision.datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='train',
+    #                                         transform=transform)
     A = load_3x3_weight(model_name).to(device)
     A_inv = torch.linalg.inv(A).to(device)
     Scale2One = transforms.Normalize(mean=[0, 0, 0], std=[255., 255., 255.])
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=16)
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     pretrained_model = get_model(model_name)
     pretrained_model.to(device)
@@ -60,7 +72,14 @@ def main(model = 'Alexnet', Batch_size = 100, Nexample= 10000):
     Cr_sen_list = np.empty([0])
     Cb_sen_list = np.empty([0])
     cnt = 0
+    samples_count = {}
     for data, target in tqdm(test_loader):
+        if target not in samples_count:
+            samples_count[target] = 0
+        if samples_count[target] > 10:
+            continue
+        samples_count[target] += 1
+
         data, target = data.to(device), target.to(device)  # [0,225]
         data = data.transpose(0, 1).reshape(3, -1)  # [0,225]
         # WXV = data

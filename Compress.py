@@ -9,7 +9,7 @@ from PIL import Image
 
 class SDQ_transforms(torch.nn.Module):
     def __init__(self, model="NoModel", SenMap_dir="./SenMap/", colorspace=0, Q=50, q=50, J=4, a=4, b=4,
-                 Lambda=1, Beta_S=1,Beta_W=1,Beta_X=1,):
+                 Lambda=1, Beta_S=1,Beta_W=1,Beta_X=1, eps = 10.0, iterations = 3):
 
         self.model = model
         self.Q = Q
@@ -22,6 +22,8 @@ class SDQ_transforms(torch.nn.Module):
         self.Beta_W = Beta_W
         self.Beta_X = Beta_X
         self.colorspace = colorspace
+        self.eps = eps 
+        self.iterations = iterations
 
         # print("Model: ", model)
         # print("J =", J)
@@ -46,7 +48,7 @@ class SDQ_transforms(torch.nn.Module):
         compressed_img = np.asarray(compressed_img)
         compressed_img = np.transpose(compressed_img, (2,0,1))
         compressed_img, BPP = SDQ.__call__(compressed_img, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b, 
-                                           self.Q, self.q, self.Beta_S, self.Beta_W, self.Beta_X, self.Lambda, 0.)
+                                           self.Q, self.q, self.Beta_S, self.Beta_W, self.Beta_X, self.Lambda, self.eps, self.iterations)
         compressed_img = np.round(compressed_img)    
         compressed_img = np.uint8(compressed_img) 
         compressed_img = np.transpose(compressed_img, (1,2,0))

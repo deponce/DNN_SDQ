@@ -23,7 +23,6 @@
 // SOFTWARE.
 
 #define DC_OPT 1
-#define NUM_ITER 10
 
 #include <map>
 #include "block.h"
@@ -57,6 +56,7 @@ class SDQ{
         int QF_C;
         int QF_Y;
         int J, a, b;
+        int iterations;
         float Loss;
         float EntACY = 0;
         float EntACC = 0;
@@ -65,7 +65,7 @@ class SDQ{
         float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
-        void __init__(float eps, float Beta_S, float Beta_W, float Beta_X,
+        void __init__(float eps, int iterations, float Beta_S, float Beta_W, float Beta_X,
                       float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                       int J, int a, int b);
         void opt_Q_Y_DC(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]);
@@ -83,7 +83,7 @@ class SDQ{
         float __call__(vector<vector<vector<float>>>& image);
 };
 
-void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
+void SDQ::__init__(float eps, int iterations, float Beta_S, float Beta_W, float Beta_X,
                    float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                    int J, int a, int b){
 
@@ -97,12 +97,13 @@ void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
     SDQ::Beta_X = Beta_X;
     quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, SDQ::Q_table_Y);
     quantizationTable(colorspace, MINQVALUE, MAXQVALUE,  QUANTIZATION_SCALE, QF_C, false, SDQ::Q_table_C);
-    SDQ::Block.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbda, Sen_Map);
+    SDQ::Block.__init__(eps, iterations, Beta_S, Beta_W, Beta_X, Lmbda, Sen_Map);
     SDQ::J_Y = 10e10;
     SDQ::J_C = 10e10;
     SDQ::J = J;
     SDQ::a = a;
     SDQ::b = b;
+    SDQ::iterations = iterations;
 
 }
 
@@ -164,7 +165,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     DPCM(seq_dct_idxs_Y, DC_idxs_Y, seq_len_Y);
     cal_P_from_DIFF(DC_idxs_Y, P_DC_Y, seq_len_Y);  // initialize P_DC_Y
     
-    for(int i=0; i<NUM_ITER; i++)
+    for(int i=0; i<SDQ::iterations; i++)
     {
         opt_DC_Y(seq_dct_idxs_Y,seq_dct_coefs_Y);       // optimize seq_dct_idxs_Y
         opt_Q_Y_DC(seq_dct_idxs_Y,seq_dct_coefs_Y);     // update Q_table_Y[0]
@@ -178,7 +179,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     cal_P_from_DIFF(DC_idxs_Cb, P_DC_C, seq_len_C);
     DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, seq_len_C);
     cal_P_from_DIFF(DC_idxs_Cr, P_DC_C, seq_len_C); // initialize P_DC_C
-    for(int i=0; i<NUM_ITER; i++)
+    for(int i=0; i<SDQ::iterations; i++)
     {
         opt_DC_C(seq_dct_idxs_Cr, seq_dct_coefs_Cr, 
                  seq_dct_idxs_Cb, seq_dct_coefs_Cb);    // optimize seq_dct_idxs_Cb/Cr
@@ -220,7 +221,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
 
     // AC optimization
     // Y channel
-    for(i=0; i<NUM_ITER; i++){
+    for(i=0; i<SDQ::iterations; i++){
         SDQ::Loss = 0;
         SDQ::Block.state.ent=0;
         SDQ::opt_RS_Y(seq_dct_idxs_Y,seq_dct_coefs_Y);
@@ -231,7 +232,7 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     EntACY = calHuffmanCodeSize(SDQ::Block.P);      // cal huffman size
     SDQ::Block.P.clear();
     // Cb Cr channels
-    for(i=0; i<NUM_ITER; i++){
+    for(i=0; i<SDQ::iterations; i++){
         SDQ::Loss = 0;
         SDQ::Block.state.ent=0;
         SDQ::opt_RS_C(seq_dct_idxs_Cb,seq_dct_coefs_Cb,

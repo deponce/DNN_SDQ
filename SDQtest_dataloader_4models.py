@@ -41,6 +41,7 @@ def main(args):
     Beta_X = args.Beta_X
     Lmbd = args.L
     resize_compress = args.resize_compress
+    iterations =  args.iterations
     eps = 10
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     # pretrained_model = load_model(model)
@@ -56,7 +57,7 @@ def main(args):
     print("Beta_W=",Beta_W)
     print("Beta_X=",Beta_X)
     print("Lambda=",Lmbd)
-
+    print("iterations=",iterations)
     pretrained_model = []
     pretrained_name = [
                         "VGG11", 
@@ -143,5 +144,6 @@ if '__main__' == __name__:
     parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
                             help='Senstivity Directory')
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
+    parser.add_argument('--iterations', type=int, default=3, help='Numebr of iterations to run SDQ')
     args = parser.parse_args()
     main(args)

@@ -13,7 +13,7 @@ import argparse
 import random
 import warnings
 
-num_workers=28
+num_workers=24
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers

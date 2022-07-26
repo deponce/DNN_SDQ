@@ -6,7 +6,7 @@ import torch
 import matplotlib.pyplot as plt
 from torchvision import models
 # from PIL import Image
-from utils import load_model, print_file, print_exp_details_SDQ
+from utils import *
 from Compress import SDQ_transforms
 from Utils.loader import SDQ_loader 
 import argparse
@@ -14,7 +14,7 @@ import random
 import warnings
 
 
-num_workers=16
+num_workers=24
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -41,6 +41,7 @@ def main(args):
     Beta_X = args.Beta_X
     Lmbd = args.L
     resize_compress = args.resize_compress
+    iterations =  args.iterations
     eps = 10
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     pretrained_model = load_model(model)
@@ -56,6 +57,7 @@ def main(args):
     print("Beta_W=",Beta_W)
     print("Beta_X=",Beta_X)
     print("Lambda=",Lmbd)
+    print("Iterations=",iterations)
     # pretrained_model = models.vgg11(pretrained=True)
     # pretrained_model = models.resnet18(pretrained=True)
     # pretrained_model = models.squeezenet1_0(pretrained=True)
@@ -74,7 +76,7 @@ def main(args):
     
 
     dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
-                                Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
+                                Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress, eps=eps, iterations=iterations)
 
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
 
@@ -84,6 +86,8 @@ def main(args):
     num_tests = 0
     BPP = 0
     cnt = 0
+    top1 = 0
+    top5 = 0
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
         labels = labels.to(device)
@@ -92,16 +96,27 @@ def main(args):
            break
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
+        
+        topk = accuracy(pred, labels, topk=(1, 5)) 
+        acc1, acc5  = topk
+        top1 += acc1
+        top5 += acc5
+
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         if (cnt+1) %500 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-            l2 = str(BPP.numpy()/num_tests) + "\n"
+            l2 = str((top1/num_tests)*100) + "\t" + str((top5/num_tests)*100) + "\n"
+            l3 = str(BPP.numpy()/num_tests) + "\n"
             # l2 = ""
-            l = l0 + l1 + l2
+            l = l0 + l1 + l2 +l3
             print_file(l, args.output_txt)
         cnt += 1
+
+    top1 = top1.cpu().numpy()
+    top5 = top5.cpu().numpy()
+    
 
     l0 = "#"* 30 + "\n"
     l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
@@ -110,7 +125,8 @@ def main(args):
     print_file(l, args.output_txt)
     l0 = "*"* 30 + "\n"
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
-    l = l0 + l1
+    l2 = str((top1/num_tests)*100) + "\t" + str((top5/num_tests)*100) + "\n"
+    l = l0 + l1 + l2
     print_file(l, args.output_txt)
 
 if '__main__' == __name__:
@@ -133,5 +149,6 @@ if '__main__' == __name__:
     parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
                             help='Senstivity Directory')
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
+    parser.add_argument('--iterations', type=int, default=3, help='Numebr of iterations to run SDQ')
     args = parser.parse_args()
     main(args)

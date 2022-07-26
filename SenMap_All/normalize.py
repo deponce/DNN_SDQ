@@ -4,13 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # beta = 500000
-read = "./SenMap_Scale/"
+read = "./SenMap_Scale_allSet/"
 
 # norm1 = "./SenMap_Scale_Normalized1/"
 # norm2 = "./SenMap_Scale_Normalized2/"
 # norm3 = "./SenMap_Scale_Normalized3/"
 # norm4 = "./SenMap_Scale_Norm/"
-norm5 = "./SenMap_Normalized/"
+# norm5 = "./SenMap_Normalized/"
+norm5 = "./SenMap_Normalized_allSet/"
 files = os.listdir(read)
 
 # # normalize_1: Linfeng's method
@@ -81,12 +82,13 @@ files = os.listdir(read)
 # same factor over 3 channels
 norm_alex = 10*max(np.loadtxt(read+"Alexnet_Y_KLT.txt"))
 print("norm_alex =", norm_alex)
-norm_res = 10*max(np.loadtxt(read+"Resnet18_Y_KLT.txt"))
-print("norm_res =", norm_res)
-norm_squeeze = 10*max(np.loadtxt(read+"Squeezenet_Y_KLT.txt"))
-print("norm_squeeze =", norm_squeeze)
 norm_vgg = 10*max(np.loadtxt(read+"VGG11_Y_KLT.txt"))
 print("norm_vgg =", norm_vgg)
+
+# norm_res = 10*max(np.loadtxt(read+"Resnet18_Y_KLT.txt"))
+# print("norm_res =", norm_res)
+# norm_squeeze = 10*max(np.loadtxt(read+"Squeezenet_Y_KLT.txt"))
+# print("norm_squeeze =", norm_squeeze)
 
 for f in files:
     sen_map = np.loadtxt(read+f)
@@ -95,15 +97,15 @@ for f in files:
     if re.findall(r"Alexnet.*", f):
         sen_map = sen_map/norm_alex
         np.savetxt(norm5+f, sen_map, "%f")
-    if re.findall(r"Resnet18.*", f):
-        sen_map = sen_map/norm_res
-        np.savetxt(norm5+f, sen_map, "%f")
-    if re.findall(r"Squeezenet.*", f):
-        sen_map = sen_map/norm_squeeze
-        np.savetxt(norm5+f, sen_map, "%f")
     if re.findall(r"VGG11.*", f):
         sen_map = sen_map/norm_vgg
         np.savetxt(norm5+f, sen_map, "%f")
+    # if re.findall(r"Resnet18.*", f):
+    #     sen_map = sen_map/norm_res
+    #     np.savetxt(norm5+f, sen_map, "%f")
+    # if re.findall(r"Squeezenet.*", f):
+    #     sen_map = sen_map/norm_squeeze
+    #     np.savetxt(norm5+f, sen_map, "%f")
 
 # for f in files:
 #     org_sen_map = np.loadtxt(read+f)

@@ -39,7 +39,7 @@ namespace py = pybind11;
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
                      py::array_t<float, py::array::c_style | py::array::forcecast> SenMap,
                      string Model, int colorspace, int J, int a, int b, int QF_Y, int QF_C, float Beta_S, float Beta_W,
-                     float Beta_X, float Lmbd, float eps){
+                     float Beta_X, float Lmbd, float eps, int iterations){
   /*
   :Fn  py__call__: 
   :param py::array_t<float, py::array::c_style | py::array::forcecast> array: 
@@ -97,7 +97,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   }
 
   SDQ sdq;
-  sdq.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbd, Sen_Map, colorspace, QF_Y, QF_C, J, a ,b);
+  sdq.__init__(eps, iterations, Beta_S, Beta_W, Beta_X, Lmbd, Sen_Map, colorspace, QF_Y, QF_C, J, a ,b);
   BPP = sdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
   
   // YUV2rgb(Vect_img);

@@ -36,6 +36,7 @@ class BLOCK{
     public:
         // attributes
         float eps;
+        int iterations;
         float Q_table[64];
         const int ID_max_abs[10] = {1, 3, 7, 15,31, 63, 127, 255, 511, 1023};
         const int ID_min_abs[10] = {1, 2, 4, 8, 16, 32, 64,  128, 256, 512 };
@@ -54,7 +55,7 @@ class BLOCK{
                     vector<int>& IDlst);
         float eob_cost(int i, float CumC[64]);
         float dist(int r,int i, float CumC[64]);
-        void __init__(float eps, float Beta_S, float  Beta_W,
+        void __init__(float eps, int iterations, float Beta_S, float  Beta_W,
                      float Beta_X, float Lmbda, float Sen_Map[3][64]);
         void set_Q_table(float Q_table[64]);
         void set_channel(char channel);
@@ -72,10 +73,11 @@ float BLOCK::cal_ent(int r, int size){
     return ent_val;
 }
 
-void BLOCK::__init__(float eps, float Beta_S, float  Beta_W,
+void BLOCK::__init__(float eps, int iterations, float Beta_S, float  Beta_W,
                      float Beta_X, float Lmbda, float Sen_Map[3][64]){
     int i;
     BLOCK::eps = eps;
+    BLOCK::iterations = iterations;
     std::fill_n(BLOCK::state.cost,64,0);
     for(i=0; i<64; i++){
         BLOCK::Sen_Map[0][i] = Beta_S*Sen_Map[0][i];

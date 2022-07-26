@@ -1,0 +1,65 @@
+cuda:1
+Model: VGG11
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 30.0
+Beta_W = 30.0
+Beta_X = 30.0
+Lambda = 1.0
+Iterations = 3
+--> 499
+0.7 = 350 / 500
+6.007169486045838
+cuda:1
+Model: VGG11
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 100
+QF_C = 100
+Beta_S = 30.0
+Beta_W = 30.0
+Beta_X = 30.0
+Lambda = 1.0
+Iterations = 3
+--> 499
+0.7 = 350 / 500
+tensor(70.0000, device='cuda:1')	tensor(88.4000, device='cuda:1')
+6.007169486045838
+--> 999
+0.686 = 686 / 1000
+tensor(68.6000, device='cuda:1')	tensor(87.6000, device='cuda:1')
+6.056320119440556
+--> 1499
+0.6873333333333334 = 1031 / 1500
+tensor(68.7333, device='cuda:1')	tensor(88.1333, device='cuda:1')
+6.0251193272868795
+--> 1999
+0.691 = 1382 / 2000
+tensor(69.1000, device='cuda:1')	tensor(88.5000, device='cuda:1')
+6.017650529380888
+--> 2499
+0.6968 = 1742 / 2500
+tensor(69.6800, device='cuda:1')	tensor(89.0400, device='cuda:1')
+6.010908622738719
+--> 2999
+0.694 = 2082 / 3000
+tensor(69.4000, device='cuda:1')	tensor(89.1333, device='cuda:1')
+6.031887207744022
+--> 3499
+0.6968571428571428 = 2439 / 3500
+tensor(69.6857, device='cuda:1')	tensor(89.0286, device='cuda:1')
+6.015370936766267
+--> 3999
+0.699 = 2796 / 4000
+tensor(69.9000, device='cuda:1')	tensor(89.2750, device='cuda:1')
+5.9945026619117705
+--> 4499
+0.6957777777777778 = 3131 / 4500
+tensor(69.5778, device='cuda:1')	tensor(89.3556, device='cuda:1')
+5.993888209102883

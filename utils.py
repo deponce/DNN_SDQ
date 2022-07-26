@@ -15,6 +15,41 @@ def load_model(Model):
         Model = "VGG11"
     return pretrained_model
 
+def accuracy(output, target, topk=(1,)):
+    """Computes the precision@k for the specified values of k"""
+    maxk = max(topk)
+    batch_size = target.size(0)
+
+    _, pred = output.topk(maxk, 1, True, True)
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+    res = []
+    for k in topk:
+        correct_k = correct[:k].flatten().sum(dtype=torch.float32)
+        # correct_k = torch.reshape(correct[:k],(1, -1))
+        # correct_k = torch.squeeze(correct_k)
+        # correct_k = correct_k.float().sum(0)
+        # res.append(correct_k.mul_(100.0 / batch_size))
+        res.append(correct_k)
+    return res
+
+def compute_accuracy(outputs, targets, topk=(1,)):
+    """Computes the accuracy over the k top predictions for the specified values of k"""
+    with torch.no_grad():
+        maxk = max(topk)
+        batch_size = targets.size(0)
+        _, preds = outputs.topk(maxk, 1, True, True)
+        preds = preds.t()
+        corrects = preds.eq(targets[None])
+
+        result_list = []
+        for k in topk:
+            # print(corrects[:k].flatten().sum(dtype=torch.float32), batch_size)
+            correct_k = corrects[:k].flatten().sum(dtype=torch.float32)
+            # result_list.append(correct_k * (100.0 / batch_size))
+            result_list.append(correct_k)
+        return result_list
 
 def print_file(l1, output_txt):
     print(l1)
@@ -48,6 +83,7 @@ def print_exp_details_SDQ(args):
     f.write("Beta_W = "+ str(args.Beta_W) + "\n")
     f.write("Beta_X = "+ str(args.Beta_X) + "\n")
     f.write("Lambda = "+ str(args.L) + "\n")
+    f.write("Iterations = "+ str(args.iterations) + "\n")
     f.close()
 
 # def accuracy(output: torch.Tensor, target: torch.Tensor, topk=(1,)) -> List[torch.FloatTensor]:
