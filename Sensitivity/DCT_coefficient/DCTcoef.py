@@ -24,6 +24,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]='1'
 Batch_size = 100
 from model import get_model
 import argparse
+from loader_sampler import *
 
 def plot_confidence_interval(x, top, bottom, mean, horizontal_line_width=0.25, color='#2187bb',label=None,alpha=1):
     left = x - horizontal_line_width / 2
@@ -64,7 +65,13 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000, resize = True):
     Y_sen_list = np.empty([0, 8, 8])
     Cr_sen_list = np.empty([0, 8, 8])
     Cb_sen_list = np.empty([0, 8, 8])
+    samples_count = {}
     for data, target in tqdm(test_loader):
+        if target not in samples_count:
+            samples_count[target] = 0
+        if samples_count[target] > 10:
+            continue
+        samples_count[target] += 1
         data, target = data.to(device), target.to(device)  # [0,225]
         img_shape = data.shape[-2:]
         data = data.transpose(0, 1).reshape(3, -1)  # [0,225]

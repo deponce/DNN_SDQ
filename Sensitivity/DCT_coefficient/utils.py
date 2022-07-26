@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import math
 import numpy as np
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
@@ -39,8 +39,8 @@ def block_dct(blocks: torch.Tensor) -> torch.Tensor:
     h = _harmonics(N).float()
 
     if blocks.is_cuda:
-        n = n.cuda()
-        h = h.cuda()
+        n = n.cuda(device)
+        h = h.cuda(device)
     
     coeff = (1 / math.sqrt(2 * N)) * n * (h.t() @ blocks @ h)
 
@@ -53,8 +53,8 @@ def block_idct(coeff: torch.Tensor) -> torch.Tensor:
     h = _harmonics(N)
 
     if coeff.is_cuda:
-        n = n.cuda()
-        h = h.cuda()
+        n = n.cuda(device)
+        h = h.cuda(device)
 
     im = (1 / math.sqrt(2 * N)) * (h @ (n * coeff) @ h.t())
     return im

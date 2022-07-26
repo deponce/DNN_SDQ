@@ -1,1 +1,1 @@
-python3 get_DCTgrad.py -model Alexnet -Batch_size 100 -Nexample 10000
+python3 get_DCTgrad.py -model Alexnet -Batch_size 128 -Nexample 10000

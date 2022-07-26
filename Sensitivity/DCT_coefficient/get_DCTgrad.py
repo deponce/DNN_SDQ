@@ -6,37 +6,83 @@ from tqdm import tqdm
 import torch.nn.functional as F
 from utils import *
 import os
+# from torch.nn.parallel import DistributedDataParallel as DDP
+# from torch.nn import DataParallel
+# import torch.distributed as dist
+from loader_sampler import *
 
-os.environ["CUDA_VISIBLE_DEVICES"]='1'
-Batch_size = 100
+# os.environ["CUDA_VISIBLE_DEVICES"]='1'
+
 from model import get_model
 import argparse
 
+NUM_SAMPLES_PER_CLASS=10
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+# samples_count = {}
+# # a simple custom collate function, just to show the idea
+# def my_collate(batch):
+#     data = [item[0] for item in batch]
+#     target = [item[1] for item in batch]
+#     if target not in samples_count:
+#         samples_count[target] = 0
+#     if samples_count[target] > NUM_SAMPLES_PER_CLASS:
+#         next
+#     samples_count[target] += 1
+#     print(samples_count)
+#     return [data, target]
+
+
+
 def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     Batch_size = Batch_size
     thr = Nexample
     model_name = model
+    
     print("code run on", device)
-    Trans = [transforms.ToTensor(),
-             transforms.Resize((256, 256)),
-             transforms.CenterCrop(224),
-             transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])
-             ]
-    transform = transforms.Compose(Trans)
-    dataset = torchvision.datasets.ImageNet(root="~/project/data", split='train',
-                                            transform=transform)
+
+    # Trans = [transforms.ToTensor(),
+    #          transforms.Resize((256, 256)),
+    #          transforms.CenterCrop(224),
+    #          transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
+    # transform = transforms.Compose(Trans)
+
+
+    transform = transforms.Compose([
+                                         transforms.Resize(256),
+                                         transforms.CenterCrop(224),
+                                         transforms.ToTensor(),
+                                         transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])
+                                       ])
+
+    dataset = random_sampler(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", t_split='train',transform=transform)
+
+    # dataset = torchvision.datasets.ImageNet(root="~/project/data", split='train',
+    #                                         transform=transform)
+    
     Scale2One = transforms.Normalize(mean=[0, 0, 0], std=[255., 255., 255.])
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=16)
+                        # , collate_fn=my_collate)
 
     pretrained_model = get_model(model_name)
-    pretrained_model.to(device)
+    _ = pretrained_model.to(device)
+
+    
     pretrained_model.eval()
     Y_sen_list = np.empty([0, 8, 8])
     Cr_sen_list = np.empty([0, 8, 8])
     Cb_sen_list = np.empty([0, 8, 8])
+    # samples_count = {}
     for data, target in tqdm(test_loader):
+        # target_ = target.cpu().numpy()[0]
+        # if target_ not in samples_count:
+        #     samples_count[target_] = 0
+        # if samples_count[target_] > NUM_SAMPLES_PER_CLASS:
+        #     continue
+        # samples_count[target_] += 1
+        # print(samples_count)
+
         data, target = data.to(device), target.to(device)  # [0,225]
         img_shape = data.shape[-2:]
         ycbcr_data = rgb_to_ycbcr(data)
@@ -56,11 +102,12 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
         Y_sen_list = np.concatenate((Y_sen_list, data_grad[0].reshape(-1, 8, 8)))
         Cr_sen_list = np.concatenate((Cr_sen_list, data_grad[1].reshape(-1, 8, 8)))
         Cb_sen_list = np.concatenate((Cb_sen_list, data_grad[2].reshape(-1, 8, 8)))
-        if Y_sen_list.shape[0] >= thr:
-            break
+        # if Y_sen_list.shape[0] >= thr:
+        #     break
     np.save("./grad/Y_sen_list" + model_name + ".npy",Y_sen_list)
     np.save("./grad/Cr_sen_list" + model_name + ".npy", Cr_sen_list)
     np.save("./grad/Cb_sen_list" + model_name + ".npy", Cb_sen_list)
+    print(Y_sen_list.shape[0])
 
 
 if __name__ == '__main__':
