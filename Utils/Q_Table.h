@@ -93,6 +93,20 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
    // variance=variance/5;
    // stdDeviation = sqrt(variance);
 
+float Cal_DT(float d_waterLevel, float varianceData)
+{
+    // DT=sum(D[i]), D[i]=d or varianceData[i]
+    return DT;
+}
+
+
+float Cal_d(float DT)
+{
+    // int d = max(varianceData)/2;
+    // int DT = Cal_DT(d);
+    // binary search(set number of iterations or eps)
+    return d_waterLevel;
+}
 
 void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
 {
