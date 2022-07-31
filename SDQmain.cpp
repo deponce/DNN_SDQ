@@ -46,7 +46,9 @@ int main(int argc, char* argv[]) {
   float Beta = 1e9;
   float Lmbda = 1e9;
   float eps = 0.1;
-  while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:e:L:")) !=-1){
+  int Qmax_Y = 46, Qmax_C = 46;
+  float d_waterlevel_Y= 18.5, d_waterlevel_C= 18.5;  
+  while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:D:d:X:x:")) !=-1){
     switch (option){
       case 'h':{
         std::cout<< "-i: output the model's name and path of the input image"<<std::endl<<std::flush
@@ -59,7 +61,12 @@ int main(int argc, char* argv[]) {
         << "-q #: intial quality factor of the quantization table for C channel"<<std::endl
         << "-B #: the 1st Langrangian factor"<<std::endl
         << "-L #: the 2nd Langrangian factor"<<std::endl
-        << "-e #: the threshold "<<std::endl<<std::flush;
+        << "-e #: SDQ threshold "<<std::endl
+        << "-D #: Dist Waterlevel for Y "<<std::endl
+        << "-d #: Dist Waterlevel for C"<<std::endl
+        << "-Qm #: Max OptD Quantization step Y "<<std::endl
+        << "-qm #: Max OptD Quantization step C"<<std::endl
+        <<std::flush;
         break;}
       case 'i':{arginfo = true; break;}
       case 'M':{Model = optarg; break;}
@@ -72,6 +79,10 @@ int main(int argc, char* argv[]) {
       case 'B':{Beta = atof(optarg); break;}
       case 'L':{Lmbda = atof(optarg); break;}
       case 'e':{eps = atof(optarg); break;}
+      case 'D':{d_waterlevel_Y = atof(optarg); break;}
+      case 'd':{d_waterlevel_C = atof(optarg); break;}
+      case 'X':{Qmax_Y = atoi(optarg); break;}
+      case 'x':{Qmax_C = atoi(optarg); break;}
       default: {break;}
     }
   }
@@ -83,7 +94,10 @@ int main(int argc, char* argv[]) {
     <<"J,a,b: "<<J<<" "<<a<<" "<<b<<std::endl
     <<"QF_Y:  "<<QF_Y<<std::endl
     <<"QF_C:  "<<QF_C<<std::endl
-    <<"eps: "<<eps<<std::endl<<std::flush;
+    <<"Dist Waterlevel for Y, C: "<< d_waterlevel_Y << " , "<< d_waterlevel_C <<std::endl
+    <<"Max OptD Quantization step Y, C: "<< Qmax_Y << " , "<< Qmax_C <<std::endl
+    <<"eps: "<<eps<<std::endl
+    <<std::flush;
   }
   cv::Mat image;
   image = cv::imread(IM_PATH);
@@ -114,8 +128,8 @@ int main(int argc, char* argv[]) {
   
   SDQ sdq;
   sdq.__init__(eps, Beta_S, Beta_W, Beta_X,
-               Lmbda, Sen_Map, QF_Y , QF_C, 
-               J, a, b);
+               Lmbda, Sen_Map, 0, QF_Y , QF_C, 
+               J, a, b, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
   float BPP = sdq.__call__(Vect_img); //Vect_img is the compressed dequantilzed image after sdq.__call__()
   cout<<"BPP: "<<BPP<<endl;
 
@@ -126,8 +140,8 @@ int main(int argc, char* argv[]) {
   cout<<"PSNR: "<<psnrVal<<endl;
 
   Vector2Mat(Vect_img, image);
-  cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
-  cv::imshow("Display window",  image);
-  cv::waitKey(0);
+  // cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
+  // cv::imshow("Display window",  image);
+  // cv::waitKey(0);
   return 0;
 }

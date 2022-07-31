@@ -96,8 +96,8 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
 
 void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
 {
-    auto dct_coefs_zeroMean = new float[N_block][64];
-    for (int i = 1; i < 64; i++ )
+    float tmp;
+    for (int i = 0; i < 64; i++ )
     {
         float variance = 0, mean = 0, lambda = 0;
 
@@ -115,8 +115,8 @@ void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coe
         
         for (int j=0;j<N_block; j++)
         {
-            dct_coefs_zeroMean[j][i] = seq_dct_coefs[j][i] - mean;
-            lambda += abs(dct_coefs_zeroMean[j][i]);
+            tmp = seq_dct_coefs[j][i] - mean;
+            lambda += abs(tmp);
         }
         varianceData[i] = variance;
         lambdaData[i] = lambda/N_block;
@@ -151,20 +151,23 @@ void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coe
 //     return -1;
 // }
 
-void quantizationTable_OptD(float seq_dct_coefs[][64], bool Luminance, float Q_Table[64], int N_block)
+void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float d_waterLevel, int QMAX_Y)
 {
-    const int QMAX_Y = 46;
+    // const int QMAX_Y = 46;
+    // float d_waterLevel;
+    // d_waterLevel = 18.5;
+
     float varianceData[64]; // No need for DC 
     float lambdaData[64];
-    auto Dlap = new float[64][QMAX_Y+1];
+    auto Dlap = new float[QMAX_Y + 1][64];
     parameterCal(varianceData, lambdaData , seq_dct_coefs ,N_block);
     float si, q_lambda;
     float p1, p2, p3;
-    float d_waterLevel;
-    d_waterLevel = 350.0;
+    // cout <<  "Q value" << "\t"  << "Variance" << "\t" << "lambda" << "\n";
+    lambdaData[0] = 0.0;
     for (int i = 1; i < 64; i++)
     {
-        Dlap[i][0] = 0.0;
+        Dlap[0][i] = 0.0;
         for (int q = 1; q <= QMAX_Y; q++)
         {
             q_lambda = q / lambdaData[i];
@@ -172,8 +175,8 @@ void quantizationTable_OptD(float seq_dct_coefs[][64], bool Luminance, float Q_T
             p1 = 2 * pow(lambdaData[i], 2);
             p2 = 2 * q * (lambdaData[i] + si -0.5 * q);
             p3 = exp(si/lambdaData[i]) * (1 - exp(-1 * q_lambda));
-            Dlap[i][q] = p1 - (p2/p3);
-            // cout << Dlap[i][q]  << "\n";
+            Dlap[q][i] = p1 - (p2/p3);
+            // cout << Dlap[q][i]  << "\n";
             // break;
         }
         // Q_Table[i] = binarySearch(Dlap[i], 0, N_block - 1, d_waterLevel);
@@ -183,21 +186,22 @@ void quantizationTable_OptD(float seq_dct_coefs[][64], bool Luminance, float Q_T
     {
         if(varianceData[i] < d_waterLevel)
         {
+            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
             Q_Table[i] = QMAX_Y;
         }
         else
         {
-            if (i == 0) 
+            if (i == 0) // DC q step
             {
-                Q_Table[i] = min(floor(sqrt(12*d_waterLevel)), (float)QMAX_Y);
+                Q_Table[i] = min(floor(sqrt(12*d_waterLevel)), float(QMAX_Y));
             }
             else
             {
 
                for (int q = QMAX_Y; q >= 1 ; q--)
                {
-                    // cout << Dlap[i][q] << "\t" << d_waterLevel;
-                    if (Dlap[i][q] <= d_waterLevel)
+                    // cout << Dlap[q][i]  << "\t" << d_waterLevel;
+                    if (Dlap[q][i]  <= d_waterLevel)
                     {
                         Q_Table[i] = q;
                         break;
@@ -205,7 +209,7 @@ void quantizationTable_OptD(float seq_dct_coefs[][64], bool Luminance, float Q_T
                }
             }      
         }
-        cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
+        // cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
     }
 
 }

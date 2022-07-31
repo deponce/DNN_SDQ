@@ -50,6 +50,8 @@ class HDQ{
         int QF_C;
         int QF_Y;
         int J, a, b;
+        int QMAX_Y, QMAX_C;
+        float d_waterlevel_Y, d_waterlevel_C;
         float Loss;
         float EntACY = 0;
         float EntACC = 0;
@@ -59,12 +61,12 @@ class HDQ{
         vector<int> RSlst;
         vector<int> IDlst;
         void __init__(int colorspace, int QF_Y, int QF_C, 
-                      int J, int a, int b);
+                      int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
         float __call__(vector<vector<vector<float>>>& image);
 };
 
 void HDQ::__init__(int colorspace, int QF_Y, int QF_C, 
-                   int J, int a, int b){
+                   int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
     minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
     HDQ::RSlst.reserve(64);
     HDQ::IDlst.reserve(64);
@@ -77,6 +79,10 @@ void HDQ::__init__(int colorspace, int QF_Y, int QF_C,
     HDQ::J = J;
     HDQ::a = a;
     HDQ::b = b;
+    HDQ::d_waterlevel_Y = d_waterlevel_Y;
+    HDQ::QMAX_Y = QMAX_Y;
+    HDQ::d_waterlevel_C = d_waterlevel_C;
+    HDQ::QMAX_C = QMAX_C;
 }
 
 float HDQ::__call__(vector<vector<vector<float>>>& image){
@@ -124,20 +130,19 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ::seq_len_C);
 
     // Customized Quantization Table
-    // quantizationTable_OptD(seq_dct_coefs_Y, true, HDQ::Q_table_Y, HDQ::seq_len_Y);
-    // quantizationTable_OptD(seq_dct_coefs_Cb, true, HDQ::Q_table_C, HDQ::seq_len_C);
-    // quantizationTable_OptD(seq_dct_coefs_Cr, true, HDQ::Q_table_C, HDQ::seq_len_C);
 
-
+    quantizationTable_OptD(seq_dct_coefs_Y, HDQ::Q_table_Y, HDQ::seq_len_Y, HDQ::d_waterlevel_Y, HDQ::QMAX_Y);
+    quantizationTable_OptD(seq_dct_coefs_Cb, HDQ::Q_table_C, HDQ::seq_len_C, HDQ::d_waterlevel_C, HDQ::QMAX_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
+    quantizationTable_OptD(seq_dct_coefs_Cr, HDQ::Q_table_C, HDQ::seq_len_C, HDQ::d_waterlevel_C, HDQ::QMAX_C);
 
     //
 
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ::Q_table_Y, HDQ::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
-             HDQ::Q_table_Y,HDQ::seq_len_Y);
+             HDQ::Q_table_C,HDQ::seq_len_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
     Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
-             HDQ::Q_table_Y,HDQ::seq_len_Y);
+             HDQ::Q_table_C,HDQ::seq_len_C);
     
     map<int, float> DC_P;
     map<int, float> AC_Y_P;
@@ -179,12 +184,12 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     AC_C_P.erase(TOTAL_KEY);
     EntACC = calHuffmanCodeSize(AC_C_P);
     float BPP=0;
-    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE; // Run_length coding
-    BPP = file_size/HDQ::img_shape_Y[0]/HDQ::img_shape_Y[1];
+    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE;// Run_length coding
+    BPP = file_size/HDQ::img_shape_Y[0]/HDQ::img_shape_Y[1]; // REMOVE THIS KAIXIANG
     delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
     Dequantize(seq_dct_idxs_Y, HDQ::Q_table_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][64]
-    Dequantize(seq_dct_idxs_Cb, HDQ::Q_table_Y, HDQ::seq_len_C);
-    Dequantize(seq_dct_idxs_Cr, HDQ::Q_table_Y, HDQ::seq_len_C);
+    Dequantize(seq_dct_idxs_Cb, HDQ::Q_table_C, HDQ::seq_len_C);
+    Dequantize(seq_dct_idxs_Cr, HDQ::Q_table_C, HDQ::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
     seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ::seq_len_C);
