@@ -58,6 +58,7 @@ class SDQ{
         int QF_Y;
         int J, a, b;
         int QMAX_Y, QMAX_C;
+        float DT_Y, DT_C;
         float d_waterlevel_Y, d_waterlevel_C;
         float Loss;
         float EntACY = 0;
@@ -69,7 +70,8 @@ class SDQ{
         vector<int> IDlst;
         void __init__(float eps, float Beta_S, float Beta_W, float Beta_X,
                       float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
-                      int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
+                      int J, int a, int b, float DT_Y, float DT_C, 
+                      float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
         void opt_Q_Y_DC(float seq_dct_idxs_Y[][64], float seq_dct_coefs_Y[][64]);
         void opt_Q_C_DC(float seq_dct_idxs_Cb[][64], float seq_dct_coefs_Cb[][64],
                         float seq_dct_idxs_Cr[][64], float seq_dct_coefs_Cr[][64]);
@@ -87,7 +89,8 @@ class SDQ{
 
 void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
                    float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
-                   int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
+                   int J, int a, int b, float DT_Y, float DT_C,
+                   float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
 
     minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
     SDQ::RSlst.reserve(64);
@@ -105,11 +108,12 @@ void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
     SDQ::J = J;
     SDQ::a = a;
     SDQ::b = b;
+    SDQ::DT_Y = DT_Y;
+    SDQ::DT_C = DT_C;
     SDQ::d_waterlevel_Y = d_waterlevel_Y;
     SDQ::QMAX_Y = QMAX_Y;
     SDQ::d_waterlevel_C = d_waterlevel_C;
     SDQ::QMAX_C = QMAX_C;
-
 }
 
 float SDQ::__call__(vector<vector<vector<float>>>& image){
@@ -157,10 +161,9 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, SDQ::seq_len_C);
 
     // Customized Quantization Table
-
-    quantizationTable_OptD(seq_dct_coefs_Y, SDQ::Q_table_Y, SDQ::seq_len_Y, SDQ::d_waterlevel_Y, SDQ::QMAX_Y);
-    quantizationTable_OptD(seq_dct_coefs_Cb, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::d_waterlevel_C, SDQ::QMAX_C); // change SDQ::Q_table_Y --> SDQ::Q_table_C for 3 channel Images
-    quantizationTable_OptD(seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
+    quantizationTable_OptD(seq_dct_coefs_Y, SDQ::Q_table_Y, SDQ::seq_len_Y, SDQ::DT_Y, SDQ::d_waterlevel_Y, SDQ::QMAX_Y);
+    // quantizationTable_OptD(seq_dct_coefs_Cb, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
+    // quantizationTable_OptD(seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
 
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              SDQ::Q_table_Y, SDQ::seq_len_Y);

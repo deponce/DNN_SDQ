@@ -2,7 +2,7 @@
 
 // MIT License
 
-// Copyright (c) 2022 Ahmed Hussein Salamah, deponce(Linfeng Ye), Kaixiang Zheng, University of Waterloo
+// Copyright (c) 2022 Ahmed Hussein Salamah, Kaixiang Zheng, deponce(Linfeng Ye), University of Waterloo
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,8 @@
 // SOFTWARE.
 
 #include <math.h>
+#include <algorithm>
 using namespace std;
-
-
 
 
 void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, float &QUANTIZATION_SCALE)
@@ -95,7 +94,6 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
 
 float Cal_DT(float d_waterLevel, float varianceData[64])
 {
-    // DT=sum(D[i]), D[i]=d or varianceData[i]
     float DT = 0;
     for (int i = 0; i <= 64; i++)
     {
@@ -113,11 +111,30 @@ float Cal_d(float DT, float varianceData[64])
     {
         sum_var += varianceData[i];
     }
-    DT = MinMaxClip(DT, 0, sum_var)
-    // int d = max(varianceData)/2;
-    // int DT = Cal_DT(d);
-    // binary search(set number of iterations or eps)
-    return d_waterLevel;
+    DT = MinMaxClip(DT, 0, sum_var);
+
+    // bi-section search
+    float eps = 1e-5;
+    float a = 0;
+    float b = *max_element(varianceData, varianceData + 64);
+
+    if (DT == 0) return a;
+    if (DT == sum_var) return b;
+
+    float c = a;
+    while ((b-a) >= eps) {
+        // Find middle point
+        c = (a+b)/2;
+        // Check if middle point is root
+        if (Cal_DT(c,varianceData) == DT)
+            break;
+        // Decide the side to repeat the steps
+        else if ((Cal_DT(c,varianceData)-DT)*(Cal_DT(a,varianceData)-DT) < 0)
+            b = c;
+        else
+            a = c;
+    }
+    return c;
 }
 
 void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
@@ -152,41 +169,16 @@ void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coe
     // cout << endl;
 }
 
-// int binarySearch(float arr, int l, int r, int x)
-// {
-//     if (r >= l) {
-//         int mid = l + (r - l) / 2;
-  
-//         // If the element is present at the middle
-//         // itself
-//         if (arr[mid] == x)
-//             return mid;
-  
-//         // If element is smaller than mid, then
-//         // it can only be present in left subarray
-//         if (arr[mid] > x)
-//             return binarySearch(arr, l, mid - 1, x);
-  
-//         // Else the element can only be present
-//         // in right subarray
-//         return binarySearch(arr, mid + 1, r, x);
-//     }
-  
-//     // We reach here when element is not
-//     // present in array
-//     return -1;
-// }
-
-void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float d_waterLevel, int QMAX_Y)
+void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float DT, float d_waterLevel, int QMAX_Y)
 {
-    // const int QMAX_Y = 46;
-    // float d_waterLevel;
-    // d_waterLevel = 18.5;
-
-    float varianceData[64]; // No need for DC 
-    float lambdaData[64];
+    float varianceData[64];
+    float lambdaData[64];   // No need for DC
     auto Dlap = new float[QMAX_Y + 1][64];
     parameterCal(varianceData, lambdaData , seq_dct_coefs ,N_block);
+
+    if (d_waterLevel < 0) d_waterLevel = Cal_d(DT, varianceData); // DT will be used only if d_waterLevel < 0
+    cout << "DT = " << DT << "\t" << "d_waterLevel = " << d_waterLevel << endl;
+
     float si, q_lambda;
     float p1, p2, p3;
     // cout <<  "Q value" << "\t"  << "Variance" << "\t" << "lambda" << "\n";
@@ -205,7 +197,6 @@ void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_
             // cout << Dlap[q][i]  << "\n";
             // break;
         }
-        // Q_Table[i] = binarySearch(Dlap[i], 0, N_block - 1, d_waterLevel);
     }
 
     for (int i = 0; i < 64; i++)

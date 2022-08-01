@@ -47,8 +47,9 @@ int main(int argc, char* argv[]) {
   float Lmbda = 1e9;
   float eps = 0.1;
   int Qmax_Y = 46, Qmax_C = 46;
-  float d_waterlevel_Y= 18.5, d_waterlevel_C= 18.5;  
-  while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:D:d:X:x:")) !=-1){
+  float d_waterlevel_Y = 0, d_waterlevel_C = 0;  
+  float DT_Y = 0, DT_C = 0;
+while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:")) !=-1){
     switch (option){
       case 'h':{
         std::cout<< "-i: output the model's name and path of the input image"<<std::endl<<std::flush
@@ -62,6 +63,8 @@ int main(int argc, char* argv[]) {
         << "-B #: the 1st Langrangian factor"<<std::endl
         << "-L #: the 2nd Langrangian factor"<<std::endl
         << "-e #: SDQ threshold "<<std::endl
+        << "-T #: Dist Target for Y "<<std::endl
+        << "-t #: Dist Target for C "<<std::endl
         << "-D #: Dist Waterlevel for Y "<<std::endl
         << "-d #: Dist Waterlevel for C"<<std::endl
         << "-Qm #: Max OptD Quantization step Y "<<std::endl
@@ -79,6 +82,8 @@ int main(int argc, char* argv[]) {
       case 'B':{Beta = atof(optarg); break;}
       case 'L':{Lmbda = atof(optarg); break;}
       case 'e':{eps = atof(optarg); break;}
+      case 'T':{DT_Y = atof(optarg); break;}
+      case 't':{DT_C = atof(optarg); break;}
       case 'D':{d_waterlevel_Y = atof(optarg); break;}
       case 'd':{d_waterlevel_C = atof(optarg); break;}
       case 'X':{Qmax_Y = atoi(optarg); break;}
@@ -94,6 +99,7 @@ int main(int argc, char* argv[]) {
     <<"J,a,b: "<<J<<" "<<a<<" "<<b<<std::endl
     <<"QF_Y:  "<<QF_Y<<std::endl
     <<"QF_C:  "<<QF_C<<std::endl
+    <<"Dist Target for Y, C: "<< DT_Y << " , "<< DT_C <<std::endl
     <<"Dist Waterlevel for Y, C: "<< d_waterlevel_Y << " , "<< d_waterlevel_C <<std::endl
     <<"Max OptD Quantization step Y, C: "<< Qmax_Y << " , "<< Qmax_C <<std::endl
     <<"eps: "<<eps<<std::endl
@@ -129,7 +135,7 @@ int main(int argc, char* argv[]) {
   SDQ sdq;
   sdq.__init__(eps, Beta_S, Beta_W, Beta_X,
                Lmbda, Sen_Map, 0, QF_Y , QF_C, 
-               J, a, b, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
+               J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
   float BPP = sdq.__call__(Vect_img); //Vect_img is the compressed dequantilzed image after sdq.__call__()
   cout<<"BPP: "<<BPP<<endl;
 
