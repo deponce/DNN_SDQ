@@ -87,57 +87,9 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
     }
 }
 
-   // for(i = 0; i < 5; ++i)
-   // variance += pow(val[i] - mean, 2);
-   // variance=variance/5;
-   // stdDeviation = sqrt(variance);
-
-float Cal_DT(float d_waterLevel, float varianceData[64])
-{
-    float DT = 0;
-    for (int i = 0; i <= 64; i++)
-    {
-        if(d_waterLevel <= varianceData[i]) DT += d_waterLevel;
-        else DT += varianceData[i];
-    }
-    return DT;
-}
 
 
-float Cal_d(float DT, float varianceData[64])
-{
-    float sum_var = 0;
-    for (int i = 0; i <=64; i++)
-    {
-        sum_var += varianceData[i];
-    }
-    DT = MinMaxClip(DT, 0, sum_var);
-
-    // bi-section search
-    float eps = 1e-5;
-    float a = 0;
-    float b = *max_element(varianceData, varianceData + 64);
-
-    if (DT == 0) return a;
-    if (DT == sum_var) return b;
-
-    float c = a;
-    while ((b-a) >= eps) {
-        // Find middle point
-        c = (a+b)/2;
-        // Check if middle point is root
-        if (Cal_DT(c,varianceData) == DT)
-            break;
-        // Decide the side to repeat the steps
-        else if ((Cal_DT(c,varianceData)-DT)*(Cal_DT(a,varianceData)-DT) < 0)
-            b = c;
-        else
-            a = c;
-    }
-    return c;
-}
-
-void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
+void parameterCal_Y(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
 {
     float tmp;
     for (int i = 0; i < 64; i++ )
@@ -169,15 +121,108 @@ void parameterCal(float varianceData[64], float lambdaData[64],float seq_dct_coe
     // cout << endl;
 }
 
-void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float DT, float d_waterLevel, int QMAX_Y)
+void parameterCal_C(float varianceData[64], float lambdaData[64],float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], int N_block)
 {
-    float varianceData[64];
-    float lambdaData[64];   // No need for DC
+    float tmp;
+    for (int i = 0; i < 64; i++ )
+    {
+        float variance = 0, mean = 0, lambda = 0;
+
+        // Cal the Mean for both Cb Cr
+        for (int j=0;j<N_block; j++)
+        {
+            mean += seq_dct_coefs_Cb[j][i];
+        }
+        for (int j=0;j<N_block; j++)
+        {
+            mean += seq_dct_coefs_Cr[j][i];
+        }
+        mean /= (2*N_block);
+
+        // Cal the variance for both Cb Cr
+        for (int j=0;j<N_block; j++)
+        {
+            variance += pow(seq_dct_coefs_Cb[j][i] - mean, 2);
+        }
+        for (int j=0;j<N_block; j++)
+        {
+            variance += pow(seq_dct_coefs_Cr[j][i] - mean, 2);
+        }
+        variance /= (2*N_block);
+        
+        // Cal the lambda for both Cb Cr
+        for (int j=0;j<N_block; j++)
+        {
+            tmp = seq_dct_coefs_Cb[j][i] - mean;
+            lambda += abs(tmp);
+        }
+        for (int j=0;j<N_block; j++)
+        {
+            tmp = seq_dct_coefs_Cr[j][i] - mean;
+            lambda += abs(tmp);
+        }
+
+        varianceData[i] = variance;
+        lambdaData[i] = lambda/ (2*N_block);
+
+        // cout << varianceData[i] << "\t" << lambdaData[i] << "\n";
+    }
+    // cout << endl;
+}
+
+float Cal_DT(float d_waterLevel, float varianceData[64])
+{
+    float DT = 0;
+    for (int i = 0; i <= 64; i++)
+    {
+        if(d_waterLevel <= varianceData[i]) DT += d_waterLevel;
+        else DT += varianceData[i];
+    }
+    return DT;
+}
+
+
+float Cal_d(float DT, float varianceData[64])
+{
+    float sum_var = 0;
+    for (int i = 0; i <=64; i++)
+    {
+        sum_var += varianceData[i];
+    }
+    DT = MinMaxClip(DT, 0, sum_var); // clip between 0 and sum_var
+
+    // bi-section search
+    float eps = 1e-5;
+    float a = 0;
+    // Maximum variance allover 64 Cofficient
+    float b = *max_element(varianceData, varianceData + 64);
+
+    if (DT == 0) return a;
+    // I believe it should be DT>= sum_var
+    if (DT == sum_var) return b;
+
+    float c = a;
+    while ((b-a) >= eps) {
+        // Find middle point
+        c = (a+b)/2;
+        // Check if middle point is root
+        if (Cal_DT(c,varianceData) == DT)
+            break;
+        // Decide the side to repeat the steps
+        else if ((Cal_DT(c,varianceData)-DT)*(Cal_DT(a,varianceData)-DT) < 0)
+            b = c;
+        else
+            a = c;
+    }
+    return c;
+}
+
+void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float DT, float& d_waterLevel, int QMAX_Y)
+{
     auto Dlap = new float[QMAX_Y + 1][64];
-    parameterCal(varianceData, lambdaData , seq_dct_coefs ,N_block);
 
     if (d_waterLevel < 0) d_waterLevel = Cal_d(DT, varianceData); // DT will be used only if d_waterLevel < 0
-    cout << "DT = " << DT << "\t" << "d_waterLevel = " << d_waterLevel << endl;
+    
 
     float si, q_lambda;
     float p1, p2, p3;
@@ -228,6 +273,23 @@ void quantizationTable_OptD(float seq_dct_coefs[][64], float Q_Table[64], int N_
         }
         // cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
     }
+}
+
+void quantizationTable_OptD_C(float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], float Q_Table[64], int N_block, float DT, float& d_waterLevel, int QMAX_Y)
+{
+    float varianceData[64];
+    float lambdaData[64];   // No need for DC
+    parameterCal_C(varianceData, lambdaData , seq_dct_coefs_Cb, seq_dct_coefs_Cr ,N_block);
+    OptD(varianceData,lambdaData, Q_Table, DT, d_waterLevel,QMAX_Y);
+    
+
+}
+void quantizationTable_OptD_Y(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float DT, float& d_waterLevel, int QMAX_Y)
+{
+    float varianceData[64];
+    float lambdaData[64];   // No need for DC
+    parameterCal_Y(varianceData, lambdaData , seq_dct_coefs ,N_block);
+    OptD(varianceData,lambdaData, Q_Table, DT, d_waterLevel,QMAX_Y);
 
 }
 
