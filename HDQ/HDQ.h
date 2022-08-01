@@ -123,21 +123,14 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cb, seq_dct_coefs_Cb, HDQ::seq_len_C);
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ::seq_len_C);
 
-    // Customized Quantization Table
-    // quantizationTable_OptD(seq_dct_coefs_Y, true, HDQ::Q_table_Y, HDQ::seq_len_Y);
-    // quantizationTable_OptD(seq_dct_coefs_Cb, true, HDQ::Q_table_C, HDQ::seq_len_C);
-    // quantizationTable_OptD(seq_dct_coefs_Cr, true, HDQ::Q_table_C, HDQ::seq_len_C);
-
-
-
     //
 
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ::Q_table_Y, HDQ::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
-             HDQ::Q_table_Y,HDQ::seq_len_Y);
+             HDQ::Q_table_C,HDQ::seq_len_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
     Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
-             HDQ::Q_table_Y,HDQ::seq_len_Y);
+             HDQ::Q_table_C,HDQ::seq_len_C);
     
     map<int, float> DC_P;
     map<int, float> AC_Y_P;
@@ -179,12 +172,12 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     AC_C_P.erase(TOTAL_KEY);
     EntACC = calHuffmanCodeSize(AC_C_P);
     float BPP=0;
-    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE; // Run_length coding
-    BPP = file_size/HDQ::img_shape_Y[0]/HDQ::img_shape_Y[1];
+    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE;// Run_length coding
+    BPP = file_size/HDQ::img_shape_Y[0]/HDQ::img_shape_Y[1]; // REMOVE THIS KAIXIANG
     delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
     Dequantize(seq_dct_idxs_Y, HDQ::Q_table_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][64]
-    Dequantize(seq_dct_idxs_Cb, HDQ::Q_table_Y, HDQ::seq_len_C);
-    Dequantize(seq_dct_idxs_Cr, HDQ::Q_table_Y, HDQ::seq_len_C);
+    Dequantize(seq_dct_idxs_Cb, HDQ::Q_table_C, HDQ::seq_len_C);
+    Dequantize(seq_dct_idxs_Cr, HDQ::Q_table_C, HDQ::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
     seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ::seq_len_C);

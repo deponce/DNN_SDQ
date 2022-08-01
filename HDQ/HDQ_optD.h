@@ -1,4 +1,4 @@
-// HDQ.h
+// HDQ_OptD.h
 
 // MIT License
 
@@ -30,7 +30,7 @@
 #include "../EntCoding/Huffman.h"
 using namespace std;
 const float MIN_Q_VAL = 1;
-class HDQ{
+class HDQ_OptD{
     public:
         // attributes
         float Q_table_Y[64];
@@ -51,6 +51,7 @@ class HDQ{
         int QF_Y;
         int J, a, b;
         int QMAX_Y, QMAX_C;
+        float DT_Y, DT_C;
         float d_waterlevel_Y, d_waterlevel_C;
         float Loss;
         float EntACY = 0;
@@ -61,88 +62,92 @@ class HDQ{
         vector<int> RSlst;
         vector<int> IDlst;
         void __init__(int colorspace, int QF_Y, int QF_C, 
-                      int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
+                      int J, int a, int b, float DT_Y, float DT_C, 
+                      float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
         float __call__(vector<vector<vector<float>>>& image);
 };
 
-void HDQ::__init__(int colorspace, int QF_Y, int QF_C, 
-                   int J, int a, int b, float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
+void HDQ_OptD::__init__(int colorspace, int QF_Y, int QF_C, 
+                   int J, int a, int b, float DT_Y, float DT_C,
+                   float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
     minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
-    HDQ::RSlst.reserve(64);
-    HDQ::IDlst.reserve(64);
-    HDQ::RSlst.clear();
-    HDQ::IDlst.clear();
-    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, HDQ::Q_table_Y);
-    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_C, false, HDQ::Q_table_C);
-    HDQ::J_Y = 10e10;
-    HDQ::J_C = 10e10;
-    HDQ::J = J;
-    HDQ::a = a;
-    HDQ::b = b;
-    HDQ::d_waterlevel_Y = d_waterlevel_Y;
-    HDQ::QMAX_Y = QMAX_Y;
-    HDQ::d_waterlevel_C = d_waterlevel_C;
-    HDQ::QMAX_C = QMAX_C;
+    HDQ_OptD::RSlst.reserve(64);
+    HDQ_OptD::IDlst.reserve(64);
+    HDQ_OptD::RSlst.clear();
+    HDQ_OptD::IDlst.clear();
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_Y, true, HDQ_OptD::Q_table_Y);
+    quantizationTable(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE, QF_C, false, HDQ_OptD::Q_table_C);
+    HDQ_OptD::J_Y = 10e10;
+    HDQ_OptD::J_C = 10e10;
+    HDQ_OptD::J = J;
+    HDQ_OptD::a = a;
+    HDQ_OptD::b = b;
+    HDQ_OptD::DT_Y = DT_Y;
+    HDQ_OptD::DT_C = DT_C;
+    HDQ_OptD::d_waterlevel_Y = d_waterlevel_Y;
+    HDQ_OptD::QMAX_Y = QMAX_Y;
+    HDQ_OptD::d_waterlevel_C = d_waterlevel_C;
+    HDQ_OptD::QMAX_C = QMAX_C;
 }
 
-float HDQ::__call__(vector<vector<vector<float>>>& image){
+float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     int i,j,k,l,r,s;
     int BITS[33];
     int size;
     std::fill_n(BITS, 33, 0);
-    shape(image, HDQ::img_shape_Y);
-    HDQ::n_col = HDQ::img_shape_Y[1];
-    HDQ::n_row = HDQ::img_shape_Y[0];
-    HDQ::seq_len_Y = pad_shape(HDQ::img_shape_Y[0], 8)*pad_shape(HDQ::img_shape_Y[1], 8)/64;
+    shape(image, HDQ_OptD::img_shape_Y);
+    HDQ_OptD::n_col = HDQ_OptD::img_shape_Y[1];
+    HDQ_OptD::n_row = HDQ_OptD::img_shape_Y[0];
+    HDQ_OptD::seq_len_Y = pad_shape(HDQ_OptD::img_shape_Y[0], 8)*pad_shape(HDQ_OptD::img_shape_Y[1], 8)/64;
     int SmplHstep = floor(J/a);
     int SmplVstep;
     if(b==0){SmplVstep = 2;} else{SmplVstep = 1;}
-    int pad_rows = pad_shape(HDQ::img_shape_Y[0], J);
-    int pad_cols = pad_shape(HDQ::img_shape_Y[1], J);
+    int pad_rows = pad_shape(HDQ_OptD::img_shape_Y[0], J);
+    int pad_cols = pad_shape(HDQ_OptD::img_shape_Y[1], J);
     int Smplrows = pad_rows/SmplVstep;
     int Smplcols = pad_cols/SmplHstep;
-    Subsampling(image[1], HDQ::img_shape_Y, HDQ::img_shape_C, HDQ::J, HDQ::a, HDQ::b);
-    Subsampling(image[2], HDQ::img_shape_Y, HDQ::img_shape_C, HDQ::J, HDQ::a, HDQ::b);
+    Subsampling(image[1], HDQ_OptD::img_shape_Y, HDQ_OptD::img_shape_C, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
+    Subsampling(image[2], HDQ_OptD::img_shape_Y, HDQ_OptD::img_shape_C, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
 
-    HDQ::seq_len_C = pad_shape(Smplcols, 8)*pad_shape(Smplrows, 8)/64;
-    auto blockified_img_Y = new float[HDQ::seq_len_Y][8][8];
-    auto blockified_img_Cb = new float[HDQ::seq_len_C][8][8];
-    auto blockified_img_Cr = new float[HDQ::seq_len_C][8][8];
+    HDQ_OptD::seq_len_C = pad_shape(Smplcols, 8)*pad_shape(Smplrows, 8)/64;
+    auto blockified_img_Y = new float[HDQ_OptD::seq_len_Y][8][8];
+    auto blockified_img_Cb = new float[HDQ_OptD::seq_len_C][8][8];
+    auto blockified_img_Cr = new float[HDQ_OptD::seq_len_C][8][8];
 
-    auto seq_dct_coefs_Y = new float[HDQ::seq_len_Y][64];
-    auto seq_dct_coefs_Cb = new float[HDQ::seq_len_C][64];
-    auto seq_dct_coefs_Cr = new float[HDQ::seq_len_C][64];
+    auto seq_dct_coefs_Y = new float[HDQ_OptD::seq_len_Y][64];
+    auto seq_dct_coefs_Cb = new float[HDQ_OptD::seq_len_C][64];
+    auto seq_dct_coefs_Cr = new float[HDQ_OptD::seq_len_C][64];
 
-    auto seq_dct_idxs_Y = new float[HDQ::seq_len_Y][64];
-    auto seq_dct_idxs_Cb = new float[HDQ::seq_len_C][64];
-    auto seq_dct_idxs_Cr = new float[HDQ::seq_len_C][64];
+    auto seq_dct_idxs_Y = new float[HDQ_OptD::seq_len_Y][64];
+    auto seq_dct_idxs_Cb = new float[HDQ_OptD::seq_len_C][64];
+    auto seq_dct_idxs_Cr = new float[HDQ_OptD::seq_len_C][64];
 
-    auto DC_idxs_Y = new float[HDQ::seq_len_Y];
-    auto DC_idxs_Cb = new float[HDQ::seq_len_C];
-    auto DC_idxs_Cr = new float[HDQ::seq_len_C];
+    auto DC_idxs_Y = new float[HDQ_OptD::seq_len_Y];
+    auto DC_idxs_Cb = new float[HDQ_OptD::seq_len_C];
+    auto DC_idxs_Cr = new float[HDQ_OptD::seq_len_C];
 
-    blockify(image[0], HDQ::img_shape_Y, blockified_img_Y);
-    blockify(image[1], HDQ::img_shape_C, blockified_img_Cb);    
-    blockify(image[2], HDQ::img_shape_C, blockified_img_Cr);
+    blockify(image[0], HDQ_OptD::img_shape_Y, blockified_img_Y);
+    blockify(image[1], HDQ_OptD::img_shape_C, blockified_img_Cb);    
+    blockify(image[2], HDQ_OptD::img_shape_C, blockified_img_Cr);
 
-    block_2_seqdct(blockified_img_Y, seq_dct_coefs_Y, HDQ::seq_len_Y);
-    block_2_seqdct(blockified_img_Cb, seq_dct_coefs_Cb, HDQ::seq_len_C);
-    block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ::seq_len_C);
+    block_2_seqdct(blockified_img_Y, seq_dct_coefs_Y, HDQ_OptD::seq_len_Y);
+    block_2_seqdct(blockified_img_Cb, seq_dct_coefs_Cb, HDQ_OptD::seq_len_C);
+    block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ_OptD::seq_len_C);
 
     // Customized Quantization Table
+    quantizationTable_OptD_Y(seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
+    cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
 
-    quantizationTable_OptD(seq_dct_coefs_Y, HDQ::Q_table_Y, HDQ::seq_len_Y, HDQ::d_waterlevel_Y, HDQ::QMAX_Y);
-    quantizationTable_OptD(seq_dct_coefs_Cb, HDQ::Q_table_C, HDQ::seq_len_C, HDQ::d_waterlevel_C, HDQ::QMAX_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
-    quantizationTable_OptD(seq_dct_coefs_Cr, HDQ::Q_table_C, HDQ::seq_len_C, HDQ::d_waterlevel_C, HDQ::QMAX_C);
+
 
     //
 
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
-             HDQ::Q_table_Y, HDQ::seq_len_Y);
+             HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
-             HDQ::Q_table_C,HDQ::seq_len_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
+             HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
     Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
-             HDQ::Q_table_C,HDQ::seq_len_C);
+             HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
     
     map<int, float> DC_P;
     map<int, float> AC_Y_P;
@@ -150,55 +155,55 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     DC_P.clear();
     float EntDCY=0;
     float EntDCC=0;
-    DPCM(seq_dct_idxs_Y, DC_idxs_Y, HDQ::seq_len_Y);
-    cal_P_from_DIFF(DC_idxs_Y, DC_P, HDQ::seq_len_Y);
+    DPCM(seq_dct_idxs_Y, DC_idxs_Y, HDQ_OptD::seq_len_Y);
+    cal_P_from_DIFF(DC_idxs_Y, DC_P, HDQ_OptD::seq_len_Y);
     DC_P.erase(TOTAL_KEY);
     EntDCY = calHuffmanCodeSize(DC_P);
     DC_P.clear();
-    DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, HDQ::seq_len_C);
-    cal_P_from_DIFF(DC_idxs_Cb, DC_P, HDQ::seq_len_C);
-    DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, HDQ::seq_len_C);
-    cal_P_from_DIFF(DC_idxs_Cr, DC_P, HDQ::seq_len_C);
+    DPCM(seq_dct_idxs_Cb, DC_idxs_Cb, HDQ_OptD::seq_len_C);
+    cal_P_from_DIFF(DC_idxs_Cb, DC_P, HDQ_OptD::seq_len_C);
+    DPCM(seq_dct_idxs_Cr, DC_idxs_Cr, HDQ_OptD::seq_len_C);
+    cal_P_from_DIFF(DC_idxs_Cr, DC_P, HDQ_OptD::seq_len_C);
     DC_P.erase(TOTAL_KEY);
     EntDCC = calHuffmanCodeSize(DC_P);
     DC_P.clear();
 
-    for(i=0; i<HDQ::seq_len_Y; i++){
-        HDQ::RSlst.clear(); HDQ::IDlst.clear();
-        Block_to_RSlst(seq_dct_idxs_Y[i], HDQ::RSlst, HDQ::IDlst);
-        cal_P_from_RSlst(HDQ::RSlst, AC_Y_P);
+    for(i=0; i<HDQ_OptD::seq_len_Y; i++){
+        HDQ_OptD::RSlst.clear(); HDQ_OptD::IDlst.clear();
+        Block_to_RSlst(seq_dct_idxs_Y[i], HDQ_OptD::RSlst, HDQ_OptD::IDlst);
+        cal_P_from_RSlst(HDQ_OptD::RSlst, AC_Y_P);
     }
-    HDQ::RSlst.clear(); HDQ::IDlst.clear();
+    HDQ_OptD::RSlst.clear(); HDQ_OptD::IDlst.clear();
     AC_Y_P.erase(TOTAL_KEY);
     EntACY = calHuffmanCodeSize(AC_Y_P);
     AC_Y_P.clear();
 
-    for(i=0; i<HDQ::seq_len_C; i++){
-        HDQ::RSlst.clear(); HDQ::IDlst.clear();
-        Block_to_RSlst(seq_dct_idxs_Cr[i], HDQ::RSlst, HDQ::IDlst);
-        cal_P_from_RSlst(HDQ::RSlst, AC_C_P);
-        HDQ::RSlst.clear(); HDQ::IDlst.clear();
-        Block_to_RSlst(seq_dct_idxs_Cb[i], HDQ::RSlst, HDQ::IDlst);
-        cal_P_from_RSlst(HDQ::RSlst, AC_C_P);
+    for(i=0; i<HDQ_OptD::seq_len_C; i++){
+        HDQ_OptD::RSlst.clear(); HDQ_OptD::IDlst.clear();
+        Block_to_RSlst(seq_dct_idxs_Cr[i], HDQ_OptD::RSlst, HDQ_OptD::IDlst);
+        cal_P_from_RSlst(HDQ_OptD::RSlst, AC_C_P);
+        HDQ_OptD::RSlst.clear(); HDQ_OptD::IDlst.clear();
+        Block_to_RSlst(seq_dct_idxs_Cb[i], HDQ_OptD::RSlst, HDQ_OptD::IDlst);
+        cal_P_from_RSlst(HDQ_OptD::RSlst, AC_C_P);
     }
     AC_C_P.erase(TOTAL_KEY);
     EntACC = calHuffmanCodeSize(AC_C_P);
     float BPP=0;
-    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE;// Run_length coding
-    BPP = file_size/HDQ::img_shape_Y[0]/HDQ::img_shape_Y[1]; // REMOVE THIS KAIXIANG
+    float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE; // Run_length coding
+    BPP = file_size/HDQ_OptD::img_shape_Y[0]/HDQ_OptD::img_shape_Y[1];
     delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
-    Dequantize(seq_dct_idxs_Y, HDQ::Q_table_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][64]
-    Dequantize(seq_dct_idxs_Cb, HDQ::Q_table_C, HDQ::seq_len_C);
-    Dequantize(seq_dct_idxs_Cr, HDQ::Q_table_C, HDQ::seq_len_C);
-    seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
-    seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ::seq_len_C);
-    seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ::seq_len_C);
+    Dequantize(seq_dct_idxs_Y, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][64]
+    Dequantize(seq_dct_idxs_Cb, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_C);
+    Dequantize(seq_dct_idxs_Cr, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_C);
+    seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
+    seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ_OptD::seq_len_C);
+    seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ_OptD::seq_len_C);
     delete [] seq_dct_idxs_Y; delete [] seq_dct_idxs_Cb; delete [] seq_dct_idxs_Cr;
-    deblockify(blockified_img_Y,  image[0], HDQ::img_shape_Y); //seq_dct_idxs_Y: [][], crop here!
-    deblockify(blockified_img_Cb, image[1], HDQ::img_shape_C);
-    deblockify(blockified_img_Cr, image[2], HDQ::img_shape_C);
+    deblockify(blockified_img_Y,  image[0], HDQ_OptD::img_shape_Y); //seq_dct_idxs_Y: [][], crop here!
+    deblockify(blockified_img_Cb, image[1], HDQ_OptD::img_shape_C);
+    deblockify(blockified_img_Cr, image[2], HDQ_OptD::img_shape_C);
     delete [] blockified_img_Y; delete [] blockified_img_Cb; delete [] blockified_img_Cr;
-    Upsampling(image[1], HDQ::img_shape_Y, HDQ::J, HDQ::a, HDQ::b);
-    Upsampling(image[2], HDQ::img_shape_Y, HDQ::J, HDQ::a, HDQ::b);
+    Upsampling(image[1], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
+    Upsampling(image[2], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
     return BPP;
 }

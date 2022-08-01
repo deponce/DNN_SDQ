@@ -182,7 +182,7 @@ float Cal_DT(float d_waterLevel, float varianceData[64])
 }
 
 
-float Cal_d(float DT, float varianceData[64])
+float Cal_d(float& DT, float varianceData[64])
 {
     float sum_var = 0;
     for (int i = 0; i <=64; i++)
@@ -191,6 +191,8 @@ float Cal_d(float DT, float varianceData[64])
     }
     DT = MinMaxClip(DT, 0, sum_var); // clip between 0 and sum_var
 
+    // cout << "sum_var : " << sum_var << endl;
+
     // bi-section search
     float eps = 1e-5;
     float a = 0;
@@ -198,7 +200,7 @@ float Cal_d(float DT, float varianceData[64])
     float b = *max_element(varianceData, varianceData + 64);
 
     if (DT == 0) return a;
-    // I believe it should be DT>= sum_var
+    // I believe it should be DT== sum_var
     if (DT == sum_var) return b;
 
     float c = a;
@@ -217,7 +219,7 @@ float Cal_d(float DT, float varianceData[64])
     return c;
 }
 
-void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float DT, float& d_waterLevel, int QMAX_Y)
+void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float& DT, float& d_waterLevel, int QMAX_Y)
 {
     auto Dlap = new float[QMAX_Y + 1][64];
 
@@ -275,7 +277,7 @@ void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float
     }
 }
 
-void quantizationTable_OptD_C(float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], float Q_Table[64], int N_block, float DT, float& d_waterLevel, int QMAX_Y)
+void quantizationTable_OptD_C(float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_Y)
 {
     float varianceData[64];
     float lambdaData[64];   // No need for DC
@@ -284,7 +286,7 @@ void quantizationTable_OptD_C(float seq_dct_coefs_Cb[][64], float seq_dct_coefs_
     
 
 }
-void quantizationTable_OptD_Y(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float DT, float& d_waterLevel, int QMAX_Y)
+void quantizationTable_OptD_Y(float seq_dct_coefs[][64], float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_Y)
 {
     float varianceData[64];
     float lambdaData[64];   // No need for DC
