@@ -163,8 +163,8 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     // Customized Quantization Table
     quantizationTable_OptD_Y(seq_dct_coefs_Y, SDQ::Q_table_Y, SDQ::seq_len_Y, SDQ::DT_Y, SDQ::d_waterlevel_Y, SDQ::QMAX_Y);
     cout << "DT_Y = " << SDQ::DT_Y << "\t" << "d_waterLevel_Y = " << SDQ::d_waterlevel_Y << endl;
-    // quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
-
+    quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
+    cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;
     // [LENA] Just to check seq_dct_coefs_Cb = seq_dct_coefs_Cr = seq_dct_coefs_Y 
     // quantizationTable_OptD_C(seq_dct_coefs_Y, seq_dct_coefs_Y, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
     // cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;

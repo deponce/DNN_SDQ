@@ -29,20 +29,20 @@ using namespace std;
 
 void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, float &QUANTIZATION_SCALE)
 {
-    if(colorspace == 0) // HDQ
+    if(colorspace == 0) // HDQ & SDQ
     { 
         // YUV
         MINQVALUE = 1.;
         MAXQVALUE = 255.;
         QUANTIZATION_SCALE = 1.;   
     }
-    else if(colorspace == -1) // SDQ
-    { 
-        // YUV
-        MINQVALUE = 5.;
-        MAXQVALUE = 255.;
-        QUANTIZATION_SCALE = 1.;   
-    }
+    // else if(colorspace == -1) // SDQ
+    // { 
+    //     // YUV
+    //     MINQVALUE = 5.;
+    //     MAXQVALUE = 255.;
+    //     QUANTIZATION_SCALE = 1.;   
+    // }
     else if(colorspace == 1) // SWX
     {
         // Setting 1
@@ -221,6 +221,9 @@ float Cal_d(float& DT, float varianceData[64])
 
 void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float& DT, float& d_waterLevel, int QMAX_Y)
 {
+    float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
+    minMaxQuantizationStep(0, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
+
     auto Dlap = new float[QMAX_Y + 1][64];
 
     if (d_waterLevel < 0) d_waterLevel = Cal_d(DT, varianceData); // DT will be used only if d_waterLevel < 0
@@ -251,13 +254,14 @@ void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float
         if(varianceData[i] < d_waterLevel)
         {
             // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
-            Q_Table[i] = QMAX_Y;
+            Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
+            
         }
         else
         {
             if (i == 0) // DC q step
             {
-                Q_Table[i] = min(floor(sqrt(12*d_waterLevel)), float(QMAX_Y));
+                Q_Table[i] = MinMaxClip(min(floor(sqrt(12*d_waterLevel)), float(QMAX_Y)), MINQVALUE, MAXQVALUE);
             }
             else
             {
@@ -265,6 +269,7 @@ void OptD(float varianceData[64], float lambdaData[64], float Q_Table[64], float
                for (int q = QMAX_Y; q >= 1 ; q--)
                {
                     // cout << Dlap[q][i]  << "\t" << d_waterLevel;
+                    Q_Table[i] = MINQVALUE;
                     if (Dlap[q][i]  <= d_waterLevel)
                     {
                         Q_Table[i] = q;
@@ -324,13 +329,13 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
     if (Luminance == true){
         for(int i=0; i<64; i++){
             q = (50.+S*quantizationTableData_Y[i])/100.;
-            if ((colorspace == 3) ||( colorspace == 1)) // No Round
+            if ((colorspace == 3) ||( colorspace == 1)) // No floor
             {
                 Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
             else // JPEG Standard
             {
-                Q_Table[i] = MinMaxClip(round(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+                Q_Table[i] = MinMaxClip(floor(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
 
         
@@ -340,13 +345,13 @@ void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QU
         for(int i=0; i<64; i++){
             q = (50.+S*quantizationTableData_C[i])/100.;
             
-            if ((colorspace == 3) ||( colorspace == 1)) // No Round
+            if ((colorspace == 3) ||( colorspace == 1)) // No floor
             {
                 Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
             else // JPEG
             {
-                Q_Table[i] = MinMaxClip(round(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+                Q_Table[i] = MinMaxClip(floor(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
             }
         }
     }

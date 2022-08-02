@@ -1,11 +1,15 @@
 g++ -std=c++11 SDQmain.cpp -o SDQoutput $(pkg-config opencv4 --cflags --libs) -lpthread 
 
+# ./SDQ_CPP.sh 46 46 260 260 -1 -1 2 1.6
 
-export q_max=$1
-export DT_Y=$2
-export d_Y=$3
-export BPP_t=$4
-export lambda=$5
+export q_max_Y=$1
+export q_max_C=$2
+export DT_Y=$3
+export DT_C=$4
+export d_Y=$5
+export d_C=$6
+export lambda=$7
+export BPP_t=$8
 
 # d --> 36 // L --> 50
 # ./SDQoutput -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -Q 50 -q 50 -B 1 -L ${lambda} -D ${d_Y} -d ${d_Y} -X ${q_max} -x ${q_max}  # done
@@ -15,11 +19,9 @@ export lambda=$5
 # ./SDQoutput -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -Q 50 -q 50 -B 1 -L ${lambda} -D ${d_Y} -d ${d_Y} -X ${q_max} -x ${q_max}  # done
 # echo
 
-
-
 # DT --> 260 (d=4) // d --> -1 // L --> 1.5
-./SDQoutput -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -Q 50 -q 50 -B 1 -L ${lambda} -T ${DT_Y} -t ${DT_Y} -D ${d_Y} -d ${d_Y} -X ${q_max} -x ${q_max} -U ${BPP_t}  # done
-echo
+./SDQoutput -M NoModel -P ./sample/lena3.tif -J 4 -a 4 -b 4 -Q 50 -q 50 -B 1 -L ${lambda} -T ${DT_Y} -t ${DT_C} -D ${d_Y} -d ${d_C} -X ${q_max_Y} -x ${q_max_C}  -U ${BPP_t}  # done
+
 
 # BPP = 0.25
 # DT_Y = 146839	d_waterLevel_Y = 128644

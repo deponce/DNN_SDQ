@@ -2,7 +2,7 @@
 
 // MIT License
 
-// Copyright (c) 2022 deponce(Linfeng Ye), University of Waterloo
+// Copyright (c) 2022 deponce(Linfeng Ye), Kaixiang Zheng University of Waterloo
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   float Beta = 1e9;
   float Lmbda = 1e9;
   float eps = 0.1;
-  int Qmax_Y = 46, Qmax_C = 46;
+  int Qmax_Y = 46, Qmax_C = 255;
   float d_waterlevel_Y = 0, d_waterlevel_C = 0;  
   float DT_Y = 0, DT_C = 0;
   float BPP_t = 1e16, Lmbda_step;
