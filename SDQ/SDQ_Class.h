@@ -2,7 +2,7 @@
 
 // MIT License
 
-// Copyright (c) 2022 deponce(Linfeng Ye), Kaixiang Zheng, University of Waterloo
+// Copyright (c) 2022 Ahmed Hussein Salamah, Kaixiang Zheng, deponce(Linfeng Ye), University of Waterloo
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -165,6 +165,8 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     cout << "DT_Y = " << SDQ::DT_Y << "\t" << "d_waterLevel_Y = " << SDQ::d_waterlevel_Y << endl;
     quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
     cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;
+    
+
     // [LENA] Just to check seq_dct_coefs_Cb = seq_dct_coefs_Cr = seq_dct_coefs_Y 
     // quantizationTable_OptD_C(seq_dct_coefs_Y, seq_dct_coefs_Y, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
     // cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;

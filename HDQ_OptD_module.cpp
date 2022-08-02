@@ -1,8 +1,8 @@
-// SDQ_module.cpp
+// HDQ_module.cpp
 
 // MIT License
 
-// Copyright (c) 2022 Ahmed Hussein Salamah, Kaixiang Zheng, deponce(Linfeng Ye), University of Waterloo
+// Copyright (c) 2022 deponce(Linfeng Ye), University of Waterloo
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,31 +30,27 @@
 #include <getopt.h>
 #include <iostream>
 #include <stdlib.h>
-#include "./SDQ/SDQ.h"
+#include "./HDQ/HDQ_optD.h"
 #include "./SDQ/load.h"
 // using namespace cv;
 using namespace std;
+
+// -------------
+// pure C++ code
+// -------------
+using namespace std;
+
+// ----------------
+// Python interface
+// ----------------
+
 namespace py = pybind11;
 
+// wrap C++ function with NumPy array IO
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
-                     py::array_t<float, py::array::c_style | py::array::forcecast> SenMap,
-                     string Model, int colorspace, int J, int a, int b, int QF_Y, int QF_C, float Beta_S, float Beta_W,
-                     float Beta_X, float Lmbd, float eps){
-  /*
-  :Fn  py__call__: 
-  :param py::array_t<float, py::array::c_style | py::array::forcecast> array: 
-  :param string Model:
-  :param int J, int a, int b:
-  :param int QF_Y:
-  :param int QF_C:
-  :param int QF_C:
-  :param float Beta_S:
-  :param float Beta_W:
-  :param float Beta_X:
-  :param float Lmbd:
-  :param float eps: 
-  :return: std::pair<py::array, float>
-  */
+                                       string Model, int colorspace, int J, int a, int b, 
+                                       float DT_Y, float DT_C, float d_waterlevel_Y, float d_waterlevel_C, 
+                                       int Qmax_Y, int Qmax_C){
   unsigned long size[2];
   size[0] = (unsigned long)array.shape()[1];
   size[1] = (unsigned long)array.shape()[2];
@@ -62,76 +58,85 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   vector<float> pos(array.size());
   vector<vector<vector<float>>> Vect_img(3, vector<vector<float>>(size[0], vector<float>(size[1], 0)));
   // copy py::array -> std::vector
-  float BPP =0;
-  vector<float> result(array.size());
   memcpy(pos.data(), array.data(),array.size()*sizeof(float));
-  //delete [] &array;
   // call pure C++ function
   //TODO::
+  float BPP =0;
+  vector<float> result(array.size());
   seq2img(pos, Vect_img, size[0], size[1]);
-  float Sen_Map[3][64]={0};
-  memcpy(Sen_Map, SenMap.data(), 3*64*sizeof(float));
-
-  // LoadSenMap(Model, Sen_Map);
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
-  float bias_rgb2swx = 128;
   float biasPerImage[3] = {0,0,0};
-  
+  float bias_rgb2swx = 128.;
+
+  int QF_Y = 50;
+  int QF_C = 50;
+
+
+  // string Model = "Alexnet";
+  // LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+  // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
   // rgb2YUV(Vect_img);
-  // if(Model=="NoModel" || colorspace == 0)
+
+  
   if(colorspace == 0)
   {
     rgb2YUV(Vect_img);
   }
-  else if(colorspace == 3)
+  else if(colorspace == 1)
+  {
+    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
+    rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
+  }
+  else if(colorspace >= 2)
   {
     // remove the mean for each image
     LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
     rgb2swx_PerImage(Vect_img, W_rgb2swx, biasPerImage);
   }
-  else
-  {
-    LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
-    rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
-  }
 
-  SDQ sdq;
-  sdq.__init__(eps, Beta_S, Beta_W, Beta_X, Lmbd, Sen_Map, colorspace, QF_Y, QF_C, J, a ,b);
-  BPP = sdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
-  
+
+  HDQ_OptD hdq;
+  hdq.__init__(colorspace, QF_Y , QF_C, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
+  BPP = hdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
+
   // YUV2rgb(Vect_img);
-  // if(Model=="NoModel" || colorspace == 0)
+  // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
+
+  
   if(colorspace == 0)
   {
     YUV2rgb(Vect_img);
   }
-  else if(colorspace == 3)
-  {
-    swx2rgb_PerImage(Vect_img, W_swx2rgb, biasPerImage);
-  }
-  else
+  else if(colorspace == 1)
   {
     swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
   }
+  else if(colorspace >= 2)
+  {
+    swx2rgb_PerImage(Vect_img, W_swx2rgb, biasPerImage);
+  }
+
 
   img2seq(Vect_img, result, size[0], size[1]);
   int ndim = 3;
   vector<unsigned long> shape   = { 3, size[0], size[1]};
   vector<unsigned long> strides = { size[0]*size[1]*sizeof(float),
                                     size[1]*sizeof(float), sizeof(float)};
+  // delete [] Sen_Map;
+  // return 2-D NumPy array
   return std::make_pair(py::array(py::buffer_info(
-    result.data(),                           /* data as contiguous array */
-    sizeof(float),                           /* size of one scalar       */
-    py::format_descriptor<float>::format(),  /* data type                */
+    result.data(),                          /* data as contiguous array */
+    sizeof(float),                          /* size of one scalar       */
+    py::format_descriptor<float>::format(), /* data type                */
     ndim,                                    /* number of dimensions     */
     shape,                                   /* shape of the matrix      */
     strides                                  /* strides for each axis    */
   )), BPP);
 }
 // wrap as Python module
-PYBIND11_MODULE(SDQ,m)
+PYBIND11_MODULE(HDQ_OptD,m)
 {
-  m.doc() = "SDQ API";
+  m.doc() = "HDQ_OptD API";
   m.def("__call__", &py__call__, py::return_value_policy::move ,"Calculate the length of an array of vectors");
 }

@@ -2,7 +2,7 @@
 
 // MIT License
 
-// Copyright (c) 2022 deponce(Linfeng Ye), Kaixiang Zheng University of Waterloo
+// Copyright (c) 2022 Ahmed Hussein Salamah, Kaixiang Zheng, deponce(Linfeng Ye), University of Waterloo
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -168,11 +168,7 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
       Lmbda = Lmbda + Lmbda_step;
     }
     count++;
-
-    // condition = (abs(BPP - BPP_t) >= 0.25) || ((BPP - BPP_t) < 0);
-    condition = ((BPP - BPP_t) < 0.03) && (count < 500);
-    // condition = false;
-    
+    condition = ((BPP - BPP_t) < 0.03) && (count < 10);
     if (condition) Vect_img = ori_img; 
   }
   while(condition);

@@ -1,5 +1,5 @@
 # g++ -std=c++11 HDQmain.cpp -o HDQ_output $(pkg-config opencv4 --cflags --libs) -lpthread
-g++ -std=c++11 HDQmain_OptD.cpp -o HDQmain_OptD $(pkg-config opencv4 --cflags --libs)
+g++ -std=c++11 HDQ_OptD_main.cpp -o HDQ_OptD_main $(pkg-config opencv4 --cflags --libs)
 
 # for Opt-D 
 # ./HDQ_output -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -Q 50 -q 50 -B 1 -L 0   # done
@@ -12,7 +12,7 @@ export BPP_t=$4
 export QF_Y=$5
 export QF_C=$6
 
-./HDQmain_OptD -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -T ${DT_Y} -t ${DT_Y} -D ${d_Y} -d ${d_Y} -X ${q_max} -x ${q_max} -U ${BPP_t} # done
+./HDQ_OptD_main -M NoModel -P ./sample/lena223.tif -J 4 -a 4 -b 4 -T ${DT_Y} -t ${DT_Y} -D ${d_Y} -d ${d_Y} -X ${q_max} -x ${q_max} -U ${BPP_t} # done
 echo
 
 

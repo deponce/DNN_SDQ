@@ -48,34 +48,21 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
         // Setting 1
         QUANTIZATION_SCALE = 3.;
         MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        MINQVALUE = 1.;
+        MINQVALUE = 1;
 
     }
     else if(colorspace == 2)  // SWX
     {
-        // Setting 2
+        QUANTIZATION_SCALE = 3.;
         MINQVALUE = 1.; 
         MAXQVALUE = 255.;
-        QUANTIZATION_SCALE = 3.;
 
     }
     else if(colorspace == 3)  // SWX remove the mean form each image
     {
-
-        // Setting 1
-        // QUANTIZATION_SCALE = 3.;
-        // MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        // MINQVALUE = 1.;
-
-        // Setting 2
-        // MAXQVALUE = 422.;
-        // QUANTIZATION_SCALE = 3.;
-        // MINQVALUE = sqrt(QUANTIZATION_SCALE); 
-
-        // Setting 3
         QUANTIZATION_SCALE = 3.;
+        MINQVALUE = 0.5;
         MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        MINQVALUE = 1./sqrt(QUANTIZATION_SCALE);;
 
     }
     else 
@@ -87,6 +74,61 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
     }
 }
 
+void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
+{
+    QF = max(min(QF, 100),0);
+    if(QF==0){
+        QF=1;
+    }
+    float quantizationTableData_Y[64]={16.,  11.,  12.,  14.,  12.,  10.,  16.,  14.,  13.,  14.,  18.,  17.,
+                                        16.,  19.,  24.,  40.,  26.,  24.,  22.,  22.,  24.,  49.,  35.,  37.,
+                                        29.,  40.,  58.,  51.,  61.,  60.,  57.,  51.,  56.,  55.,  64.,  72.,
+                                        92.,  78.,  64.,  68.,  87.,  69.,  55.,  56.,  80., 109.,  81.,  87.,
+                                        95.,  98., 103., 104., 103.,  62.,  77., 113., 121., 112., 100., 120.,
+                                        92., 101., 103.,  99.};
+    float quantizationTableData_C[64]={17., 18., 18., 24., 21., 24., 47., 26., 26., 47., 99., 66., 56., 66.,
+                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
+                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
+                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
+                                        99., 99., 99., 99., 99., 99., 99., 99.};
+    float S;
+    float q;              
+    if(QF<50){
+        S = 5000/QF;
+    }
+    else{
+        S = 200-2*QF;
+    }
+    if (Luminance == true){
+        for(int i=0; i<64; i++){
+            q = (50.+S*quantizationTableData_Y[i])/100.;
+            if ((colorspace == 2) ||( colorspace == 3)) // No floor
+            {
+                Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // JPEG Standard
+            {
+                Q_Table[i] = MinMaxClip(floor(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+
+        
+        }
+    }
+    else{
+        for(int i=0; i<64; i++){
+            q = (50.+S*quantizationTableData_C[i])/100.;
+            
+            if ((colorspace == 2) ||( colorspace == 3)) // No floor
+            {
+                Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+            else // JPEG
+            {
+                Q_Table[i] = MinMaxClip(floor(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
+            }
+        }
+    }
+}
 
 
 void parameterCal_Y(float varianceData[64], float lambdaData[64],float seq_dct_coefs[][64], int N_block)
@@ -301,58 +343,3 @@ void quantizationTable_OptD_Y(float seq_dct_coefs[][64], float Q_Table[64], int 
 }
 
 
-void quantizationTable(int colorspace, float MINQVALUE,float MAXQVALUE, float QUANTIZATION_SCALE, int QF, bool Luminance, float Q_Table[64])
-{
-    QF = max(min(QF, 100),0);
-    if(QF==0){
-        QF=1;
-    }
-    float quantizationTableData_Y[64]={16.,  11.,  12.,  14.,  12.,  10.,  16.,  14.,  13.,  14.,  18.,  17.,
-                                        16.,  19.,  24.,  40.,  26.,  24.,  22.,  22.,  24.,  49.,  35.,  37.,
-                                        29.,  40.,  58.,  51.,  61.,  60.,  57.,  51.,  56.,  55.,  64.,  72.,
-                                        92.,  78.,  64.,  68.,  87.,  69.,  55.,  56.,  80., 109.,  81.,  87.,
-                                        95.,  98., 103., 104., 103.,  62.,  77., 113., 121., 112., 100., 120.,
-                                        92., 101., 103.,  99.};
-    float quantizationTableData_C[64]={17., 18., 18., 24., 21., 24., 47., 26., 26., 47., 99., 66., 56., 66.,
-                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
-                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
-                                        99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99., 99.,
-                                        99., 99., 99., 99., 99., 99., 99., 99.};
-    float S;
-    float q;              
-    if(QF<50){
-        S = 5000/QF;
-    }
-    else{
-        S = 200-2*QF;
-    }
-    if (Luminance == true){
-        for(int i=0; i<64; i++){
-            q = (50.+S*quantizationTableData_Y[i])/100.;
-            if ((colorspace == 3) ||( colorspace == 1)) // No floor
-            {
-                Q_Table[i] = MinMaxClip((q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-            else // JPEG Standard
-            {
-                Q_Table[i] = MinMaxClip(floor(q * sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-
-        
-        }
-    }
-    else{
-        for(int i=0; i<64; i++){
-            q = (50.+S*quantizationTableData_C[i])/100.;
-            
-            if ((colorspace == 3) ||( colorspace == 1)) // No floor
-            {
-                Q_Table[i] = MinMaxClip((q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-            else // JPEG
-            {
-                Q_Table[i] = MinMaxClip(floor(q* sqrt(QUANTIZATION_SCALE)), MINQVALUE, MAXQVALUE);
-            }
-        }
-    }
-}

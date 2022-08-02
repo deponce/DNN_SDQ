@@ -4,6 +4,7 @@ import torchvision.datasets as datasets
 from torchvision import transforms
 import torch
 import HDQ
+import HDQ_OptD
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -67,6 +68,31 @@ class HDQ_transforms(torch.nn.Module):
         # compressed_img, BPP  = sample, 0.0
         compressed_img, BPP = HDQ.__call__(sample, self.model, self.colorspace, self.J, self.a, self.b,
                                            self.Q,self.q)
+        compressed_img = np.round(compressed_img)    
+        compressed_img = np.uint8(compressed_img) 
+        compressed_img = np.transpose(compressed_img, (1,2,0))
+        return {'image': compressed_img, 'BPP': BPP}
+
+class HDQ_OptD_transforms(torch.nn.Module):
+    def __init__(self, model="VGG11", colorspace=0, J=4, a=4, b=4, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, Qmax_Y=46, Qmax_C=46):
+        self.J = J
+        self.a = a
+        self.b = b
+        self.model = model
+        self.colorspace=colorspace
+        self.DT_Y = DT_Y
+        self.DT_C = DT_C
+        self.d_waterlevel_Y = d_waterlevel_Y
+        self.d_waterlevel_C = d_waterlevel_C
+        self.Qmax_Y = Qmax_Y
+        self.Qmax_C = Qmax_C
+    def __call__(self, sample):
+        sample = np.asarray(sample)
+        sample = np.transpose(sample, (2,0,1))
+        # compressed_img, BPP  = sample, 0.0
+        compressed_img, BPP = HDQ_OptD.__call__(sample, self.model, self.colorspace, self.J, self.a, self.b,
+                                           self.DT_Y, self.DT_C, self.d_waterlevel_Y, 
+                                           self.d_waterlevel_C, self.Qmax_Y, self.Qmax_C)
         compressed_img = np.round(compressed_img)    
         compressed_img = np.uint8(compressed_img) 
         compressed_img = np.transpose(compressed_img, (1,2,0))
