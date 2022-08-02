@@ -166,8 +166,7 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
     }
     count++;
 
-    // condition = (abs(BPP - BPP_t) >= 0.25) || ((BPP - BPP_t) < 0);
-    condition = ((BPP - BPP_t) > 0.03) || (count < 500);
+    condition = ((BPP - BPP_t) < 0.03) && (count < 500);
     if (condition) Vect_img = ori_img; 
   }
   while(condition);
