@@ -269,18 +269,21 @@ void OptD_C(float Sen_Map[3][64], float varianceData_CbCr[64],
 
     for (int i = 0; i < 64; i++)
     {
-        if(varianceData_CbCr[i] < d_waterLevel)
-        {
-            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
-            Q_Table[i] = MinMaxClip(QMAX_C, MINQVALUE, MAXQVALUE);
+        // if(varianceData_CbCr[i] < d_waterLevel)
+        // {
+        //     // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
+        //     Q_Table[i] = MinMaxClip(QMAX_C, MINQVALUE, MAXQVALUE);
             
-        }
-        else
-        {
+        // }
+        // else
+        // {
             if (i == 0) // DC q step
             {
-                Q_Table[i] = MinMaxClip(min(floor(sqrt(12*d_waterLevel / (Sen_Map[1][i] + Sen_Map[2][i]))), float(QMAX_C))
+                Q_Table[i] = MinMaxClip(floor(sqrt(12*d_waterLevel / (Sen_Map[1][i] + Sen_Map[2][i])))
                                         , MINQVALUE, MAXQVALUE);
+
+                // Q_Table[i] = MinMaxClip(min(floor(sqrt(12*d_waterLevel / (Sen_Map[1][i] + Sen_Map[2][i]))), float(QMAX_C))
+                //                         , MINQVALUE, MAXQVALUE);
             }
             else
             {
@@ -296,7 +299,7 @@ void OptD_C(float Sen_Map[3][64], float varianceData_CbCr[64],
                     }
                }
             }      
-        }
+        // }
         // cout <<  Q_Table[i]  << "\t"  << varianceData_CbCr[i] << "\n";
     }
 }
@@ -333,17 +336,18 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
 
     for (int i = 0; i < 64; i++)
     {
-        if(varianceData[i] < d_waterLevel)
-        {
-            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
-            Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
+        // if(varianceData[i] < d_waterLevel)
+        // {
+        //     // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
+        //     Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
             
-        }
-        else
-        {
+        // }
+        // else
+        // {
             if (i == 0) // DC q step
             {
-                Q_Table[i] = MinMaxClip(min(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), float(QMAX_Y)), MINQVALUE, MAXQVALUE);
+                Q_Table[i] = MinMaxClip(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), MINQVALUE, MAXQVALUE);
+                // Q_Table[i] = MinMaxClip(min(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), float(QMAX_Y)), MINQVALUE, MAXQVALUE);
             }
             else
             {
@@ -359,7 +363,7 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
                     }
                }
             }      
-        }
+        // }
         // cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
     }
 }
