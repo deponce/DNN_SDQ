@@ -58,16 +58,17 @@ class HDQ_OptD{
         float EntACC = 0;
         float EntDCY = 0;
         float EntDCC = 0;
+        float Sen_Map[3][64];
         float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
-        void __init__(int colorspace, int QF_Y, int QF_C, 
+        void __init__(float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                       int J, int a, int b, float DT_Y, float DT_C, 
                       float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C);
         float __call__(vector<vector<vector<float>>>& image);
 };
 
-void HDQ_OptD::__init__(int colorspace, int QF_Y, int QF_C, 
+void HDQ_OptD::__init__(float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                    int J, int a, int b, float DT_Y, float DT_C,
                    float d_waterlevel_Y, float d_waterlevel_C, int QMAX_Y, int QMAX_C){
     minMaxQuantizationStep(colorspace, MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE);
@@ -88,6 +89,13 @@ void HDQ_OptD::__init__(int colorspace, int QF_Y, int QF_C,
     HDQ_OptD::QMAX_Y = QMAX_Y;
     HDQ_OptD::d_waterlevel_C = d_waterlevel_C;
     HDQ_OptD::QMAX_C = QMAX_C;
+    for (int i = 0; i <3 ; i++)
+    {
+        for (int j = 0; j <64 ; j++)
+        { 
+            HDQ_OptD::Sen_Map[i][j] = Sen_Map[i][j];
+        }
+    }
 }
 
 float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
@@ -135,9 +143,12 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ_OptD::seq_len_C);
 
     // Customized Quantization Table
-    quantizationTable_OptD_Y(seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
+    quantizationTable_OptD_Y(HDQ_OptD::Sen_Map, seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, 
+                HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
     // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
-    quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, HDQ_OptD::Q_table_C, HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
+    
+    quantizationTable_OptD_C(HDQ_OptD::Sen_Map, seq_dct_coefs_Cb, seq_dct_coefs_Cr, HDQ_OptD::Q_table_C
+        , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
     // cout << "DT_C = " << HDQ_OptD::DT_C << "\t" << "d_waterLevel_C = " << HDQ_OptD::d_waterlevel_C << endl;
    
 

@@ -44,23 +44,37 @@ export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 DT_Y=('50' '150' '200' '300')
 DT_C=('80' '200' '300' '400')
+
+# d_waterlevel_Y=('2' '5' '10' '15')
+# d_waterlevel_C=('4' '10' '20' '30')
+
+d_waterlevel_Y=('5' )
+d_waterlevel_C=('10')
+
+Qmax_Y=('46')
+Qmax_C=('46')
+
 export colorspace=0
+# export sens=SenMap_Normalized
+export sens=NoModel
 
 # Resize then Compress
 for model in VGG11 
 do
-	# for QF_YC in 85
-	# for QF_YC in `seq 100 -5 10`
-	# do
-	for i in "${!DT_Y[@]}"; do
+	# for i in "${!DT_Y[@]}"; do
+	for i in "${!Qmax_Y[@]}"; do
 
 		# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
-		export file=./Resize_Compress/HDQ_OptD/${model}/YUV/${model}_DT_Y${DT_Y[i]}_DT_C${DT_C[i]}_YUV.txt
+		export file=./Resize_Compress/HDQ_OptD/${model}/YUV/${model}_d_water_Y${d_waterlevel_Y[i]}_Q_max_Y${Qmax_Y[i]}.txt
+		printf '${DT_Y[%s]}=%s\t${DT_C[%s]}=%s\n' "$i" "${DT_Y[i]}" "$i" "${DT_C[i]}"
+		export sens_dir=./SenMap_All/${sens}/${model}
 		echo ${file}
 		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
 									  -resize_compress --colorspace ${colorspace} \
-									  --Qmax_Y 46 --Qmax_C 46 --DT_Y ${DT_Y[i]} --DT_C ${DT_C[i]} \
-									  --output_txt ${file} --device "cuda:0" --root ${root}
+									  --Qmax_Y ${Qmax_Y[i]}  --Qmax_C ${Qmax_C[i]} --DT_Y ${DT_Y[i]} --DT_C ${DT_C[i]} \
+									  --d_waterlevel_Y ${d_waterlevel_Y[i]}  --d_waterlevel_C ${d_waterlevel_C[i]}  \
+									  --output_txt ${file} --device "cuda:0" --root ${root} \
+									  --SenMap_dir ${sens_dir}  
 
 	done
 done

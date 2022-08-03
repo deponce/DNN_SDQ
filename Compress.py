@@ -74,7 +74,7 @@ class HDQ_transforms(torch.nn.Module):
         return {'image': compressed_img, 'BPP': BPP}
 
 class HDQ_OptD_transforms(torch.nn.Module):
-    def __init__(self, model="VGG11", colorspace=0, J=4, a=4, b=4, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, Qmax_Y=46, Qmax_C=46):
+    def __init__(self, model="NoModel", SenMap_dir="./SenMap/", colorspace=0, J=4, a=4, b=4, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, Qmax_Y=46, Qmax_C=46):
         self.J = J
         self.a = a
         self.b = b
@@ -85,12 +85,20 @@ class HDQ_OptD_transforms(torch.nn.Module):
         self.d_waterlevel_Y = d_waterlevel_Y
         self.d_waterlevel_C = d_waterlevel_C
         self.Qmax_Y = Qmax_Y
-        self.Qmax_C = Qmax_C
+        self.Qmax_C = Qmax_C        
+
+        self.sen_map = np.ones((3,64))
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+
+        # print(self.sen_map)
+
     def __call__(self, sample):
         sample = np.asarray(sample)
         sample = np.transpose(sample, (2,0,1))
         # compressed_img, BPP  = sample, 0.0
-        compressed_img, BPP = HDQ_OptD.__call__(sample, self.model, self.colorspace, self.J, self.a, self.b,
+        compressed_img, BPP = HDQ_OptD.__call__(sample, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b,
                                            self.DT_Y, self.DT_C, self.d_waterlevel_Y, 
                                            self.d_waterlevel_C, self.Qmax_Y, self.Qmax_C)
         compressed_img = np.round(compressed_img)    

@@ -33,7 +33,9 @@ import matplotlib.pyplot as plt
 
 class HDQ_loader(datasets.ImageNet):
     """docstring for loader"""
-    def __init__(self, model, colorspace, root, QF_Y=50, QF_C=50, J=4, a=4, b=4, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, QMAX_Y=46, QMAX_C=46, split="val", resize_compress=True, OptD=False):
+    def __init__(self, model, SenMap_dir, colorspace, root, QF_Y=50, QF_C=50, J=4, a=4, b=4, 
+                DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, QMAX_Y=46, QMAX_C=46, 
+                split="val", resize_compress=True, OptD=False):
         # self.transforms =  transforms.Compose([
   #                                   # transforms.Resize((256, 256)),
   #                                   transforms.Scale(256),
@@ -50,7 +52,7 @@ class HDQ_loader(datasets.ImageNet):
         # super().__init__(self.root)
 
         if OptD:
-            self.HDQ_transforms = HDQ_OptD_transforms(model, colorspace, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, QMAX_Y, QMAX_C)
+            self.HDQ_transforms = HDQ_OptD_transforms(model, SenMap_dir, colorspace, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, QMAX_Y, QMAX_C)
         else:
             self.HDQ_transforms = HDQ_transforms(model, colorspace, QF_Y, QF_C, J, a, b)
         

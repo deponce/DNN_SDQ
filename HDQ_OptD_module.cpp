@@ -48,6 +48,7 @@ namespace py = pybind11;
 
 // wrap C++ function with NumPy array IO
 std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | py::array::forcecast> array,
+                                       py::array_t<float, py::array::c_style | py::array::forcecast> SenMap,
                                        string Model, int colorspace, int J, int a, int b, 
                                        float DT_Y, float DT_C, float d_waterlevel_Y, float d_waterlevel_C, 
                                        int Qmax_Y, int Qmax_C){
@@ -64,6 +65,9 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   float BPP =0;
   vector<float> result(array.size());
   seq2img(pos, Vect_img, size[0], size[1]);
+  float Sen_Map[3][64]={0};
+  memcpy(Sen_Map, SenMap.data(), 3*64*sizeof(float));
+
   float W_rgb2swx[3][3];
   float W_swx2rgb[3][3];
   float biasPerImage[3] = {0,0,0};
@@ -97,7 +101,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
 
 
   HDQ_OptD hdq;
-  hdq.__init__(colorspace, QF_Y , QF_C, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
+  hdq.__init__(Sen_Map, colorspace, QF_Y , QF_C, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
   BPP = hdq.__call__(Vect_img); // Vect_img is the compressed dequantilzed image after sdq.__call__()
 
   // YUV2rgb(Vect_img);

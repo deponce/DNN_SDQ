@@ -69,8 +69,8 @@ def main(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    dataset = HDQ_loader(model=model, root=args.root, QF_Y=50, QF_C=50, 
-                            colorspace=args.colorspace, J=J, a=a, b=b, 
+    dataset = HDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=50, QF_C=50, 
+                            colorspace=args.colorspace, J=J, a=a, b=b,
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
                             split="val", resize_compress=resize_compress, OptD=True)
 
@@ -125,6 +125,8 @@ if '__main__' == __name__:
     parser.add_argument('--device', type=str, default="cuda:0", help='cpu or cuda:0')
     parser.add_argument('--root', type=str, default="/home/h2amer/AhmedH.Salamah/ilsvrc2012", 
                             help='root to ImageNet Driectory')
+    parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
+                            help='Senstivity Directory')
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
     args = parser.parse_args()
     main(args)
