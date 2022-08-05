@@ -93,7 +93,7 @@ export sens=SenMap_Normalized
 # export sens=NoModel
 
 # Resize then Compress
-for model in Squeezenet Resnet18
+for model in Resnet18 Squeezenet
 do
 	# for i in "${!DT_Y[@]}"; do
 	# for i in "${!Qmax_Y[@]}"; do

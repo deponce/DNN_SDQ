@@ -1,6 +1,6 @@
-# export root=/home/h2amer/work/workspace/ML_TS/
+export root=/home/h2amer/work/workspace/ML_TS/
 # export root="~/data/ImageNet/2012"
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 
 export DT_Y=10
