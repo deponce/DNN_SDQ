@@ -161,14 +161,14 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
     
     if ((BPP - BPP_t) > 0)
     {
-      Lmbda = Lmbda - Lmbda_step;
+      Lmbda = Lmbda + Lmbda_step;
     }
     else if ((BPP - BPP_t) < 0)
     { 
-      Lmbda = Lmbda + Lmbda_step;
+      Lmbda = Lmbda - Lmbda_step;
     }
     count++;
-    condition = ((BPP - BPP_t) < 0.03) && (count < 10);
+    condition = ((BPP - BPP_t) > 0.03) && (count < 10);
     if (condition) Vect_img = ori_img; 
   }
   while(condition);

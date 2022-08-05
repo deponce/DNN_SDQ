@@ -316,7 +316,7 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
 
     float si, q_lambda;
     float p1, p2, p3;
-    // cout <<  "Q value" << "\t"  << "Variance" << "\t" << "lambda" << "\n";
+    // cout <<  "Q value" << "\t"  << "Variance" << "\t"    << "lambda" << "\n";
     lambdaData[0] = 0.0;
     for (int i = 1; i < 64; i++)
     {
@@ -336,18 +336,19 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
 
     for (int i = 0; i < 64; i++)
     {
-        // if(varianceData[i] < d_waterLevel)
-        // {
-        //     // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
-        //     Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
+        if(varianceData[i] < d_waterLevel)
+        {
+            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
+            Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
             
-        // }
-        // else
-        // {
+        }
+        else
+        {
             if (i == 0) // DC q step
             {
-                Q_Table[i] = MinMaxClip(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), MINQVALUE, MAXQVALUE);
-                // Q_Table[i] = MinMaxClip(min(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), float(QMAX_Y)), MINQVALUE, MAXQVALUE);
+                // Free Search with Qmax
+                // Q_Table[i] = MinMaxClip(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), MINQVALUE, MAXQVALUE);
+                Q_Table[i] = MinMaxClip(min(floor(sqrt(12*(d_waterLevel/Sen_Map[0][i]))), float(QMAX_Y)), MINQVALUE, MAXQVALUE);
             }
             else
             {
@@ -363,7 +364,7 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
                     }
                }
             }      
-        // }
+        }
         // cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
     }
 }

@@ -68,6 +68,7 @@ class SDQ{
         float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
+        float Sen_Map[3][64];
         void __init__(float eps, float Beta_S, float Beta_W, float Beta_X,
                       float Lmbda, float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C, 
                       int J, int a, int b, float DT_Y, float DT_C, 
@@ -114,6 +115,14 @@ void SDQ::__init__(float eps, float Beta_S, float Beta_W, float Beta_X,
     SDQ::QMAX_Y = QMAX_Y;
     SDQ::d_waterlevel_C = d_waterlevel_C;
     SDQ::QMAX_C = QMAX_C;
+
+    for (int i = 0; i <3 ; i++)
+    {
+        for (int j = 0; j <64 ; j++)
+        { 
+            SDQ::Sen_Map[i][j] = Sen_Map[i][j];
+        }
+    }
 }
 
 float SDQ::__call__(vector<vector<vector<float>>>& image){
@@ -161,10 +170,11 @@ float SDQ::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, SDQ::seq_len_C);
 
     // Customized Quantization Table
-    quantizationTable_OptD_Y(seq_dct_coefs_Y, SDQ::Q_table_Y, SDQ::seq_len_Y, SDQ::DT_Y, SDQ::d_waterlevel_Y, SDQ::QMAX_Y);
+    quantizationTable_OptD_Y(SDQ::Sen_Map, seq_dct_coefs_Y, SDQ::Q_table_Y, 
+                SDQ::seq_len_Y, SDQ::DT_Y, SDQ::d_waterlevel_Y, SDQ::QMAX_Y);
     cout << "DT_Y = " << SDQ::DT_Y << "\t" << "d_waterLevel_Y = " << SDQ::d_waterlevel_Y << endl;
-    quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
-    cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;
+    // quantizationTable_OptD_C(seq_dct_coefs_Cb, seq_dct_coefs_Cr, SDQ::Q_table_C, SDQ::seq_len_C, SDQ::DT_C, SDQ::d_waterlevel_C, SDQ::QMAX_C);
+    // cout << "DT_C = " << SDQ::DT_C << "\t" << "d_waterLevel_C = " << SDQ::d_waterlevel_C << endl;
     
 
     // [LENA] Just to check seq_dct_coefs_Cb = seq_dct_coefs_Cr = seq_dct_coefs_Y 

@@ -93,7 +93,7 @@ export sens=SenMap_Normalized
 # export sens=NoModel
 
 # Resize then Compress
-for model in VGG11 Alexnet
+for model in Squeezenet Resnet18
 do
 	# for i in "${!DT_Y[@]}"; do
 	# for i in "${!Qmax_Y[@]}"; do

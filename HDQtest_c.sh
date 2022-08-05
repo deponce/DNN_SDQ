@@ -10,16 +10,16 @@ export Qmax_Y=255
 export Qmax_C=255
 
 export colorspace=0
-# export sens=SenMap_Normalized
-export sens=NoModel
+export sens=SenMap_Normalized
+# export sens=NoModel
 
 # Resize then Compress
-for model in VGG11 Alexnet
+for model in Resnet18 Squeezenet
 do
 	# for i in "${!DT_Y[@]}"; do
 	# for i in "${!Qmax_Y[@]}"; do
-	for d_waterlevel in `seq 5 5 1000`; do
-		d_waterlevel_Y=$(echo "scale = 2; $d_waterlevel / 10" | bc)
+	for d_waterlevel in `seq 1 1 4`; do
+		d_waterlevel_Y=$(echo "scale = 2; $d_waterlevel / 100" | bc)
 		d_waterlevel_C=$(echo "scale = 2; $d_waterlevel_Y * 2" | bc)
 		echo "d_waterlevel_Y:"${d_waterlevel_Y}" ... d_waterlevel_C:"${d_waterlevel_C}
 		export file=./Resize_Compress/HDQ_OptD/${model}/YUV/${model}_sens_${sens}_d_water_Y${d_waterlevel_Y}_Q_max_Y${Qmax_Y}.txt
