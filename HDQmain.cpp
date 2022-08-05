@@ -113,6 +113,7 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:")) !=-
   float Beta_W = Beta;
   float Beta_X = Beta;
   int colorspace = 0;
+  float psnrVal;
 
   
   float W_rgb2swx[3][3];
@@ -146,10 +147,11 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:")) !=-
   // YYY2rgb(Vect_img);
 
   // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
-  float psnrVal = PSNRY(Vect_img, ori_img);
+  psnrVal = PSNR3C(Vect_img, ori_img);
+  // psnrVal = PSNRY(Vect_img, ori_img);
   cout<<"PSNR: "<<psnrVal<<endl;
 
-  Vector2Mat(Vect_img, image);
+  // Vector2Mat(Vect_img, image);
   // cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
   // cv::imshow("Display window",  image);
   // cv::waitKey(0);

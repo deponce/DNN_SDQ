@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
   float d_waterlevel_Y = 0, d_waterlevel_C = 0;  
   float DT_Y = 0, DT_C = 0; 
   float BPP_t = 1e16;
+  float Sen_Map[3][64];
 while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !=-1){
     switch (option){
       case 'h':{
@@ -130,6 +131,14 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
   Mat2Vector(image, Vect_img);
   Mat2Vector(image, ori_img);
 
+  for (int i = 0 ; i < 3; i++)
+  {
+    for (int j = 0; j < 64; j++)
+    {
+      Sen_Map[i][j] = 1.0;
+    }
+  }
+
   int count = 0;
   bool condition;
   do
@@ -139,7 +148,8 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
     // rgb2swx(Vect_img, W_rgb2swx, bias_rgb2swx);
 
     HDQ_OptD hdq;
-    hdq.__init__(colorspace, QF_Y , QF_C, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
+
+    hdq.__init__(Sen_Map, colorspace, QF_Y , QF_C, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, Qmax_Y, Qmax_C);
 
     BPP = hdq.__call__(Vect_img); //Vect_img is the compressed dequantilzed image after sdq.__call__()
 
@@ -147,7 +157,8 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
     // YYY2rgb(Vect_img);
 
     // swx2rgb(Vect_img, W_swx2rgb, bias_rgb2swx);
-    psnrVal = PSNRY(Vect_img, ori_img);
+    psnrVal = PSNR3C(Vect_img, ori_img);
+    // psnrVal = PSNRY(Vect_img, ori_img);
 
     
     if ((BPP - BPP_t) > 0)
@@ -166,7 +177,7 @@ while ((option = getopt(argc, argv, "hiM:P:J:a:b:e:Q:q:B:L:e:T:t:D:d:X:x:U:")) !
     }
     count++;
 
-    condition = ((BPP - BPP_t) < 0.03) && (count < 500);
+    condition = ((BPP - BPP_t) < 0.03) && (count < 1);
     if (condition) Vect_img = ori_img; 
   }
   while(condition);

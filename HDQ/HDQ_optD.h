@@ -28,6 +28,10 @@
 #include "../Utils/utils.h"
 #include "../Utils/Q_Table.h"
 #include "../EntCoding/Huffman.h"
+#include <limits>
+// #include <algorithm>
+// #include <math.h>
+
 using namespace std;
 const float MIN_Q_VAL = 1;
 class HDQ_OptD{
@@ -142,11 +146,32 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cb, seq_dct_coefs_Cb, HDQ_OptD::seq_len_C);
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ_OptD::seq_len_C);
 
+
+    // // adaptive Qmax 
+    // float max_q = std::numeric_limits<float>::min(), tmp, num1, num2;
+    // for(int N=0; N<HDQ_OptD::seq_len_C; N++)
+    // {
+    //     tmp = *max_element(seq_dct_coefs_Y[N], seq_dct_coefs_Y[N] + 64);
+    //     if (tmp > max_q) max_q = tmp;
+    // }
+    // HDQ_OptD::QMAX_Y = 2 * max_q + 1;
+    // cout << "Max Quantization Step Y : " <<HDQ_OptD::QMAX_Y << endl;
+
+    // max_q = std::numeric_limits<float>::min();
+    // for(int N=0; N<HDQ_OptD::seq_len_C; N++)
+    // {
+    //     num1 = *max_element(seq_dct_coefs_Cb[N], seq_dct_coefs_Cb[N] + 64);
+    //     num2 = *max_element(seq_dct_coefs_Cr[N], seq_dct_coefs_Cr[N] + 64);
+    //     tmp = max(num1, num2);
+    //     if (tmp > max_q) max_q = tmp;
+    // }
+    // HDQ_OptD::QMAX_C = 2 * max_q + 1;
+    // cout << "Max Quantization Step CbCr : " <<HDQ_OptD::QMAX_C << endl;
+
     // Customized Quantization Table
     quantizationTable_OptD_Y(HDQ_OptD::Sen_Map, seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, 
                 HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
     // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
-    
     quantizationTable_OptD_C(HDQ_OptD::Sen_Map, seq_dct_coefs_Cb, seq_dct_coefs_Cr, HDQ_OptD::Q_table_C
         , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
     // cout << "DT_C = " << HDQ_OptD::DT_C << "\t" << "d_waterLevel_C = " << HDQ_OptD::d_waterlevel_C << endl;
@@ -161,6 +186,19 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
              HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
     Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
              HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
+
+    
+    // cout << "number of blocks: " << seq_len_C << endl;
+    // cout << "Cb indices" << endl;
+    // for(int N=0; N<HDQ_OptD::seq_len_C; N++)
+    // {
+    //     cout << seq_dct_idxs_Cb[N][33] << endl;
+    // }
+    // cout << "Cr indices" << endl;
+    // for(int N=0; N<HDQ_OptD::seq_len_C; N++)
+    // {
+    //     cout << seq_dct_idxs_Cr[N][33] << endl;
+    // }
     
     map<int, float> DC_P;
     map<int, float> AC_Y_P;
