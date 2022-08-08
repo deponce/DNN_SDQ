@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 export root=/home/h2amer/work/workspace/ML_TS/
 # export root="~/data/ImageNet/2012"
-=======
-# export root=/home/h2amer/work/workspace/ML_TS/
-export root="~/data/ImageNet/2012"
->>>>>>> 7b9270d1c4f271750cea00466516ac3bb8fdd2c5
 # export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 
