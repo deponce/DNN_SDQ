@@ -62,7 +62,7 @@ class HDQ_OptD{
         float EntACC = 0;
         float EntDCY = 0;
         float EntDCC = 0;
-        float Sen_Map[3][64];
+        float (*Sen_Map)[64];
         float MINQVALUE, MAXQVALUE, QUANTIZATION_SCALE;
         vector<int> RSlst;
         vector<int> IDlst;
@@ -93,13 +93,7 @@ void HDQ_OptD::__init__(float Sen_Map[3][64], int colorspace, int QF_Y, int QF_C
     HDQ_OptD::QMAX_Y = QMAX_Y;
     HDQ_OptD::d_waterlevel_C = d_waterlevel_C;
     HDQ_OptD::QMAX_C = QMAX_C;
-    for (int i = 0; i <3 ; i++)
-    {
-        for (int j = 0; j <64 ; j++)
-        { 
-            HDQ_OptD::Sen_Map[i][j] = Sen_Map[i][j];
-        }
-    }
+    HDQ_OptD::Sen_Map = Sen_Map;
 }
 
 float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){

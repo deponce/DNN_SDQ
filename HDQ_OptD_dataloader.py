@@ -11,6 +11,7 @@ from Utils.loader import HDQ_loader
 import argparse
 import random
 import warnings
+import pickle
 
 num_workers=28
 
@@ -26,7 +27,55 @@ def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+
 def main(args):
+    fileFormat = args.output_txt
+    data_all = {}
+    sens = args.SenMap_dir.split("/")[2]
+    data_file_name =  args.Model+"_" + sens
+    const = 1
+    if sens == "NoModel":
+        const = 10
+
+    for args.d_waterlevel_Y in np.arange(0.04, 4.01, 0.04):
+        args.d_waterlevel_Y = args.d_waterlevel_Y * const
+        args.d_waterlevel_C = args.d_waterlevel_Y
+        tmp = 0
+        for Q in range(3, 256):
+            max_q_c = np.ceil(255/Q)
+            for ratio in np.arange(1, max_q_c+1):
+                args.Qmax_Y = Q
+                args.Qmax_C = int(min(ratio * Q , 255))
+                args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+                # print(args.output_txt)
+                BPP, Acc = running_func(args)
+                # BPP , Acc = 0 , 0
+                key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C)
+                data_all[key] = [BPP, Acc]
+                write_live(data_file_name, key, [BPP, Acc])
+                if abs(tmp - BPP ) < 1e-4:
+                    break
+                tmp = BPP
+
+        #         break
+        #     break
+        # break
+
+    with open(data_file_name +'.pkl', 'wb') as handle:
+        pickle.dump(data_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    
+def write_live(filename, key, vec):
+    f = open(filename +'.txt', "+a")
+    f.write(key + "\t")
+    for x in vec:
+        f.write(str(x)+ "\t")
+    f.write("\n")
+    f.close()
+
+
+
+def running_func(args):
     Batch_size = 50
     model = args.Model
     J = args.J
@@ -106,6 +155,8 @@ def main(args):
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1
     print_file(l, args.output_txt)
+
+    return (BPP.numpy()/num_tests), ((num_correct/num_tests)*100) 
 
 
 if '__main__' == __name__:

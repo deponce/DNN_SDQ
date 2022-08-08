@@ -22,12 +22,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <opencv2/highgui.hpp>
+// #include <opencv2/highgui.hpp>
 #include <math.h>
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+// using namespace cv;
 
 int pad_shape(int Num, int size=8){
     /*
@@ -45,37 +45,37 @@ int pad_shape(int Num, int size=8){
     return n;
 }
 
- void Mat2Vector(cv::Mat Mat_img, vector<vector<vector<float>>>& Vect_img){
-    /*
-    :Fn  Mat2Vector: 
-    :param cv::Mat Mat_img:
-    :param vector<vector<vector<float>>>& Vect_img:
-    :return void:
-    */
-     int i, j;
-     int nrows = Mat_img.rows;
-     int ncols = Mat_img.cols;
-     for (i=0; i<nrows; ++i){
-         for(j=0; j<ncols; ++j){
-             Vect_img[0][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[2];
-             Vect_img[1][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[1];
-             Vect_img[2][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[0];
-         }
-     }
- }
+ // void Mat2Vector(cv::Mat Mat_img, vector<vector<vector<float>>>& Vect_img){
+ //    /*
+ //    :Fn  Mat2Vector: 
+ //    :param cv::Mat Mat_img:
+ //    :param vector<vector<vector<float>>>& Vect_img:
+ //    :return void:
+ //    */
+ //     int i, j;
+ //     int nrows = Mat_img.rows;
+ //     int ncols = Mat_img.cols;
+ //     for (i=0; i<nrows; ++i){
+ //         for(j=0; j<ncols; ++j){
+ //             Vect_img[0][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[2];
+ //             Vect_img[1][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[1];
+ //             Vect_img[2][i][j] =  Mat_img.at<cv::Vec3b>(i, j)[0];
+ //         }
+ //     }
+ // }
 
- void Vector2Mat(vector<vector<vector<float>>> Vect_img, cv::Mat Mat_img){
-     int i, j;
-     int nrows = Mat_img.rows;
-     int ncols = Mat_img.cols;
-     for (i=0; i<nrows; ++i){
-         for(j=0; j<ncols; ++j){
-             Mat_img.at<cv::Vec3b>(i, j)[2] = Vect_img[0][i][j];
-             Mat_img.at<cv::Vec3b>(i, j)[1] = Vect_img[1][i][j];
-             Mat_img.at<cv::Vec3b>(i, j)[0] = Vect_img[2][i][j];
-         }
-     }
- }
+ // void Vector2Mat(vector<vector<vector<float>>> Vect_img, cv::Mat Mat_img){
+ //     int i, j;
+ //     int nrows = Mat_img.rows;
+ //     int ncols = Mat_img.cols;
+ //     for (i=0; i<nrows; ++i){
+ //         for(j=0; j<ncols; ++j){
+ //             Mat_img.at<cv::Vec3b>(i, j)[2] = Vect_img[0][i][j];
+ //             Mat_img.at<cv::Vec3b>(i, j)[1] = Vect_img[1][i][j];
+ //             Mat_img.at<cv::Vec3b>(i, j)[0] = Vect_img[2][i][j];
+ //         }
+ //     }
+ // }
 
 void blockify(vector<vector<float>> img, int img_size[2], float v_im[][8][8]){
     int pad_row = pad_shape(img_size[0])/8; 
