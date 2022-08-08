@@ -98,7 +98,7 @@ export sens=NoModel
 
 for model in Alexnet Resnet18 VGG11 Squeezenet
 do
-		export file=./Resize_Compress/HDQ_OptD_correct_YUV/${model}/YUV/${model}_sens_${sens}_d_water_Y%.2f_d_water_C%.2f_Q_max_Y%d_Q_max_C%d.txt
+		export file=./Resize_Compress/HDQ_OptD_correct_YUV_Qmax/${model}/YUV/${model}_sens_${sens}_d_water_Y%.2f_d_water_C%.2f_Q_max_Y%d_Q_max_C%d.txt
 		export sens_dir=./SenMap_All/${sens}/${model}
 		# echo ${file}
 		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
