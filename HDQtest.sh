@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 export root=/home/h2amer/work/workspace/ML_TS/
 # export root="~/data/ImageNet/2012"
+=======
+# export root=/home/h2amer/work/workspace/ML_TS/
+export root="~/data/ImageNet/2012"
+>>>>>>> 7b9270d1c4f271750cea00466516ac3bb8fdd2c5
 # export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 
@@ -42,11 +47,14 @@ export root=/home/h2amer/work/workspace/ML_TS/
 
 # //////////////////////////////////////////
 
+
 # DT_Y=('50')
 # DT_C=('80')
 
+
 # d_waterlevel_Y=('2')
 # d_waterlevel_C=('2')
+
 
 # d_waterlevel_Y=('0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04' '0.04')
 # d_waterlevel_C=('0.02' '0.03' '0.04' '0.05' '0.06' '0.07' '0.08' '0.09' '0.10' '0.11' '0.12' '0.13' '0.14' '0.15' '0.16' '0.17' '0.18' '0.19' '0.20')
@@ -89,7 +97,6 @@ export root=/home/h2amer/work/workspace/ML_TS/
 # 	do
 # 		# for i in "${!DT_Y[@]}"; do
 # 		for i in "${!d_waterlevel_Y[@]}"; do
-
 # 			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
 # 			d_waterlevel_Y_=$(echo "scale = 2; ${d_waterlevel_Y[i]} * ${mult}" | bc)
 # 			d_waterlevel_C_=$(echo "scale = 2; ${d_waterlevel_C[i]} * ${mult}" | bc)
@@ -126,6 +133,7 @@ do
 									  --SenMap_dir ${sens_dir}  
 
 done
+
 
 
 

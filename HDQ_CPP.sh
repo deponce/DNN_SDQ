@@ -14,8 +14,8 @@ export DT_C=$4
 export d_Y=$5
 export d_C=$6
 export BPP_t=$7
-export QF_Y=$8
-export QF_C=$9
+# export QF_Y=$8
+# export QF_C=$9
 
 ./HDQ_OptD_main -M NoModel -P ./sample/lena3.tif -J 4 -a 4 -b 4 -T ${DT_Y} -t ${DT_C} -D ${d_Y} -d ${d_C} -X ${q_max_y} -x ${q_max_c} -U ${BPP_t} # done
 echo
@@ -65,10 +65,10 @@ echo
 
 # //////////////////////////////////////////////////
 
-g++ -std=c++11 HDQmain.cpp -o HDQ_output $(pkg-config opencv4 --cflags --libs) -lpthread
+# g++ -std=c++11 HDQmain.cpp -o HDQ_output $(pkg-config opencv4 --cflags --libs) -lpthread
 
-./HDQ_output -M NoModel -P ./sample/lena3.tif -J 4 -a 4 -b 4 -Q ${QF_Y} -q ${QF_C} -B 1 -L 0   # done
-echo
+# ./HDQ_output -M NoModel -P ./sample/lena3.tif -J 4 -a 4 -b 4 -Q ${QF_Y} -q ${QF_C} -B 1 -L 0   # done
+# echo
 
 #  for Vanilla HDQ
 # g++ -std=c++11 HDQmain.cpp -o HDQmain $(pkg-config opencv4 --cflags --libs)
