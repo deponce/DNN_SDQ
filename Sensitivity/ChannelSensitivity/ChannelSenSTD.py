@@ -24,6 +24,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]='1'
 Batch_size = 100
 from model import get_model
 import argparse
+from loader_sampler import *
 
 def plot_confidence_interval(x, top, bottom, mean, horizontal_line_width=0.25, color='#2187bb',label=None,alpha=1):
     left = x - horizontal_line_width / 2
@@ -40,11 +41,20 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000, grace=True):
     thr = Nexample
     model_name = model
     print("code run on", device)
-    Trans = [transforms.ToTensor(),
-             transforms.Resize((224, 224)),
-             transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
-    transform = transforms.Compose(Trans)
-    dataset = torchvision.datasets.ImageNet(root="~/project/data", split='train',
+
+    transform = transforms.Compose([
+                                     transforms.Resize(256),
+                                     transforms.CenterCrop(224),
+                                     transforms.ToTensor(),
+                                     transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])
+                                   ])
+
+    # Trans = [transforms.ToTensor(),
+    #          transforms.Resize((224, 224)),
+    #          transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
+    # transform = transforms.Compose(Trans)
+
+    dataset = torchvision.datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='train',
                                             transform=transform)
     if grace:
         A = load_3_weight(model_name).to(device)
@@ -61,7 +71,13 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000, grace=True):
     Cb_sen_list = np.empty([0])
     cnt = 0
     print(A)
+    samples_count = {}
     for data, target in tqdm(test_loader):
+        if target not in samples_count:
+            samples_count[target] = 0
+        if samples_count[target] > 10:
+            continue
+        samples_count[target] += 1
         data, target = data.to(device), target.to(device)  # [0,225]
         ycbcr_data = rgb_to_ycbcr(data,
                                   W_r=A[0],

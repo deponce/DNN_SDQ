@@ -36,32 +36,41 @@ def main(args):
     const = 1
     if sens == "NoModel":
         const = 10
+    # d_list = [0.07]
+    # d_list.extend(np.arange(0.11, 0.2, 0.01))
+    # d_list.extend(np.arange(0.21, 0.3, 0.01))
+    d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
+    d_waterlevel_C=[0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20]
+    tmp = 0
+    while(const <= 100):
+        for i, val in enumerate(d_waterlevel_Y):
+            args.d_waterlevel_Y = val * const
+            args.Qmax_Y = 46
+            args.Qmax_C = 46
+            # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
+            # for ratio in [1]:
+            # args.d_waterlevel_C = ratio * args.d_waterlevel_Y
+            args.d_waterlevel_C = d_waterlevel_C[i] * const
+            # max_q_c = np.ceil(255/Q)
+            # for ratio in np.arange(1, max_q_c+1):
+                # args.Qmax_C = int(min(ratio * Q , 255))
+            args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+            # print(args.output_txt)
+            BPP, Acc, Qmax_flag= running_func(args)
+            # BPP , Acc = 0 , 0
+            key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+            data_all[key] = [BPP, Acc]
+            write_live("./RESULTS/"+data_file_name, key, [BPP, Acc])
+            if (abs(tmp - BPP ) < 1e-3) or Qmax_flag:
+                break
+            tmp = BPP
 
-    for args.d_waterlevel_Y in np.arange(0.04, 4.01, 0.04):
-        args.d_waterlevel_Y = args.d_waterlevel_Y * const
-        args.d_waterlevel_C = args.d_waterlevel_Y
-        tmp = 0
-        for Q in range(3, 256):
-            max_q_c = np.ceil(255/Q)
-            for ratio in np.arange(1, max_q_c+1):
-                args.Qmax_Y = Q
-                args.Qmax_C = int(min(ratio * Q , 255))
-                args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
-                # print(args.output_txt)
-                BPP, Acc = running_func(args)
-                # BPP , Acc = 0 , 0
-                key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C)
-                data_all[key] = [BPP, Acc]
-                write_live(data_file_name, key, [BPP, Acc])
-                if abs(tmp - BPP ) < 1e-4:
-                    break
-                tmp = BPP
+            #         break
+            #     break
+            # break
+        const *= 10
 
-        #         break
-        #     break
-        # break
-
-    with open(data_file_name +'.pkl', 'wb') as handle:
+    with open("./RESULTS/"+data_file_name +'.pkl', 'wb') as handle:
         pickle.dump(data_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
     
     
@@ -88,6 +97,7 @@ def running_func(args):
     d_waterlevel_Y = args.d_waterlevel_Y
     d_waterlevel_C = args.d_waterlevel_C
     resize_compress = args.resize_compress
+    OptD = args.OptD
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     # print_exp_details(args)
     print("Model: ", model)
@@ -101,6 +111,8 @@ def running_func(args):
     print("d_waterlevel_C: ",d_waterlevel_C)
     print("Qmax_Y =",Qmax_Y)
     print("Qmax_C =",Qmax_C)
+    print("OptD enables =",OptD)
+
 
     # pretrained_model = models.vgg11(pretrained=True)
     # pretrained_model = models.resnet18(pretrained=True)
@@ -118,10 +130,10 @@ def running_func(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    dataset = HDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=50, QF_C=50, 
+    dataset = HDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=100, QF_C=100, 
                             colorspace=args.colorspace, J=J, a=a, b=b,
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
-                            split="val", resize_compress=resize_compress, OptD=True)
+                            split="val", resize_compress=resize_compress, OptD=args.OptD)
 
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers)
     # test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
@@ -129,8 +141,12 @@ def running_func(args):
     num_tests = 0
     BPP = 0
     cnt = 0
+    count_Qmax = 0
+    Qmax_flag = False
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
+        count_Qmax += torch.sum(image_BPP < 0)
+        image_BPP = torch.abs(image_BPP)
         # exit(0)
         labels = labels.to(device)
         image = image.to(device)
@@ -155,8 +171,10 @@ def running_func(args):
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1
     print_file(l, args.output_txt)
-
-    return (BPP.numpy()/num_tests), ((num_correct/num_tests)*100) 
+    
+    if (count_Qmax == len(dataset)): Qmax_flag = True
+    
+    return (BPP.numpy()/num_tests), ((num_correct/num_tests)*100) , Qmax_flag
 
 
 if '__main__' == __name__:
@@ -179,5 +197,6 @@ if '__main__' == __name__:
     parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
                             help='Senstivity Directory')
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
+    parser.add_argument('--OptD', type=bool, default=False, help='OptD initialization for Quantization Table')
     args = parser.parse_args()
     main(args)

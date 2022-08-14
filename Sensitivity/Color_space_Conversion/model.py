@@ -9,4 +9,7 @@ def get_model(name):
         pretrained_model = models.squeezenet1_0(pretrained=True)
     elif name == 'VGG11':
         pretrained_model = models.vgg11(pretrained=True)
+    else:
+        print("Default model is sent DUDE....")
+        pretrained_model = models.alexnet(pretrained=True)
     return pretrained_model

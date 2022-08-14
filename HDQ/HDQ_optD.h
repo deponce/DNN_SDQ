@@ -170,8 +170,15 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
         , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
     // cout << "DT_C = " << HDQ_OptD::DT_C << "\t" << "d_waterLevel_C = " << HDQ_OptD::d_waterlevel_C << endl;
    
-
-
+    int check = checkQmax(HDQ_OptD::Q_table_Y, HDQ_OptD::QMAX_Y, HDQ_OptD::Q_table_C, HDQ_OptD::QMAX_C);
+    if (check == 2)
+    {
+        check = -1;
+    }
+    else
+    {
+        check = 1;
+    }
     //
 
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
@@ -250,5 +257,5 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     delete [] blockified_img_Y; delete [] blockified_img_Cb; delete [] blockified_img_Cr;
     Upsampling(image[1], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
     Upsampling(image[2], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
-    return BPP;
+    return (check * BPP);
 }

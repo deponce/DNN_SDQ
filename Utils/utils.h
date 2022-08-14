@@ -257,3 +257,22 @@ float PSNRY(vector<vector<vector<float>>> img1,
     float m = MSEY(img1, img2);
     return 10*log10(pow(MAX_PXL_VAL,2)/m);
 }
+
+
+int checkQmax(float Q_table_Y[64], float Qmax_Y, float Q_table_C[64], float Qmax_C)
+{
+    float Acc = 0;
+    int check = 0;
+    for(int x=0; x<64; x++){
+        Acc += Q_table_Y[x];
+        // seq_dct_idxs[N][x] = seq_dct_idxs[N][x]*20;
+    }
+    if (Acc == 64*Qmax_Y ) check += 1;
+    Acc = 0;
+    for(int x=0; x<64; x++){
+        Acc += Q_table_C[x];
+        // seq_dct_idxs[N][x] = seq_dct_idxs[N][x]*20;
+    }
+    if (Acc == 64*Qmax_C ) check += 1;
+    return check;
+}

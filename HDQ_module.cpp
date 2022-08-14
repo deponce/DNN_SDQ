@@ -77,7 +77,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   {
     rgb2YUV(Vect_img);
   }
-  else if(colorspace == 3)
+  else if(colorspace == 4)
   {
     // remove the mean for each image
     LoadColorConvW(Model, W_rgb2swx, W_swx2rgb);
@@ -101,7 +101,7 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
   {
     YUV2rgb(Vect_img);
   }
-  else if(colorspace == 3)
+  else if(colorspace == 4)
   {
     swx2rgb_PerImage(Vect_img, W_swx2rgb, biasPerImage);
   }

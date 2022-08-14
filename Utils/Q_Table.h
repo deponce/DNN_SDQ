@@ -51,7 +51,7 @@ void minMaxQuantizationStep(int colorspace, float &MINQVALUE, float &MAXQVALUE, 
         // Setting 1
         QUANTIZATION_SCALE = 3.;
         MAXQVALUE = 255.*sqrt(QUANTIZATION_SCALE);
-        MINQVALUE = 1;
+        MINQVALUE = 1.;
 
     }
     else if(colorspace == 2)  // SWX
@@ -273,7 +273,7 @@ void OptD_C(float Sen_Map[][64],
     {
         if(max(varianceData_CbCr[i], varianceData_CbCr[i+64]) < d_waterLevel)
         {
-            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
+            // Q_Table[i] = 1e6; // quantize to 0
             Q_Table[i] = MinMaxClip(QMAX_C, MINQVALUE, MAXQVALUE);
             
         }
@@ -397,7 +397,7 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
     {
         if(varianceData[i] < d_waterLevel)
         {
-            // Q_Table[i] = 255; // ACT as FAST QUANTIZTION
+            // Q_Table[i] = 1e6; // quantize to 0
             Q_Table[i] = MinMaxClip(QMAX_Y, MINQVALUE, MAXQVALUE);
             
         }

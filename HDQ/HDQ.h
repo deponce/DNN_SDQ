@@ -128,7 +128,7 @@ float HDQ::__call__(vector<vector<vector<float>>>& image){
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ::Q_table_Y, HDQ::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
-             HDQ::Q_table_C,HDQ::seq_len_C); // change HDQ::Q_table_Y --> HDQ::Q_table_C for 3 channel Images
+             HDQ::Q_table_C,HDQ::seq_len_C);
     Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
              HDQ::Q_table_C,HDQ::seq_len_C);
     
