@@ -89,8 +89,8 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
     
     pretrained_model.eval()
     Y_sen_list = np.empty([0, 8, 8])
-    Cr_sen_list = np.empty([0, 8, 8])
     Cb_sen_list = np.empty([0, 8, 8])
+    Cr_sen_list = np.empty([0, 8, 8])
     samples_count = {}
     for i in range(0,1000):
         samples_count[i] = 0
@@ -124,8 +124,8 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
         if Y_sen_list.shape[0] >= thr:
             break
     np.save(main_dir + "/grad/Y_sen_list_" + model_name + ".npy",Y_sen_list)
-    np.save(main_dir + "/grad/Cr_sen_list_" + model_name + ".npy", Cr_sen_list)
     np.save(main_dir + "/grad/Cb_sen_list_" + model_name + ".npy", Cb_sen_list)
+    np.save(main_dir + "/grad/Cr_sen_list_" + model_name + ".npy", Cr_sen_list)
     print(Y_sen_list.shape[0])
 
 
