@@ -1,0 +1,15 @@
+cuda:0
+Model: Resnet18
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 50
+QF_C = 50
+Beta_S = 20.0
+Beta_W = 20.0
+Beta_X = 20.0
+Lambda = 1.0
+--> 499
+0.69 = 345 / 500
+5.681092560052872

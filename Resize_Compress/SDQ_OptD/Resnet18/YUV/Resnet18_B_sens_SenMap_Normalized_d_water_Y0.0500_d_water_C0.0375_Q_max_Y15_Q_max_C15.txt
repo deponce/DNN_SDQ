@@ -1,0 +1,12 @@
+cuda:0
+Model: Resnet18
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 50
+QF_C = 50
+Beta_S = 20
+Beta_W = 20
+Beta_X = 20
+Lambda = 1.0

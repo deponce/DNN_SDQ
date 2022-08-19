@@ -36,8 +36,11 @@ def main(args):
     const = 1
     if sens == "NoModel":
         const = 10
-    dy_list = [0.01]
-    dc_list = [0.015]
+    dy_list = [0.05,0.01,0.01]
+    dc_list = [0.037500000000000006,0.015,0.015]
+    Qmaxy_list = [15,3,15]
+    Qmaxc_list = [15,3,15]
+    beta_list = [20,30,30]
     # d_list.extend(np.arange(0.5, 5, 0.1))
     # d_list.extend(np.arange(0.21, 0.3, 0.01))
     # d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
@@ -46,8 +49,11 @@ def main(args):
     for i in range(len(dy_list)):
         args.d_waterlevel_Y = dy_list[i] * const
         args.d_waterlevel_C = dc_list[i] * const
-        args.Qmax_Y = 3
-        args.Qmax_C = 3
+        args.Qmax_Y = Qmaxy_list[i]
+        args.Qmax_C = Qmaxc_list[i]
+        args.Beta_S = beta_list[i]
+        args.Beta_W = beta_list[i]
+        args.Beta_X = beta_list[i]
         # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
         # for ratio in [1]:
         # for args.Qmax_Y in range(1, 52, 3):
@@ -183,9 +189,10 @@ def running_func(args):
         if (cnt+1) %500 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-            l2 = str(BPP.numpy()/num_tests) + "\n"
+            l2 = str(BPP.numpy()/num_tests) + "\t" + str((top1.cpu().numpy()/num_tests)*100) + "\t" + str((top5.cpu().numpy()/num_tests)*100) + "\n"
+            # l3 = str(BPP.numpy()/num_tests) + "\n"
             # l2 = ""
-            l = l0 + l1 + l2
+            l = l0 + l1 + l2 
             print_file(l, args.output_txt)
         cnt += 1
 

@@ -39,19 +39,16 @@ export sens=SenMap_Normalized
 
 for model in Resnet18
 do
-	for beta in 30
-	do
-			export file=./Resize_Compress/SDQ_OptD/${model}/YUV/${model}_B${beta}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
-			export sens_dir=./SenMap_All/${sens}/${model}
-			# echo ${file}
-			python3 SDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
-										  -resize_compress --colorspace ${colorspace} \
-										  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
-										  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
-										  --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1.0 \
-										  --output_txt ${file} --device "cuda:0" --root ${root} \
-										  --SenMap_dir ${sens_dir}  --OptD True
-	done
+		export file=./Resize_Compress/SDQ_OptD/${model}/YUV/${model}_B${beta}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+		export sens_dir=./SenMap_All/${sens}/${model}
+		# echo ${file}
+		python3 SDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
+									  -resize_compress --colorspace ${colorspace} \
+									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
+									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
+									  --Beta_S 100 --Beta_W 100 --Beta_X 100 --L 1.0 \
+									  --output_txt ${file} --device "cuda:0" --root ${root} \
+									  --SenMap_dir ${sens_dir}  --OptD True
 done
 
 
