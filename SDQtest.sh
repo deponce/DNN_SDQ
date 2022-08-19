@@ -1,35 +1,56 @@
-export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
-# export root="/home/h2amer/work/workspace/ML_TS/"
+# export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
+export root="/home/h2amer/work/workspace/ML_TS/"
 # export root="~/data/ImageNet/2012"
 
 # export sens=SenMap_Scale_Norm
-export sens=SenMap_Normalized
+# export sens=SenMap_Normalized
 
 # export addText="_wo_DC"
 
-export min_beta=0.5
+# export min_beta=0.5
 
 
 
 
-for model in  VGG11 
+# for model in  VGG11 
+# do
+# 	# for QF_YC in `seq 90 -10 80`
+# 	# for QF_YC in `seq 70 -5 30`
+# 	for QF_YC in 100
+# 	do
+# 		for beta in 30
+# 		# for beta in 20 10 7.5 5 3 1 
+# 		do
+# 			echo "Beta : "${beta}
+
+# 			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}${addText}.txt
+# 			export sens_dir=./SenMap_All/${sens}/${model}
+# 			echo ${file}
+# 			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1.0 \
+# 					-resize_compress  --colorspace 0 \
+# 					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
+# 		done	
+# 	done
+# done
+
+export colorspace=0
+export sens=SenMap_Normalized
+# export sens=NoModel
+
+for model in Resnet18
 do
-	# for QF_YC in `seq 90 -10 80`
-	# for QF_YC in `seq 70 -5 30`
-	for QF_YC in 100
+	for beta in 30
 	do
-		for beta in 30
-		# for beta in 20 10 7.5 5 3 1 
-		do
-			echo "Beta : "${beta}
-
-			export file=./Resize_Compress/SDQ/${model}/${model}_QF${QF_YC}_B${beta}_${sens}${addText}.txt
+			export file=./Resize_Compress/SDQ_OptD/${model}/YUV/${model}_B${beta}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
 			export sens_dir=./SenMap_All/${sens}/${model}
-			echo ${file}
-			python3 SDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1.0 \
-					-resize_compress  --colorspace 0 \
-					--output_txt ${file} --device "cuda:0" --root ${root} --SenMap_dir ${sens_dir} 
-		done	
+			# echo ${file}
+			python3 SDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
+										  -resize_compress --colorspace ${colorspace} \
+										  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
+										  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
+										  --Beta_S ${beta} --Beta_W ${beta} --Beta_X ${beta}  --L 1.0 \
+										  --output_txt ${file} --device "cuda:0" --root ${root} \
+										  --SenMap_dir ${sens_dir}  --OptD True
 	done
 done
 

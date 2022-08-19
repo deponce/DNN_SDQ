@@ -110,7 +110,12 @@ class HDQ_loader(datasets.ImageNet):
 
 class SDQ_loader(datasets.ImageNet):
     """docstring for loader"""
-    def __init__(self, model, SenMap_dir, colorspace, root, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X, split="val", resize_compress=True):
+
+    def __init__(self, model, SenMap_dir, colorspace, root, 
+                QF_Y=50, QF_C=50, J=4, a=4, b=4, 
+                DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, QMAX_Y=46, QMAX_C=46, 
+                Lambda=1, Beta_S=1, Beta_W=1, Beta_X=1,
+                split="val", resize_compress=True, OptD=False):
         # self.transforms =  transforms.Compose([
   #                                   # transforms.Resize((256, 256)),
   #                                   transforms.Scale(256),
@@ -125,7 +130,12 @@ class SDQ_loader(datasets.ImageNet):
         self.normalize_1 = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         super().__init__(self.root, split="val")
 
-        self.SDQ_transforms = SDQ_transforms(model, SenMap_dir, colorspace, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
+        
+        if OptD:
+            self.SDQ_transforms = SDQ_OptD_transforms(model, SenMap_dir, colorspace, J, a, b, DT_Y, DT_C, d_waterlevel_Y, d_waterlevel_C, QMAX_Y, QMAX_C, Lambda, Beta_S, Beta_W, Beta_X)
+        else:
+            self.SDQ_transforms = SDQ_transforms(model, SenMap_dir, colorspace, QF_Y, QF_C, J, a, b, Lambda, Beta_S, Beta_W, Beta_X)
+
         if resize_compress:
             self.SDQ_preprocess = self.resize_compression
         else:

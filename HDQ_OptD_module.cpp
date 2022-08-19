@@ -51,7 +51,8 @@ std::pair<py::array, float> py__call__(py::array_t<float, py::array::c_style | p
                                        py::array_t<float, py::array::c_style | py::array::forcecast> SenMap,
                                        string Model, int colorspace, int J, int a, int b, 
                                        float DT_Y, float DT_C, float d_waterlevel_Y, float d_waterlevel_C, 
-                                       int Qmax_Y, int Qmax_C){
+                                       int Qmax_Y, int Qmax_C
+                                       ){
   unsigned long size[2];
   size[0] = (unsigned long)array.shape()[1];
   size[1] = (unsigned long)array.shape()[2];

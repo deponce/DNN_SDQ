@@ -36,39 +36,42 @@ def main(args):
     const = 1
     if sens == "NoModel":
         const = 10
-    # d_list = [0.07]
-    # d_list.extend(np.arange(0.11, 0.2, 0.01))
+    dy_list = [0.35]
+    dc_list = [0.33]
+    # d_list.extend(np.arange(0.5, 5, 0.1))
     # d_list.extend(np.arange(0.21, 0.3, 0.01))
-    d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
-    d_waterlevel_C=[0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20]
+    # d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
+    # d_waterlevel_C=[0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20]
     tmp = 0
-    while(const <= 100):
-        for i, val in enumerate(d_waterlevel_Y):
-            args.d_waterlevel_Y = val * const
-            args.Qmax_Y = 46
-            args.Qmax_C = 46
-            # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
-            # for ratio in [1]:
+    for i in range(len(dy_list)):
+        args.d_waterlevel_Y = dy_list[i] * const
+        args.d_waterlevel_C = dc_list[i] * const
+        args.Qmax_Y = 19
+        args.Qmax_C = 27
+        # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
+        # for ratio in [1]:
+        # for args.Qmax_Y in range(1, 52, 3):
+        #     for args.Qmax_C in range(args.Qmax_Y, 52, 3):
+            # for ratio in [1]:  
             # args.d_waterlevel_C = ratio * args.d_waterlevel_Y
-            args.d_waterlevel_C = d_waterlevel_C[i] * const
+            # args.d_waterlevel_C = d_waterlevel_C[i] * const
             # max_q_c = np.ceil(255/Q)
             # for ratio in np.arange(1, max_q_c+1):
-                # args.Qmax_C = int(min(ratio * Q , 255))
-            args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
-            # print(args.output_txt)
-            BPP, Acc, Qmax_flag= running_func(args)
-            # BPP , Acc = 0 , 0
-            key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
-            data_all[key] = [BPP, Acc]
-            write_live("./RESULTS/"+data_file_name, key, [BPP, Acc])
-            if (abs(tmp - BPP ) < 1e-3) or Qmax_flag:
-                break
-            tmp = BPP
+            #     args.Qmax_C = int(min(ratio * Q , 255))
+        args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+        # print(args.output_txt)
+        BPP, Acc, Qmax_flag= running_func(args)
+        # BPP , Acc = 0 , 0
+        key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+        data_all[key] = [BPP, Acc]
+        write_live("./RESULTS_1/"+data_file_name, key, [BPP, Acc])
+        if (abs(tmp - BPP ) < 1e-5) or Qmax_flag:
+            break
+        tmp = BPP
 
-            #         break
-            #     break
-            # break
-        const *= 10
+    #         break
+    #     break
+    # break
 
     with open("./RESULTS/"+data_file_name +'.pkl', 'wb') as handle:
         pickle.dump(data_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
