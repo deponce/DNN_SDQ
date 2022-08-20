@@ -14,7 +14,7 @@ import random
 import warnings
 
 
-num_workers=28
+num_workers=24
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -34,6 +34,14 @@ def main(args):
     J = args.J
     a = args.a
     b = args.b
+    Qmax_Y = args.Qmax_Y
+    Qmax_C = args.Qmax_C
+    DT_Y = args.DT_Y
+    DT_C = args.DT_C
+    d_waterlevel_Y = args.d_waterlevel_Y
+    d_waterlevel_C = args.d_waterlevel_C
+    resize_compress = args.resize_compress
+    OptD = args.OptD
     QF_Y = args.QF_Y
     QF_C = args.QF_C
     Beta_S = args.Beta_S
@@ -56,12 +64,27 @@ def main(args):
     print("Beta_W=",Beta_W)
     print("Beta_X=",Beta_X)
     print("Lambda=",Lmbd)
-    # pretrained_model = models.vgg11(pretrained=True)
-    # pretrained_model = models.resnet18(pretrained=True)
-    # pretrained_model = models.squeezenet1_0(pretrained=True)
-    # pretrained_model = models.alexnet(pretrained=True)
-    # pretrained_model, model = load_model(model) 
-    _ = pretrained_model.to(device)
+
+    print("DT_Y:", DT_Y)
+    print("DT_C:", DT_C)
+    print("d_waterlevel_Y: ",d_waterlevel_Y)
+    print("d_waterlevel_C: ",d_waterlevel_C)
+    print("Qmax_Y =",Qmax_Y)
+    print("Qmax_C =",Qmax_C)
+    print("OptD enables =",OptD)
+
+    pretrained_model = []
+    pretrained_name = [
+                        "VGG11", 
+                        "Resnet18", 
+                        "Squeezenet", "Alexnet"
+    ]
+
+    for nm in pretrained_name: 
+        pretrained_model_buff = load_model(nm)
+        _ = pretrained_model_buff.to(device)
+        pretrained_model.append(pretrained_model_buff)
+    
     # transform = transforms.Compose([
     #                                 transforms.Scale(256),
     #                                 transforms.CenterCrop(224),
@@ -72,15 +95,23 @@ def main(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     
-
-    dataset = SDQ_loader(model, SenMap_dir=args.SenMap_dir, root=args.root, colorspace=args.colorspace,  QF_Y=QF_Y, QF_C=QF_C, J=J, a=a, b=b, Lambda=Lmbd,
-                                Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X, split="val", resize_compress=resize_compress)
+    # The Colorspace will be always 0 .... as it is the vanila SDQ with YUV only that will be similar for all networks.
+    model = "VGG11"
+    args.colorspace = 0
+    args.sens_dir="./SenMap_All/NoModel/VGG11"
+        dataset = SDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, 
+                            QF_Y=100, QF_C=100, 
+                            colorspace=args.colorspace, J=J, a=a, b=b,
+                            DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
+                            Lambda=Lmbd, Beta_S=Beta_S, Beta_W=Beta_W, Beta_X=Beta_X,
+                            split="val", resize_compress=resize_compress, OptD=args.OptD)
 
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
-
-
     
-    num_correct = 0
+    top1 = [0] * len(pretrained_model)
+    top5 = [0] * len(pretrained_model)
+
+    num_correct = [0] * len(pretrained_model)
     num_tests = 0
     BPP = 0
     cnt = 0
@@ -91,27 +122,35 @@ def main(args):
         if torch.sum(image_BPP) < 0:
            break
         BPP+=torch.sum(image_BPP)
-        pred = pretrained_model(image)
-        num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
-        if (cnt+1) %500 ==0:
-            l0 = "--> " + str(cnt) + "\n"
-            l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-            l2 = str(BPP.numpy()/num_tests) + "\n"
-            # l2 = ""
-            l = l0 + l1 + l2
-            print_file(l, args.output_txt)
+        for idx , model in enumerate(pretrained_model): 
+            pred = pretrained_model[idx](image)
+            num_correct[idx] += (pred.argmax(1) == labels).sum().item()
+            if (cnt+1) %500 ==0:
+                l0 = pretrained_name[idx] + " --> " + str(cnt) + "\n"
+                l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
+                l2 = str(BPP.numpy()/num_tests) + "\t" +  str(top1[idx].cpu().numpy()/num_tests) + "\t" + str(top5[idx].cpu().numpy()/num_tests) + "\n"
+                l3 = str(BPP.numpy()/num_tests) + "\n"
+                # l2 = ""
+                l = l0 + l1 + l2 + l3
+                print_file(l, args.output_txt)
         cnt += 1
 
-    l0 = "#"* 30 + "\n"
-    l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-    l2 = str(BPP.numpy()/num_tests) + "\n"
-    l = l0 + l1 + l2
-    print_file(l, args.output_txt)
-    l0 = "*"* 30 + "\n"
-    l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
-    l = l0 + l1
-    print_file(l, args.output_txt)
+    top1 = top1.cpu().numpy()
+    top5 = top5.cpu().numpy()
+    for idx , model in enumerate(pretrained_model): 
+        # l0 = "#"* 30 + "\n"
+        # l0 = l0 + pretrained_name[idx] + "\n"
+        # l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
+        # l2 = str(BPP.numpy()/num_tests) + "\n"
+        # l = l0 + l1 + l2
+        # print_file(l, args.output_txt)
+        l0 = "*"* 30 + "\n"
+        l0 = l0 + pretrained_name[idx] + "\n"
+        l1 = str((num_correct[idx]/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
+        l2 = str(top1[idx].cpu().numpy()/num_tests) + "\t" + str(top5[idx].cpu().numpy()/num_tests) + "\t" + str(BPP.numpy()/num_tests) + "\n"
+        l = l0 + l1 + l2
+        print_file(l, args.output_txt)
 
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="SDQ")
@@ -133,5 +172,14 @@ if '__main__' == __name__:
     parser.add_argument('--SenMap_dir', type=str, default="./SenMap/", 
                             help='Senstivity Directory')
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
+    parser.add_argument('--OptD', type=bool, default=False, help='OptD initialization for Quantization Table')
+    
+    parser.add_argument('--Qmax_Y', type=int, default=46, help='Maximum Quantization Step Y Channel')
+    parser.add_argument('--Qmax_C', type=int, default=46, help='Maximum Quantization Step C Channel')
+    parser.add_argument('--d_waterlevel_Y', type=float, default=-1, help='Waterfilling level on Y channel')
+    parser.add_argument('--d_waterlevel_C', type=float, default=-1, help='Waterfilling level on C channel')
+    parser.add_argument('--DT_Y', type=float, default=1, help='Target Distortion on Y channel')
+    parser.add_argument('--DT_C', type=float, default=1, help='Target Distortion on C channel')
+    
     args = parser.parse_args()
     main(args)
