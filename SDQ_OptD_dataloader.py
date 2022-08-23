@@ -40,13 +40,14 @@ def main(args):
     dc_list = [0.01]
     Qmaxy_list = [3]
     Qmaxc_list = [3]
-    beta_list = [10,20,30,40]
+    beta_list = [40,20,30,50]
 
-    # dy_list = [0.05,0.01,0.01]
-    # dc_list = [0.037500000000000006,0.015,0.015]
-    # Qmaxy_list = [15,3,15]
-    # Qmaxc_list = [15,3,15]
+    # dy_list = [0.01,0.05,0.01,0.01]
+    # dc_list = [0.01,0.037500000000000006,0.015,0.015]
+    # Qmaxy_list = [3,15,3,15]
+    # Qmaxc_list = [3,15,3,15]
     # beta_list = [10,30,30]
+    # lamda_list = [0.1,0.5,1]
 
     # d_list.extend(np.arange(0.5, 5, 0.1))
     # d_list.extend(np.arange(0.21, 0.3, 0.01))

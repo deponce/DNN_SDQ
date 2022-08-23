@@ -79,7 +79,9 @@ def main(args):
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
 
 
-    
+    top1 = 0
+    top5 = 0
+
     num_correct = 0
     num_tests = 0
     BPP = 0
@@ -92,26 +94,69 @@ def main(args):
            break
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
+        
+        topk = accuracy(pred, labels, topk=(1, 5)) 
+        acc1, acc5  = topk
+        top1 += acc1
+        top5 += acc5
+
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         if (cnt+1) %500 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
-            l2 = str(BPP.numpy()/num_tests) + "\n"
+            l2 = str(BPP.numpy()/num_tests) + "\t" + str((top1.cpu().numpy()/num_tests)*100) + "\t" + str((top5.cpu().numpy()/num_tests)*100) + "\n"
+            # l3 = str(BPP.numpy()/num_tests) + "\n"
             # l2 = ""
-            l = l0 + l1 + l2
+            l = l0 + l1 + l2 
             print_file(l, args.output_txt)
         cnt += 1
+
+    top1 = top1.cpu().numpy()
+    top5 = top5.cpu().numpy()
 
     l0 = "#"* 30 + "\n"
     l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
     l2 = str(BPP.numpy()/num_tests) + "\n"
-    l = l0 + l1 + l2
+    l = l0 + l1 + l2 
     print_file(l, args.output_txt)
     l0 = "*"* 30 + "\n"
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
-    l = l0 + l1
-    print_file(l, args.output_txt)
+    l2 = str((top1/num_tests)*100) + "\t" + str((top5/num_tests)*100) + str(BPP.numpy()/num_tests) + "\n"
+    l = l0 + l1 + l2
+    print_file(l, args.output_txt)    
+    # num_correct = 0
+    # num_tests = 0
+    # BPP = 0
+    # cnt = 0
+    # for dt in tqdm.tqdm(test_loader):
+    #     image, image_BPP, labels = dt
+    #     labels = labels.to(device)
+    #     image = image.to(device)
+    #     if torch.sum(image_BPP) < 0:
+    #        break
+    #     BPP+=torch.sum(image_BPP)
+    #     pred = pretrained_model(image)
+    #     num_correct += (pred.argmax(1) == labels).sum().item()
+    #     num_tests += len(labels)
+    #     if (cnt+1) %500 ==0:
+    #         l0 = "--> " + str(cnt) + "\n"
+    #         l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+    #         l2 = str(BPP.numpy()/num_tests) + "\n"
+    #         # l2 = ""
+    #         l = l0 + l1 + l2
+    #         print_file(l, args.output_txt)
+    #     cnt += 1
+
+    # l0 = "#"* 30 + "\n"
+    # l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
+    # l2 = str(BPP.numpy()/num_tests) + "\n"
+    # l = l0 + l1 + l2
+    # print_file(l, args.output_txt)
+    # l0 = "*"* 30 + "\n"
+    # l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
+    # l = l0 + l1
+    # print_file(l, args.output_txt)
 
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="SDQ")
