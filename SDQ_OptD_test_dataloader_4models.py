@@ -166,11 +166,18 @@ def running_func(args):
         for idx , model in enumerate(pretrained_model): 
             pred = pretrained_model[idx](image)
             num_correct[idx] += (pred.argmax(1) == labels).sum().item()
+
+
+            topk = accuracy(pred, labels, topk=(1, 5)) 
+            acc1, acc5  = topk
+            top1[idx] += acc1
+            top5[idx] += acc5
+
             if (cnt+1) %500 ==0:
                 l0 = pretrained_name[idx] + " --> " + str(cnt) + "\n"
                 l1 = str(num_correct[idx]/num_tests) + " = " + str(num_correct[idx]) + " / "+ str(num_tests) + "\n"
                 l2 = str(BPP.numpy()/num_tests) + "\t" +  str(top1[idx].cpu().numpy()/num_tests) + "\t" + str(top5[idx].cpu().numpy()/num_tests) + "\n"
-                l3 = str(BPP.numpy()/num_tests) + "\n"
+                # l3 = str(BPP.numpy()/num_tests) + "\n"
                 # l2 = ""
                 l = l0 + l1 + l2 + l3
                 print_file(l, args.output_txt)

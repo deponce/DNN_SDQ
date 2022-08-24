@@ -19,5 +19,5 @@ python3 SDQ_OptD_test_dataloader_4models.py --Model ${model} --J 4 --a 4 --b 4 \
 							  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
 							  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
 							  --Beta_S ${beta}  --Beta_W ${beta}  --Beta_X ${beta} --L ${Lambda} \
-							  --output_txt ${file} --device "cuda:0" --root ${root} \
+							  --output_txt ${file} --device "cpu" --root ${root} \
 							  --SenMap_dir ${sens_dir}  --OptD True
