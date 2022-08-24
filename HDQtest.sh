@@ -3,22 +3,22 @@ export root=/home/h2amer/work/workspace/ML_TS/
 # export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
 # Resize then Compress
-for model in Resnet18
-do
-	# for QF_YC in 85
-	for QF_YC in `seq 100 -1 1`
-	do
-		for colorspace in 0
-		do
-			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
-			export file=./Resize_Compress/HDQ/YUV420/${model}_PC52/${model}_QF${QF_YC}_YUV.txt
-			echo ${file}
-			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-										  -resize_compress --colorspace ${colorspace} \
-										  --output_txt ${file} --device "cuda:0" --root ${root}
-		done
-	done
-done
+# for model in Resnet18
+# do
+# 	# for QF_YC in 85
+# 	for QF_YC in `seq 100 -1 1`
+# 	do
+# 		for colorspace in 0
+# 		do
+# 			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
+# 			export file=./Resize_Compress/HDQ/YUV420/${model}_PC52/${model}_QF${QF_YC}_YUV.txt
+# 			echo ${file}
+# 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+# 										  -resize_compress --colorspace ${colorspace} \
+# 										  --output_txt ${file} --device "cuda:0" --root ${root}
+# 		done
+# 	done
+# done
 
 
 # Resize then Compress
@@ -111,22 +111,21 @@ done
 # 	done
 # done
 
-# export colorspace=0
-# export sens=SenMap_Normalized
+export colorspace=0
+export sens=SenMap_Normalized
 
-# for model in Resnet18 #Alexnet Resnet18 VGG11 Squeezenet
-# do
-# 		export file=./Resize_Compress/HDQ_OptD_correct_YUV_Qmax/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
-# 		export sens_dir=./SenMap_All/${sens}/${model}
-# 		# echo ${file}
-# 		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
-# 									  -resize_compress --colorspace ${colorspace} \
-# 									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 1 --DT_C 1 \
-# 									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
-# 									  --output_txt ${file} --device "cuda:0" --root ${root} \
-# 									  --SenMap_dir ${sens_dir}  
-
-# done
+for model in Resnet18 #Alexnet Resnet18 VGG11 Squeezenet
+do
+		export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+		export sens_dir=./SenMap_All/${sens}/${model}
+		# echo ${file}
+		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
+									  -resize_compress --colorspace ${colorspace} \
+									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 1 --DT_C 1 \
+									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
+									  --output_txt ${file} --device "cuda:0" --root ${root} \
+									  --SenMap_dir ${sens_dir}  --OptD True
+done
 
 # export colorspace=4
 # # export sens=SenMap_Normalized

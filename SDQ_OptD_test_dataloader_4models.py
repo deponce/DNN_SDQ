@@ -28,7 +28,48 @@ def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+
 def main(args):
+    fileFormat = args.output_txt
+    data_all = {}
+    sens = args.SenMap_dir.split("/")[2]
+    data_file_name =  args.Model+"_" + sens
+    const = 1
+    if sens == "NoModel":
+        const = 10
+    
+    beta_list = [0.1, 0.5, 1.0]
+    dy_list = [0.01,0.05,0.01,0.01]
+    dc_list = [0.01,0.037500000000000006,0.015,0.015]
+    Qmaxy_list = [3,15,3,15]
+    Qmaxc_list = [3,15,3,15]
+    for i in range(len(dy_list)):
+        args.d_waterlevel_Y = dy_list[i] * const
+        args.d_waterlevel_C = dc_list[i] * const
+        args.Qmax_Y = Qmaxy_list[i]
+        args.Qmax_C = Qmaxc_list[i]
+
+        args.output_txt = fileFormat%(args.Beta_S, args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+        BPP, Acc_t1, Acc_t5= running_func(args)
+        # BPP , Acc = 0 , 0
+        key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C)+"_" + str(args.Beta_S)
+        # data_all[key] = [BPP, Acc_t1, Acc_t5]
+        write_live("./RESULT_SDQ(g)_OptD(g)/"+data_file_name, key, [BPP, Acc_t1, Acc_t5])
+        # if (abs(tmp - BPP ) < 1e-5) or Qmax_flag:
+        #     break
+        # tmp = BPP
+
+
+def write_live(filename, key, vec):
+    f = open(filename +'.txt', "+a")
+    f.write(key + "\t")
+    for x in vec:
+        f.write(str(x)+ "\t")
+    f.write("\n")
+    f.close()   
+
+
+def running_func(args):
     Batch_size = 1
     model = args.Model
     J = args.J
@@ -51,7 +92,6 @@ def main(args):
     resize_compress = args.resize_compress
     eps = 10
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
-    pretrained_model = load_model(model)
     print(device)
     print_exp_details_SDQ(args)
     print("Model: ", model)
@@ -99,7 +139,7 @@ def main(args):
     model = "VGG11"
     args.colorspace = 0
     args.sens_dir="./SenMap_All/NoModel/VGG11"
-        dataset = SDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, 
+    dataset = SDQ_loader(model=model, SenMap_dir=args.SenMap_dir, root=args.root, 
                             QF_Y=100, QF_C=100, 
                             colorspace=args.colorspace, J=J, a=a, b=b,
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,

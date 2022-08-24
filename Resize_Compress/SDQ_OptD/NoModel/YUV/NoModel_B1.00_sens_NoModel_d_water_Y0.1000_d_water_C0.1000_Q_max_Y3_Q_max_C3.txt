@@ -1,0 +1,24 @@
+cuda:0
+Model: NoModel
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 50
+QF_C = 50
+Beta_S = 1.0
+Beta_W = 1.0
+Beta_X = 1.0
+Lambda = 0.1
+cuda:0
+Model: NoModel
+ColorSpace: 0
+J = 4
+a = 4
+b = 4
+QF_Y = 50
+QF_C = 50
+Beta_S = 1.0
+Beta_W = 1.0
+Beta_X = 1.0
+Lambda = 0.1
