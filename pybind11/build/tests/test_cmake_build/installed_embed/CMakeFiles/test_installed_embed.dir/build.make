@@ -79,7 +79,7 @@ test_installed_embed_EXTERNAL_OBJECTS =
 
 test_cmake_build: CMakeFiles/test_installed_embed.dir/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/tests/test_cmake_build/embed.cpp.o
 test_cmake_build: CMakeFiles/test_installed_embed.dir/build.make
-test_cmake_build: /home/h2amer/anaconda3/lib/libpython3.7m.so
+test_cmake_build: /home/linuxbrew/.linuxbrew/opt/python@3.9/lib/libpython3.9.so
 test_cmake_build: CMakeFiles/test_installed_embed.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/tests/test_cmake_build/installed_embed/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable test_cmake_build"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_installed_embed.dir/link.txt --verbose=$(VERBOSE)

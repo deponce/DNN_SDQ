@@ -53,8 +53,8 @@ CMAKE_BINARY_DIR = /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/t
 # Include the progress variables for this target.
 include CMakeFiles/check_installed_target.dir/progress.make
 
-CMakeFiles/check_installed_target: test_cmake_build.cpython-37m-x86_64-linux-gnu.so
-	/usr/bin/cmake -E env PYTHONPATH=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/tests/test_cmake_build/installed_target /home/h2amer/anaconda3/bin/python /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/tests/test_cmake_build/installed_target/../test.py test_installed_target
+CMakeFiles/check_installed_target: test_cmake_build.cpython-39-x86_64-linux-gnu.so
+	/usr/bin/cmake -E env PYTHONPATH=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/tests/test_cmake_build/installed_target /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ_env/bin/python /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/tests/test_cmake_build/installed_target/../test.py test_installed_target
 
 check_installed_target: CMakeFiles/check_installed_target
 check_installed_target: CMakeFiles/check_installed_target.dir/build.make

@@ -31,6 +31,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "./HDQ/HDQ_optD.h"
+// #include "./HDQ/HDQ_optD_SWE.h"
 #include "./SDQ/load.h"
 // using namespace cv;
 using namespace std;

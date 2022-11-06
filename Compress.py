@@ -1,10 +1,11 @@
 import numpy as np
+import HDQ
 import SDQ
 import torchvision.datasets as datasets
 from torchvision import transforms
 import torch
-import HDQ
 import HDQ_OptD
+import HDQ_OptD_SWE
 import SDQ_OptD
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -37,13 +38,13 @@ class SDQ_transforms(torch.nn.Module):
         # print("Lambda=",Lambda)
         # exit(0)
         self.sen_map = np.ones((3,64))
-        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
-        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
-        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y.txt")
+        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb.txt")
+        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr.txt")
 
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
     def __call__(self, compressed_img):
         compressed_img = np.asarray(compressed_img)
         compressed_img = np.transpose(compressed_img, (2,0,1))
@@ -90,13 +91,13 @@ class SDQ_OptD_transforms(torch.nn.Module):
         # print("Lambda=",Lambda)
         # exit(0)
         self.sen_map = np.ones((3,64))
-        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
-        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
-        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y.txt")
+        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb.txt")
+        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr.txt")
 
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
     def __call__(self, compressed_img):
         compressed_img = np.asarray(compressed_img)
         compressed_img = np.transpose(compressed_img, (2,0,1))
@@ -131,10 +132,12 @@ class HDQ_transforms(torch.nn.Module):
         return {'image': compressed_img, 'BPP': BPP}
 
 class HDQ_OptD_transforms(torch.nn.Module):
-    def __init__(self, model="NoModel", SenMap_dir="./SenMap/", colorspace=0, J=4, a=4, b=4, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, Qmax_Y=46, Qmax_C=46):
+    def __init__(self, model="NoModel", SenMap_dir="./SenMap/", colorspace=0, J=4, a=4, b=4, QF_Y=50, QF_C=50, DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, Qmax_Y=46, Qmax_C=46):
         self.J = J
         self.a = a
         self.b = b
+        self.QF_Y = QF_Y
+        self.QF_C = QF_C
         self.model = model
         self.colorspace=colorspace
         self.DT_Y = DT_Y
@@ -145,9 +148,9 @@ class HDQ_OptD_transforms(torch.nn.Module):
         self.Qmax_C = Qmax_C        
 
         self.sen_map = np.ones((3,64))
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
 
         # print(self.sen_map)
 
@@ -155,10 +158,13 @@ class HDQ_OptD_transforms(torch.nn.Module):
         sample = np.asarray(sample)
         sample = np.transpose(sample, (2,0,1))
         # compressed_img, BPP  = sample, 0.0
-        compressed_img, BPP = HDQ_OptD.__call__(sample, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b,
+        # OLD ---> HDQ_OptD.__call__
+        compressed_img, BPP = HDQ_OptD_SWE.__call__(sample, self.sen_map, self.model, self.colorspace, self.J, self.a, self.b, self.QF_Y, self.QF_C,
                                            self.DT_Y, self.DT_C, self.d_waterlevel_Y, 
                                            self.d_waterlevel_C, self.Qmax_Y, self.Qmax_C)
         compressed_img = np.round(compressed_img)    
-        compressed_img = np.uint8(compressed_img) 
+        compressed_img = np.uint8(compressed_img)
         compressed_img = np.transpose(compressed_img, (1,2,0))
+        # plt.imshow(compressed_img)
+        # plt.show()
         return {'image': compressed_img, 'BPP': BPP}

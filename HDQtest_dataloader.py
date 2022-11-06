@@ -28,7 +28,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def main(args):
-    Batch_size = 50
+    Batch_size = 25
     model = args.Model
     J = args.J
     a = args.a
@@ -45,6 +45,7 @@ def main(args):
     print("b =", b)
     print("QF_Y =",QF_Y)
     print("QF_C =",QF_C)
+    print("Resize_compress =",resize_compress)
 
     # pretrained_model = models.vgg11(pretrained=True)
     # pretrained_model = models.resnet18(pretrained=True)
@@ -71,6 +72,7 @@ def main(args):
     num_tests = 0
     BPP = 0
     cnt = 0
+    loss = 0
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
         # exit(0)
@@ -78,6 +80,8 @@ def main(args):
         image = image.to(device)
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
+        # breakpoint()
+        loss += float(torch.nn.CrossEntropyLoss()(pred, labels))
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         if (cnt+1) %100 ==0:
@@ -97,7 +101,8 @@ def main(args):
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1
     print_file(l, args.output_txt)
-
+    l = str(loss/num_tests) + "\n"
+    print_file("average loss = "+l, args.output_txt)
 
 if '__main__' == __name__:
     parser = argparse.ArgumentParser(description="HDQ")
@@ -107,7 +112,7 @@ if '__main__' == __name__:
     parser.add_argument('--b', type=int, default=4, help='Subsampling b')
     parser.add_argument('--QF_Y', type=int, default=50, help='Quality factor of Y channel')
     parser.add_argument('--QF_C', type=int, default=50, help='Quality factor of Cb & Cr channel')
-    parser.add_argument('-resize_compress', action='store_true', help='For Resize --> Compress set True')
+    parser.add_argument('--resize_compress', type=bool, default=False, help='For Resize --> Compress set True')
     parser.add_argument('--output_txt', type=str, help='output txt file')
     parser.add_argument('--device', type=str, default="cuda:0", help='cpu or cuda:0')
     parser.add_argument('--root', type=str, default="/home/h2amer/AhmedH.Salamah/ilsvrc2012", 

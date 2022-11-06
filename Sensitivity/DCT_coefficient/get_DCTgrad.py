@@ -56,8 +56,8 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
     thr = Nexample
     model_name = model
 
-    main_dir = "/home/h2amer/AhmedH.Salamah/workspace_pc15/JPEG_lin/DNN_SDQ/Sensitivity/DCT_coefficient"
-    
+    # main_dir = "/home/h2amer/AhmedH.Salamah/workspace_pc15/JPEG_lin/DNN_SDQ/Sensitivity/DCT_coefficient"
+    main_dir = "/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/Sensitivity/DCT_coefficient"
     print("code run on", device)
 
     # Trans = [transforms.ToTensor(),
@@ -66,6 +66,14 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
     #          transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])]
     # transform = transforms.Compose(Trans)
 
+    # transform = transforms.Compose(
+    #         [
+    #             transforms.ToTensor(),
+    #             transforms.Resize((224,224)),
+    #             transforms.Normalize(mean=[0, 0, 0], std=[1/255., 1/255., 1/255.])
+    #         ]
+    #     )
+
     transform = transforms.Compose([
                                      transforms.Resize(256),
                                      transforms.CenterCrop(224),
@@ -73,7 +81,8 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
                                      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                    ])
 
-    dataset = random_sampler(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", t_split='train',transform=transform)
+    # dataset = random_sampler(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", t_split='train',transform=transform)
+    dataset = random_sampler(root="/home/h2amer/work/workspace/ML_TS", t_split='training_original',transform=transform)
 
     # dataset = torchvision.datasets.ImageNet(root="~/project/data", split='train',
     #                                         transform=transform)
@@ -83,7 +92,7 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
     test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=16)
                         # , collate_fn=my_collate)
 
-    pretrained_model = get_model(model_name)
+    pretrained_model = get_model(model_name, device)
     _ = pretrained_model.to(device)
 
     
@@ -102,6 +111,7 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
         #         data = torch.cat((data[:idx,:,:,:], data[idx+1:,:,:,:]), axis = 0)
         #     samples_count[target_] += 1
         data, target = data.to(device), target.to(device)  # [0,225]
+        # data = normalize(Scale2One(data))
         img_shape = data.shape[-2:]
         ycbcr_data = rgb_to_ycbcr(data)
         input_DCT_block_batch = block_dct(blockify(ycbcr_data, 8))
@@ -114,6 +124,9 @@ def main(model = 'alexnet', Batch_size = 100, Nexample= 10000):
         output = pretrained_model(recoverd_RGB_img)
         # loss = my_CrossEntropyLoss(output, target)
         loss = torch.nn.CrossEntropyLoss()(output, target)
+
+        # FIX ME
+        # loss = F.nll_loss(output, target)
         pretrained_model.zero_grad()
         loss.backward()
         data_grad = torch.mean(torch.abs(input_DCT_block_batch.grad), dim = 2).transpose(1,0).detach().cpu().numpy()

@@ -109,6 +109,19 @@ void block_2_seqdct(float blockified_img_Y[][8][8],
     }
 }
 
+
+void deepcopy(float X[][64], float Y[][64], int N_block)
+{
+
+    for(int N=0; N<N_block; N++){
+        for (int idx = 0 ; idx<64 ; idx++)
+        {
+            Y[N][idx] = X[N][idx];
+        }
+    }
+
+}
+
 void irotation(float *s1, int idx1, int idx2,
 
                float *s2, int k){

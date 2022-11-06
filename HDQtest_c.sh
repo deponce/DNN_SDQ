@@ -110,21 +110,42 @@ export root=/home/h2amer/work/workspace/ML_TS/
 
 # done
 
+
+# -------------------------------------------------------
+
+
+
+
 export colorspace=0
 # export sens=SenMap_Normalized
 export sens=NoModel
 
-for model in Resnet18
+# for model in Mnasnet #Alexnet Resnet18 VGG11 Squeezenet
+# do
+# 		export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+# 		export sens_dir=./SenMap_All/${sens}/${model}
+# 		# echo ${file}
+# 		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
+# 									  -resize_compress --colorspace ${colorspace} \
+# 									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 1 --DT_C 1 \
+# 									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
+# 									  --output_txt ${file} --device "cuda:1" --root ${root} \
+# 									  --SenMap_dir ${sens_dir}  --OptD True
+# done
+
+# to tune low rate
+
+
+for model in mobilenet_v2 # Mnasnet Regnet Alexnet Resnet18 VGG11 Mnasnet
 do
-		export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+		# export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+		export file=./Resize_Compress/HDQ_OptD_new_senmap_low_rate/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
 		export sens_dir=./SenMap_All/${sens}/${model}
 		# echo ${file}
 		python3 HDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
 									  -resize_compress --colorspace ${colorspace} \
-									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
+									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 1 --DT_C 1 \
 									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
 									  --output_txt ${file} --device "cuda:1" --root ${root} \
 									  --SenMap_dir ${sens_dir}  --OptD True
-
 done
-
