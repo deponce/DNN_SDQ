@@ -13,7 +13,7 @@ import random
 import warnings
 import pickle
 
-num_workers=3
+num_workers=5
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -36,21 +36,26 @@ def main(args):
     const = 1
     if sens == "NoModel":
         const = 10
-    dy_list = []
+    # dy_list = []
     # dy_list = [0.01]
     # dc_list = [0.01]
 
-    dy_list = [-1]
-    dc_list = [-1]
+    # dy_list = [-1]
+    # dc_list = [-1]
+
+    qy_list = np.arange(100,80,-1)
+    qc_list = np.arange(100,80,-1)
 
     # dy_list.extend(np.arange(0.005, 0.01, 0.001))
     # dy_list.extend(np.arange(0.01, 0.11, 0.01))
     # d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
     # d_waterlevel_C=[0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20]
     tmp = 0
-    for i in range(len(dy_list)):
-        args.d_waterlevel_Y = dy_list[i] * const
-        args.d_waterlevel_C = dc_list[i] * const
+    for i in range(len(qy_list)):
+        # args.d_waterlevel_Y = dy_list[i] * const
+        # args.d_waterlevel_C = dc_list[i] * const
+        args.QF_Y = qy_list[i]
+        args.QF_C = qc_list[i]
         args.Qmax_Y = 46
         args.Qmax_C = 46
         # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
@@ -64,13 +69,13 @@ def main(args):
                 # max_q_c = np.ceil(255/Q)
                 # for ratio in np.arange(1, max_q_c+1):
                 #     args.Qmax_C = int(min(ratio * Q , 255))
-        args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+        args.output_txt = fileFormat%(args.QF_Y, args.QF_C, args.Qmax_Y, args.Qmax_C)
         # print(args.output_txt)
         BPP, Acc, Qmax_flag= running_func(args)
         # BPP , Acc = 0 , 0
-        key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+        key = str(args.QF_Y) + "_" + str(args.QF_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
         # data_all[key] = [BPP, Acc]
-        write_live("./RESULTS_new_senmap/"+data_file_name, key, [BPP, Acc])
+        write_live("./RESULTS_new_senmap_SWE/"+data_file_name, key, [BPP, Acc])
         if (abs(tmp - BPP ) < 1e-4) or Qmax_flag:
             break
         tmp = BPP
@@ -132,13 +137,15 @@ def write_live(filename, key, vec):
 
 
 def running_func(args):
-    Batch_size = 3
+    Batch_size = 25
     model = args.Model
     J = args.J
     a = args.a
     b = args.b
     Qmax_Y = args.Qmax_Y
     Qmax_C = args.Qmax_C
+    QF_Y = args.QF_Y
+    QF_C = args.QF_C
     DT_Y = args.DT_Y
     DT_C = args.DT_C
     d_waterlevel_Y = args.d_waterlevel_Y
@@ -149,13 +156,15 @@ def running_func(args):
     # print_exp_details(args)
     print("Model: ", model)
     print("Colorspace: ", args.colorspace)
-    print("J =", J)
-    print("a =", a)
-    print("b =", b)
-    print("DT_Y:", DT_Y)
-    print("DT_C:", DT_C)
-    print("d_waterlevel_Y: ",d_waterlevel_Y)
-    print("d_waterlevel_C: ",d_waterlevel_C)
+    # print("J =", J)
+    # print("a =", a)
+    # print("b =", b)
+    print("QF_Y:", QF_Y)
+    print("QF_C:", QF_C)
+    # print("DT_Y:", DT_Y)
+    # print("DT_C:", DT_C)
+    # print("d_waterlevel_Y: ",d_waterlevel_Y)
+    # print("d_waterlevel_C: ",d_waterlevel_C)
     print("Qmax_Y =",Qmax_Y)
     print("Qmax_C =",Qmax_C)
     print("OptD enables =",OptD)
@@ -177,7 +186,7 @@ def running_func(args):
     #                                 ])
     # dataset = datasets.ImageNet(root="/home/h2amer/AhmedH.Salamah/ilsvrc2012", split='val', transform=transform)
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    dataset = HDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=80, QF_C=80, 
+    dataset = HDQ_loader(   model=model, SenMap_dir=args.SenMap_dir, root=args.root, QF_Y=QF_Y, QF_C=QF_C, 
                             colorspace=args.colorspace, J=J, a=a, b=b,
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
                             split="val", resize_compress=resize_compress, OptD=args.OptD)
@@ -240,6 +249,8 @@ if '__main__' == __name__:
     parser.add_argument('--d_waterlevel_C', type=float, default=-1, help='Waterfilling level on C channel')
     parser.add_argument('--DT_Y', type=float, default=1, help='Target Distortion on Y channel')
     parser.add_argument('--DT_C', type=float, default=1, help='Target Distortion on C channel')
+    parser.add_argument('--QF_Y', type=float, default=100, help='QF of Y channel')
+    parser.add_argument('--QF_C', type=float, default=100, help='QF of C channel')
     parser.add_argument('-resize_compress', action='store_true', help='For Resize --> Compress set True')
     parser.add_argument('--output_txt', type=str, help='output txt file')
     parser.add_argument('--device', type=str, default="cuda:0", help='cpu or cuda:0')

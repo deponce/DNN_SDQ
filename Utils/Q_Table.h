@@ -444,6 +444,7 @@ void SWE_cal(float Sen_Map[3][64],
         {
             tmp = seq_dct_coefs_Y_RAW[j][i]-seq_dct_coefs_Y[j][i];
             SWE_Y += Sen_Map[0][i]*pow(tmp, 2);
+            // SWE_Y += pow(tmp, 2);
 
         }
     }
@@ -454,9 +455,11 @@ void SWE_cal(float Sen_Map[3][64],
         {
             tmp = seq_dct_coefs_Cb_RAW[j][i]-seq_dct_coefs_Cb[j][i];
             SWE_C += Sen_Map[1][i]*pow(tmp, 2);
+            // SWE_C += pow(tmp, 2);
 
             tmp = seq_dct_coefs_Cr_RAW[j][i]-seq_dct_coefs_Cr[j][i];
             SWE_C += Sen_Map[2][i]*pow(tmp, 2);
+            // SWE_C += pow(tmp, 2);
 
         }
     }

@@ -129,10 +129,6 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     auto seq_dct_coefs_Cr = new float[HDQ_OptD::seq_len_C][64];
 
 
-    auto seq_dct_coefs_Y_RAW = new float[HDQ_OptD::seq_len_Y][64];
-    auto seq_dct_coefs_Cb_RAW = new float[HDQ_OptD::seq_len_C][64];
-    auto seq_dct_coefs_Cr_RAW = new float[HDQ_OptD::seq_len_C][64];
-
     auto seq_dct_idxs_Y = new float[HDQ_OptD::seq_len_Y][64];
     auto seq_dct_idxs_Cb = new float[HDQ_OptD::seq_len_C][64];
     auto seq_dct_idxs_Cr = new float[HDQ_OptD::seq_len_C][64];
@@ -152,10 +148,6 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     block_2_seqdct(blockified_img_Cr, seq_dct_coefs_Cr, HDQ_OptD::seq_len_C);
 
 
-    deepcopy(seq_dct_coefs_Y, seq_dct_coefs_Y_RAW, HDQ_OptD::seq_len_Y);
-    deepcopy(seq_dct_coefs_Cb, seq_dct_coefs_Cb_RAW, HDQ_OptD::seq_len_C);
-    deepcopy(seq_dct_coefs_Cr, seq_dct_coefs_Cr_RAW, HDQ_OptD::seq_len_C);
-
     Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y);
     Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
@@ -171,20 +163,19 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     // // SWE
     // cout << "A: " << DT_Y << endl;
     
-    SWE_cal(Sen_Map,
-            seq_dct_coefs_Y_RAW, seq_dct_coefs_Cb_RAW, seq_dct_coefs_Cr_RAW, 
+    SWE_cal(HDQ_OptD::Sen_Map,
+            seq_dct_coefs_Y, seq_dct_coefs_Cb, seq_dct_coefs_Cr, 
             seq_dct_idxs_Y, seq_dct_idxs_Cb, seq_dct_idxs_Cr,
-            DT_Y, DT_C, HDQ_OptD::seq_len_Y, HDQ_OptD::seq_len_C);
+            HDQ_OptD::DT_Y, HDQ_OptD::DT_C, HDQ_OptD::seq_len_Y, HDQ_OptD::seq_len_C);
 
-    cout << DT_Y << " -- " << DT_C << endl;
+    // cout << "A : " << DT_Y << " -- " << DT_C << endl;
     // 
 
-
     // Customized Quantization Table
-    quantizationTable_OptD_Y(HDQ_OptD::Sen_Map, seq_dct_coefs_Y_RAW, HDQ_OptD::Q_table_Y, 
+    quantizationTable_OptD_Y(HDQ_OptD::Sen_Map, seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, 
                 HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
     // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
-    quantizationTable_OptD_C(HDQ_OptD::Sen_Map, seq_dct_coefs_Cb_RAW, seq_dct_coefs_Cr_RAW, HDQ_OptD::Q_table_C
+    quantizationTable_OptD_C(HDQ_OptD::Sen_Map, seq_dct_coefs_Cb, seq_dct_coefs_Cr, HDQ_OptD::Q_table_C
         , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
     // cout << "DT_C = " << HDQ_OptD::DT_C << "\t" << "d_waterLevel_C = " << HDQ_OptD::d_waterlevel_C << endl;
    
@@ -199,12 +190,14 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     }
     //
 
-    Quantize(seq_dct_coefs_Y_RAW,seq_dct_idxs_Y, 
+    Quantize(seq_dct_coefs_Y,seq_dct_idxs_Y, 
              HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y);
-    Quantize(seq_dct_coefs_Cb_RAW,seq_dct_idxs_Cb,
+    Quantize(seq_dct_coefs_Cb,seq_dct_idxs_Cb,
              HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
-    Quantize(seq_dct_coefs_Cr_RAW,seq_dct_idxs_Cr,
+    Quantize(seq_dct_coefs_Cr,seq_dct_idxs_Cr,
              HDQ_OptD::Q_table_C,HDQ_OptD::seq_len_C);
+    
+
 
     
     
@@ -250,10 +243,22 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     float BPP=0;
     float file_size = EntACC+EntACY+EntDCC+EntDCY+FLAG_SIZE; // Run_length coding
     BPP = file_size/HDQ_OptD::img_shape_Y[0]/HDQ_OptD::img_shape_Y[1];
-    delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
+    
+
+    
     Dequantize(seq_dct_idxs_Y, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][64]
     Dequantize(seq_dct_idxs_Cb, HDQ_OptD::Q_table_C, HDQ_OptD::seq_len_C);
     Dequantize(seq_dct_idxs_Cr, HDQ_OptD::Q_table_C, HDQ_OptD::seq_len_C);
+
+    SWE_cal(HDQ_OptD::Sen_Map,
+        seq_dct_coefs_Y, seq_dct_coefs_Cb, seq_dct_coefs_Cr, 
+        seq_dct_idxs_Y, seq_dct_idxs_Cb, seq_dct_idxs_Cr,
+        HDQ_OptD::DT_Y, HDQ_OptD::DT_C, HDQ_OptD::seq_len_Y, HDQ_OptD::seq_len_C);
+
+    // cout << "B : " << DT_Y << " -- " << DT_C << endl;
+
+    delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
+
     seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
     seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ_OptD::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ_OptD::seq_len_C);
