@@ -3,7 +3,7 @@ import tqdm
 import torchvision.datasets as datasets
 from torchvision import transforms
 import torch
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from torchvision import models
 # from PIL import Image
 from utils import *
@@ -13,7 +13,7 @@ import random
 import warnings
 import pickle
 
-num_workers=5
+num_workers=20
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -40,11 +40,11 @@ def main(args):
     # dy_list = [0.01]
     # dc_list = [0.01]
 
-    # dy_list = [-1]
-    # dc_list = [-1]
+    qy_list = [95]
+    qc_list = [95]
 
-    qy_list = np.arange(100,80,-1)
-    qc_list = np.arange(100,80,-1)
+    # qy_list = np.arange(100,80,-1)
+    # qc_list = np.arange(100,80,-1)
 
     # dy_list.extend(np.arange(0.005, 0.01, 0.001))
     # dy_list.extend(np.arange(0.01, 0.11, 0.01))
@@ -137,7 +137,7 @@ def write_live(filename, key, vec):
 
 
 def running_func(args):
-    Batch_size = 25
+    Batch_size = 10
     model = args.Model
     J = args.J
     a = args.a
@@ -191,7 +191,7 @@ def running_func(args):
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
                             split="val", resize_compress=resize_compress, OptD=args.OptD)
 
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
     # test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
     num_correct = 0
     num_tests = 0
@@ -212,6 +212,7 @@ def running_func(args):
         loss += float(torch.nn.CrossEntropyLoss()(pred, labels))
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
+        
         if (cnt+1) %100 ==0:
             l0 = "--> " + str(cnt) + "\n"
             l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"
@@ -219,6 +220,7 @@ def running_func(args):
             l = l0 + l1 + l2
             print_file(l, args.output_txt)
         cnt += 1
+
 
     l0 = "#"* 30 + "\n"
     l1 = str(num_correct/num_tests) + " = " + str(num_correct) + " / "+ str(num_tests) + "\n"

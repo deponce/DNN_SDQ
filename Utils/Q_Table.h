@@ -431,48 +431,71 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
 
 // m += pow((Y1-Y2), 2);
 
-void SWE_cal(float Sen_Map[3][64], 
-            float seq_dct_coefs_Y_RAW[][64], float seq_dct_coefs_Cb_RAW[][64], float seq_dct_coefs_Cr_RAW[][64], 
-            float seq_dct_coefs_Y[][64], float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64],
-            float& DT_Y, float& DT_C, int N_block_Y, int N_block_C)
+float SWE(float Sen_Map[3][64], int Sens_index,
+                float seq_dct_coefs_RAW[][64],
+                float seq_dct_coefs[][64],
+                int N_block)
 {
-    float SWE_Y = 0 , SWE_C = 0;
+    float SWE = 0;
     float tmp;
     for (int i = 0; i < 64; i++ )
     {
-        for (int j=0;j<N_block_Y; j++)
+        for (int j=0;j<N_block; j++)
         {
-            tmp = seq_dct_coefs_Y_RAW[j][i]-seq_dct_coefs_Y[j][i];
-            SWE_Y += Sen_Map[0][i]*pow(tmp, 2);
-            // SWE_Y += pow(tmp, 2);
+            tmp = seq_dct_coefs_RAW[j][i]-seq_dct_coefs[j][i];
+            SWE += Sen_Map[Sens_index][i]*pow(tmp, 2);
 
         }
     }
 
-    for (int i = 0; i < 64; i++ )
-    {
-        for (int j=0;j<N_block_C; j++)
-        {
-            tmp = seq_dct_coefs_Cb_RAW[j][i]-seq_dct_coefs_Cb[j][i];
-            SWE_C += Sen_Map[1][i]*pow(tmp, 2);
-            // SWE_C += pow(tmp, 2);
+    SWE /= N_block;
 
-            tmp = seq_dct_coefs_Cr_RAW[j][i]-seq_dct_coefs_Cr[j][i];
-            SWE_C += Sen_Map[2][i]*pow(tmp, 2);
-            // SWE_C += pow(tmp, 2);
-
-        }
-    }
-
-    SWE_Y /= N_block_Y;
-    SWE_C /= N_block_C;
-
-    DT_Y = SWE_Y;
-    DT_C = SWE_C;
+    return SWE;
 
 } 
 
-void quantizationTable_OptD_C(float Sen_Map[3][64], float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_C)
+
+// float SWE_cal_C(float Sen_Map[3][64], 
+//             float seq_dct_coefs_Cb_RAW[][64], float seq_dct_coefs_Cr_RAW[][64], 
+//             float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64],
+//             int N_block_C)
+// {
+//     float SWE_C = 0;
+//     float tmp;
+
+//     for (int i = 0; i < 64; i++ )
+//     {
+//         for (int j=0;j<N_block_C; j++)
+//         {
+//             tmp = seq_dct_coefs_Cb_RAW[j][i]-seq_dct_coefs_Cb[j][i];
+//             SWE_C += Sen_Map[1][i]*pow(tmp, 2);
+//             // SWE_C += pow(tmp, 2);
+
+//             tmp = seq_dct_coefs_Cr_RAW[j][i]-seq_dct_coefs_Cr[j][i];
+//             SWE_C += Sen_Map[2][i]*pow(tmp, 2);
+//             // SWE_C += pow(tmp, 2);
+
+//         }
+//     }
+
+//     SWE_C /= N_block_C;
+
+//     return SWE_C;
+
+// } 
+
+void print_Q_table(float Q_Table[64])
+{
+    for (int i=0 ; i<64; i++)
+    {
+        cout << Q_Table[i] << "\t";
+    }
+
+    cout << endl;
+}
+
+void quantizationTable_OptD_C(float Sen_Map[3][64], float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], 
+        float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_C, float& max_var_C)
 {
     float varianceData_Cb[64], varianceData_Cr[64], varianceData_CbCr[128];
     float lambdaData_Cb[64],  lambdaData_Cr[64];   // No need for DC
@@ -495,9 +518,15 @@ void quantizationTable_OptD_C(float Sen_Map[3][64], float seq_dct_coefs_Cb[][64]
         }
     }
 
+    if(max_var_C  == 0)
+    {
+        max_var_C = *max_element(varianceData_CbCr, varianceData_CbCr + 128);
+    }
+
     OptD_C(Sen_Map, varianceData_CbCr, lambdaData_Cb, lambdaData_Cr, Q_Table, DT, d_waterLevel, QMAX_C);
 }
-void quantizationTable_OptD_Y(float Sen_Map[3][64], float seq_dct_coefs[][64], float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_Y)
+void quantizationTable_OptD_Y(float Sen_Map[3][64], float seq_dct_coefs[][64], float Q_Table[64], int N_block, 
+                float& DT, float& d_waterLevel, int QMAX_Y , float& max_var_Y)
 {
     float varianceData[64];
     float lambdaData[64];   // No need for DC
@@ -506,6 +535,11 @@ void quantizationTable_OptD_Y(float Sen_Map[3][64], float seq_dct_coefs[][64], f
     for(int i = 0; i <64; i++)
     {
         varianceData[i] = Sen_Map[0][i] * varianceData[i];
+    }
+
+    if(max_var_Y  == 0)
+    {
+        max_var_Y = *max_element(varianceData, varianceData + 64);
     }
 
     OptD_Y(Sen_Map, varianceData, lambdaData, Q_Table, DT, d_waterLevel,QMAX_Y);

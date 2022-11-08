@@ -162,12 +162,13 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     // HDQ_OptD::QMAX_C = 2 * max_q + 1;
     // cout << "Max Quantization Step CbCr : " <<HDQ_OptD::QMAX_C << endl;
 
+    float dummy;
     // Customized Quantization Table
     quantizationTable_OptD_Y(HDQ_OptD::Sen_Map, seq_dct_coefs_Y, HDQ_OptD::Q_table_Y, 
-                HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y);
+                HDQ_OptD::seq_len_Y, HDQ_OptD::DT_Y, HDQ_OptD::d_waterlevel_Y, HDQ_OptD::QMAX_Y, dummy);
     // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
     quantizationTable_OptD_C(HDQ_OptD::Sen_Map, seq_dct_coefs_Cb, seq_dct_coefs_Cr, HDQ_OptD::Q_table_C
-        , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C);
+        , HDQ_OptD::seq_len_C, HDQ_OptD::DT_C, HDQ_OptD::d_waterlevel_C, HDQ_OptD::QMAX_C, dummy);
     // cout << "DT_C = " << HDQ_OptD::DT_C << "\t" << "d_waterLevel_C = " << HDQ_OptD::d_waterlevel_C << endl;
    
     int check = checkQmax(HDQ_OptD::Q_table_Y, HDQ_OptD::QMAX_Y, HDQ_OptD::Q_table_C, HDQ_OptD::QMAX_C);
