@@ -64,7 +64,7 @@ class HDQ_OptD{
         float EntACC = 0;
         float EntDCY = 0;
         float EntDCC = 0;
-        float eps = 1e-4;
+        float eps = 1e-4, iter_stop = 50;
         float up, low, mid;
 
         float (*Sen_Map)[64];
@@ -193,7 +193,9 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     // cout << "up_d SWE_Y = " << HDQ_OptD::up  << endl;
     // cout << "low_d SWE_Y = " << HDQ_OptD::low   << endl;
 
-    while ((HDQ_OptD::up-HDQ_OptD::low) >= HDQ_OptD::eps)
+    int count = 0;
+
+    while (((HDQ_OptD::up-HDQ_OptD::low) >= HDQ_OptD::eps) && (count < iter_stop))
     {
         HDQ_OptD::mid = (HDQ_OptD::up + HDQ_OptD::low)/2.0;
         // mid
@@ -220,6 +222,7 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
         {
             HDQ_OptD::low = HDQ_OptD::mid;
         }
+        count++;
 
         // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
 
@@ -242,8 +245,9 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
 
     // cout << "up_d SWE_C = " << HDQ_OptD::up  << endl;
     // cout << "low_d SWE_C = " << HDQ_OptD::low   << endl;
-
-    while ((HDQ_OptD::up-HDQ_OptD::low) >= HDQ_OptD::eps)
+    
+    count = 0;
+    while (((HDQ_OptD::up-HDQ_OptD::low) >= HDQ_OptD::eps) && (count < iter_stop))
     {
         HDQ_OptD::mid = (HDQ_OptD::up + HDQ_OptD::low)/2.0;
 
@@ -274,7 +278,7 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
         {
             HDQ_OptD::low = HDQ_OptD::mid;
         }
-
+        count++;
         // cout << "DT_Y = " << HDQ_OptD::DT_Y << "\t" << "d_waterLevel_Y = " << HDQ_OptD::d_waterlevel_Y << endl;
 
     }

@@ -13,7 +13,7 @@ import random
 import warnings
 import pickle
 
-num_workers=20
+num_workers=24
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers

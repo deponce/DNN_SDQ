@@ -145,7 +145,7 @@ do
 									  -resize_compress --colorspace ${colorspace} \
 									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
 									  --d_waterlevel_Y -1 --d_waterlevel_C -1  \
-									  --output_txt ${file} --device "cuda:1" --root ${root} \
+									  --output_txt ${file} --device "cuda:0" --root ${root} \
 									  --SenMap_dir ${sens_dir}  --OptD True
 done
 
