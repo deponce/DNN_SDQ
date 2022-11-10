@@ -40,11 +40,11 @@ def main(args):
     # dy_list = [0.01]
     # dc_list = [0.01]
 
-    qy_list = [95]
-    qc_list = [95]
+    qy_list = [99,98,97,96,89,88,87,86,85,84,83,82,81,80]
+    qc_list = [99,98,97,96,89,88,87,86,85,84,83,82,81,80]
 
-    # qy_list = np.arange(100,80,-1)
-    # qc_list = np.arange(100,80,-1)
+    # qy_list = np.arange(99,96,-1)
+    # qc_list = np.arange(99,96,-1)
 
     # dy_list.extend(np.arange(0.005, 0.01, 0.001))
     # dy_list.extend(np.arange(0.01, 0.11, 0.01))
@@ -56,8 +56,8 @@ def main(args):
         # args.d_waterlevel_C = dc_list[i] * const
         args.QF_Y = qy_list[i]
         args.QF_C = qc_list[i]
-        args.Qmax_Y = 46
-        args.Qmax_C = 46
+        args.Qmax_Y = 15
+        args.Qmax_C = 15
         # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
         # for ratio in [1/4, 2/4, 3/4, 1 , 5/4, 6/4, 7/4, 8/4, 9/4, 10/4 , 11/4, 12/4, 13/4, 14/4, 15/4, 16/4]:
             # for ratio in [1]:
@@ -137,7 +137,7 @@ def write_live(filename, key, vec):
 
 
 def running_func(args):
-    Batch_size = 10
+    Batch_size = 20
     model = args.Model
     J = args.J
     a = args.a
@@ -191,7 +191,7 @@ def running_func(args):
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
                             split="val", resize_compress=resize_compress, OptD=args.OptD)
 
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers)
     # test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
     num_correct = 0
     num_tests = 0
@@ -207,6 +207,7 @@ def running_func(args):
         # exit(0)
         labels = labels.to(device)
         image = image.to(device)
+
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
         loss += float(torch.nn.CrossEntropyLoss()(pred, labels))

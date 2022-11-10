@@ -312,27 +312,27 @@ def main():
     ##########################
     # Mobilenet_v2
 
-    plt.figure()
-    HDQ_OptD_top1 = [71.766, 71.884, 71.958]
-    HDQ_OptD_bbp = [4.798400177247227, 6.4191030776956675, 8.278568066779076]
-    plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD(G)", marker="o", markersize=3, linestyle= '-')
-    HDQ_OptD_top1 = [71.754, 71.858, 71.884]
-    HDQ_OptD_bbp = [5.668460421251357, 7.150280818607211, 9.998163959823549]
-    plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD", marker="o", markersize=3, linestyle= '-')
-    filename = "./Resize_Compress/HDQ/YUV444/Mobilenet_v2_PC15/Mobilenet_v2"+"*.txt"
-    HDQ_OptD_top1, HDQ_OptD_bbp = get_data_HDQ(filename) 
-    HDQ_OptD_top1, HDQ_OptD_bbp = minRate(HDQ_OptD_top1, HDQ_OptD_bbp, 5.5)
-    tmp1 = [HDQ_OptD_top1[0], HDQ_OptD_top1[3], HDQ_OptD_top1[1]]
-    tmp2 = [HDQ_OptD_bbp[0], HDQ_OptD_bbp[3], HDQ_OptD_bbp[1]]
-    plt.plot(tmp2, tmp1,label="JPEG", marker="o", markersize=3, linestyle= '-')
-    plt.hlines(y=71.878, xmin= 4.798400177247227, xmax=max(HDQ_OptD_bbp), label="Raw Images",alpha=0.5) 
-    plt.title("MobileNet_V2")
-    plt.xlabel("Rate (bpp)")
-    plt.ylabel("Accuracy (%)")
-    plt.legend(loc='lower right')
-    plt.grid(linestyle='--', linewidth=0.5)
-    plt.savefig("./paper_figures/Mobilenet_v2_HDQ_OptD_compare_3curves.pdf",dpi=1000)
-    plt.savefig("./paper_figures/Mobilenet_v2_HDQ_OptD_compare_3curves.png",dpi=1000)
+    # plt.figure()
+    # HDQ_OptD_top1 = [71.766, 71.884, 71.958]
+    # HDQ_OptD_bbp = [4.798400177247227, 6.4191030776956675, 8.278568066779076]
+    # plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD(G)", marker="o", markersize=3, linestyle= '-')
+    # HDQ_OptD_top1 = [71.754, 71.858, 71.884]
+    # HDQ_OptD_bbp = [5.668460421251357, 7.150280818607211, 9.998163959823549]
+    # plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD", marker="o", markersize=3, linestyle= '-')
+    # filename = "./Resize_Compress/HDQ/YUV444/Mobilenet_v2_PC15/Mobilenet_v2"+"*.txt"
+    # HDQ_OptD_top1, HDQ_OptD_bbp = get_data_HDQ(filename) 
+    # HDQ_OptD_top1, HDQ_OptD_bbp = minRate(HDQ_OptD_top1, HDQ_OptD_bbp, 5.5)
+    # tmp1 = [HDQ_OptD_top1[0], HDQ_OptD_top1[3], HDQ_OptD_top1[1]]
+    # tmp2 = [HDQ_OptD_bbp[0], HDQ_OptD_bbp[3], HDQ_OptD_bbp[1]]
+    # plt.plot(tmp2, tmp1,label="JPEG", marker="o", markersize=3, linestyle= '-')
+    # plt.hlines(y=71.878, xmin= 4.798400177247227, xmax=max(HDQ_OptD_bbp), label="Raw Images",alpha=0.5) 
+    # plt.title("MobileNet_V2")
+    # plt.xlabel("Rate (bpp)")
+    # plt.ylabel("Accuracy (%)")
+    # plt.legend(loc='lower right')
+    # plt.grid(linestyle='--', linewidth=0.5)
+    # plt.savefig("./paper_figures/Mobilenet_v2_HDQ_OptD_compare_3curves.pdf",dpi=1000)
+    # plt.savefig("./paper_figures/Mobilenet_v2_HDQ_OptD_compare_3curves.png",dpi=1000)
 
     ##########################
     # # Mobilenet_v2 low rate
@@ -351,5 +351,29 @@ def main():
     # plt.grid(linestyle='--', linewidth=0.5)
     # plt.savefig("./paper_figures/Mobilenet_v2_lowrate.pdf",dpi=1000)
     # plt.savefig("./paper_figures/Mobilenet_v2_lowrate.png",dpi=1000)
+
+    ##########################
+    # # Mobilenet_v2 same SWE
+
+    plt.figure()
+    # HDQ_OptD_top1 = [69.702,69.726,69.832,70.074,70.246,70.374,70.456,70.568,70.686,70.736,71.026,71.102,71.188,71.356,71.446,71.518,71.624,71.66,71.768,71.822]
+    # HDQ_OptD_bbp = [1.85,1.91,1.97,2.03,2.10,2.19,2.27,2.37,2.49,2.59,2.75,2.92,3.09,3.33,3.63,3.99,4.56,5.29,6.46,8.58]
+    # plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD(G)", marker="o", markersize=3, linestyle= '-')
+    # HDQ_OptD_top1 = [69.776,69.94,70.014,70.162,70.322,70.426,70.54,70.672,70.838,70.862,71.0,71.126,71.3,71.384,71.442,71.524,71.644,71.718,71.84,71.872]
+    # HDQ_OptD_bbp = [2.09,2.16,2.23,2.32,2.39,2.49,2.59,2.69,2.84,2.95,3.14,3.32,3.50,3.78,4.14,4.55,5.19,5.90,6.84,8.57]
+    # plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="JPEG", marker="o", markersize=3, linestyle= '-')
+    HDQ_OptD_top1 = [70.074,70.246,70.374,70.456,70.568,70.686,70.736,71.026,71.102,71.188,71.356,71.446,71.518,71.624]
+    HDQ_OptD_bbp = [2.03,2.10,2.19,2.27,2.37,2.49,2.59,2.75,2.92,3.09,3.33,3.63,3.99,4.56]
+    plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="OptD(G)", marker="o", markersize=3, linestyle= '-')
+    HDQ_OptD_top1 = [70.162,70.322,70.426,70.54,70.672,70.838,70.862,71.0,71.126,71.3,71.384,71.442,71.524,71.644]
+    HDQ_OptD_bbp = [2.32,2.39,2.49,2.59,2.69,2.84,2.95,3.14,3.32,3.50,3.78,4.14,4.55,5.19]
+    plt.plot(HDQ_OptD_bbp, HDQ_OptD_top1,label="JPEG", marker="o", markersize=3, linestyle= '-')
+    plt.title("MobileNet_V2, same SWE")
+    plt.xlabel("Rate (bpp)")
+    plt.ylabel("Accuracy (%)")
+    plt.legend(loc='best')
+    plt.grid(linestyle='--', linewidth=0.5)
+    plt.savefig("./paper_figures/Mobilenet_v2_same_SWE.pdf",dpi=1000)
+    plt.savefig("./paper_figures/Mobilenet_v2_same_SWE.png",dpi=1000)
 if __name__ == "__main__":
     main()

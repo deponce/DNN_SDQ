@@ -346,6 +346,7 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
         Block_to_RSlst(seq_dct_idxs_Cb[i], HDQ_OptD::RSlst, HDQ_OptD::IDlst);
         cal_P_from_RSlst(HDQ_OptD::RSlst, AC_C_P);
     }
+
     AC_C_P.erase(TOTAL_KEY);
     EntACC = calHuffmanCodeSize(AC_C_P);
     float BPP=0;
@@ -365,6 +366,7 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     delete [] blockified_img_Y; delete [] blockified_img_Cb; delete [] blockified_img_Cr;
     Upsampling(image[1], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
     Upsampling(image[2], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
+    delete [] DC_idxs_Y; delete [] DC_idxs_Cb; delete [] DC_idxs_Cr;
     return (check * BPP);
 }
 
