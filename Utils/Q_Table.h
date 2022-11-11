@@ -362,6 +362,9 @@ void OptD_C(float Sen_Map[][64],
         }
         // cout <<  Q_Table[i]  << "\t"  << varianceData_CbCr[i]  <<  "\t"  << varianceData_CbCr[i+64] << "\n";
     }
+
+    delete[] Dlap_Cb; delete[] Dlap_Cr;
+
 }
 
 void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], float Q_Table[64], float& DT, float& d_waterLevel, int QMAX_Y)
@@ -426,6 +429,8 @@ void OptD_Y(float Sen_Map[3][64], float varianceData[64], float lambdaData[64], 
         }
         // cout <<  Q_Table[i]  << "\t"  << varianceData[i] << "\t" << lambdaData[i] << "\n";
     }
+
+    delete[] Dlap;
 }
 
 void quantizationTable_OptD_C(float Sen_Map[3][64], float seq_dct_coefs_Cb[][64], float seq_dct_coefs_Cr[][64], float Q_Table[64], int N_block, float& DT, float& d_waterLevel, int QMAX_C)

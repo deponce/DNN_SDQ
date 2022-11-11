@@ -39,7 +39,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/pybind11_tests.dir/test_thread.cpp.o"
   "CMakeFiles/pybind11_tests.dir/test_union.cpp.o"
   "CMakeFiles/pybind11_tests.dir/test_virtual_functions.cpp.o"
-  "pybind11_tests.cpython-37m-x86_64-linux-gnu.so"
+  "pybind11_tests.cpython-39-x86_64-linux-gnu.so"
   "pybind11_tests.pdb"
 )
 

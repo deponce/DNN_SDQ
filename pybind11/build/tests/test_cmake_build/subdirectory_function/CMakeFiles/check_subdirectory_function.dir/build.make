@@ -53,8 +53,8 @@ CMAKE_BINARY_DIR = /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/t
 # Include the progress variables for this target.
 include CMakeFiles/check_subdirectory_function.dir/progress.make
 
-CMakeFiles/check_subdirectory_function: test_cmake_build.cpython-37m-x86_64-linux-gnu.so
-	/usr/bin/cmake -E env PYTHONPATH=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/tests/test_cmake_build/subdirectory_function /home/h2amer/anaconda3/bin/python /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/tests/test_cmake_build/subdirectory_function/../test.py test_subdirectory_function
+CMakeFiles/check_subdirectory_function: test_cmake_build.cpython-39-x86_64-linux-gnu.so
+	/usr/bin/cmake -E env PYTHONPATH=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/tests/test_cmake_build/subdirectory_function /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ_env/bin/python /home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/tests/test_cmake_build/subdirectory_function/../test.py test_subdirectory_function
 
 check_subdirectory_function: CMakeFiles/check_subdirectory_function
 check_subdirectory_function: CMakeFiles/check_subdirectory_function.dir/build.make

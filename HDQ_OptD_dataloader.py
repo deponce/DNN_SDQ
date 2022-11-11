@@ -13,7 +13,7 @@ import random
 import warnings
 import pickle
 
-num_workers=28
+num_workers=32
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -36,39 +36,40 @@ def main(args):
     const = 1
     if sens == "NoModel":
         const = 10
-    d_list = []
-    # dy_list = [0.35]
-    # dc_list = [0.33]
-    d_list.extend(np.arange(0.005, 0.01, 0.001))
-    d_list.extend(np.arange(0.01, 0.11, 0.01))
+    dy_list = []
+    dy_list = [0.01]
+    dc_list = [0.0125]
+    # dy_list.extend(np.arange(0.005, 0.01, 0.001))
+    # dy_list.extend(np.arange(0.01, 0.11, 0.01))
     # d_waterlevel_Y=[0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04]
     # d_waterlevel_C=[0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,0.20]
     tmp = 0
-    for i in range(len(d_list)):
-        args.d_waterlevel_Y = d_list[i] * const
-        # args.d_waterlevel_C = dc_list[i] * const
-        args.Qmax_Y = 15
-        args.Qmax_C = 15
-        for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
-        # for ratio in [1]:
-        # for args.Qmax_Y in range(1, 52, 3):
-        #     for args.Qmax_C in range(args.Qmax_Y, 52, 3):
+    for i in range(len(dy_list)):
+        args.d_waterlevel_Y = dy_list[i] * const
+        args.d_waterlevel_C = dc_list[i] * const
+        args.Qmax_Y = 25
+        args.Qmax_C = 31
+        # for ratio in [3/4, 1 , 5/4, 6/4, 7/4, 8/4]:
+        # for ratio in [1/4, 2/4, 3/4, 1 , 5/4, 6/4, 7/4, 8/4, 9/4, 10/4 , 11/4, 12/4, 13/4, 14/4, 15/4, 16/4]:
+            # for ratio in [1]:
+        # for args.Qmax_Y in range(1, 62, 3):
+        #     for args.Qmax_C in range(args.Qmax_Y, 62, 3):
             # for ratio in [1]:  
-            args.d_waterlevel_C = ratio * args.d_waterlevel_Y
-            # args.d_waterlevel_C = d_waterlevel_C[i] * const
-            # max_q_c = np.ceil(255/Q)
-            # for ratio in np.arange(1, max_q_c+1):
-            #     args.Qmax_C = int(min(ratio * Q , 255))
-            args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
-            # print(args.output_txt)
-            BPP, Acc, Qmax_flag= running_func(args)
-            # BPP , Acc = 0 , 0
-            key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
-            # data_all[key] = [BPP, Acc]
-            write_live("./RESULTS_new_senmap/"+data_file_name, key, [BPP, Acc])
-            if (abs(tmp - BPP ) < 1e-4) or Qmax_flag:
-                break
-            tmp = BPP
+                # args.d_waterlevel_C = ratio * args.d_waterlevel_Y
+                # args.d_waterlevel_C = d_waterlevel_C[i] * const
+                # max_q_c = np.ceil(255/Q)
+                # for ratio in np.arange(1, max_q_c+1):
+                #     args.Qmax_C = int(min(ratio * Q , 255))
+        args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+        # print(args.output_txt)
+        BPP, Acc, Qmax_flag= running_func(args)
+        # BPP , Acc = 0 , 0
+        key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+        # data_all[key] = [BPP, Acc]
+        write_live("./RESULTS_new_senmap/"+data_file_name, key, [BPP, Acc])
+        if (abs(tmp - BPP ) < 1e-4) or Qmax_flag:
+            break
+        tmp = BPP
 
     #         break
     #     break
@@ -76,7 +77,48 @@ def main(args):
 
     # with open("./RESULTS/"+data_file_name +'.pkl', 'wb') as handle:
     #     pickle.dump(data_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
+   
+
+
+def main_low_rate(args):
+    fileFormat = args.output_txt
+    data_all = {}
+    sens = args.SenMap_dir.split("/")[2]
+    data_file_name =  args.Model+"_" + sens
+    const = 1
+    if sens == "NoModel":
+        const = 10
+    # dy_list = np.concatenate((np.arange(0.06, 0.1, 0.005), np.arange(0.1, 0.21, 0.01)))
+    # dc_list = np.concatenate((np.arange(0.05, 0.1, 0.01), np.arange(0.1, 0.21, 0.01)))
+
+    dy_list = np.arange(0.01, 0.11, 0.01)
+    dc_list = np.arange(0.01, 0.11, 0.01)
+    count = 0
+    # dy_list = np.arange(0.52, 1.02, 0.05)
+    # dc_list = np.arange(0.52, 1.02, 0.05)
+    tmp = 0
+    for idx1, i in enumerate(dy_list):
+        for idx2, j in enumerate(dc_list):
+            args.d_waterlevel_Y = dy_list[idx1] * const
+            args.d_waterlevel_C = dc_list[idx2] * const
+
+            for args.Qmax_Y in range(5, 21, 5):
+                for args.Qmax_C in range(args.Qmax_Y, 21, 5):
+                    args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
+                    # print(args.output_txt)
+                    # BPP, Acc, Qmax_flag= running_func(args)
+                    # BPP , Acc, Qmax_flag = 0 , 0
+                    count += 1
+                    # key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+                    # data_all[key] = [BPP, Acc]
+                    # write_live("./RESULTS_new_senmap_low_rate/"+data_file_name, key, [BPP, Acc])
     
+    print("Numbe of exoeriment : ", count)
+
+
+
+    # with open("./RESULTS/"+data_file_name +'.pkl', 'wb') as handle:
+    #     pickle.dump(data_all, handle, protocol=pickle.HIGHEST_PROTOCOL) 
     
 def write_live(filename, key, vec):
     f = open(filename +'.txt', "+a")
@@ -89,7 +131,7 @@ def write_live(filename, key, vec):
 
 
 def running_func(args):
-    Batch_size = 50
+    Batch_size = 25
     model = args.Model
     J = args.J
     a = args.a
@@ -147,6 +189,7 @@ def running_func(args):
     cnt = 0
     count_Qmax = 0
     Qmax_flag = False
+    loss = 0
     for dt in tqdm.tqdm(test_loader):
         image, image_BPP, labels = dt
         count_Qmax += torch.sum(image_BPP < 0)
@@ -156,6 +199,7 @@ def running_func(args):
         image = image.to(device)
         BPP+=torch.sum(image_BPP)
         pred = pretrained_model(image)
+        loss += float(torch.nn.CrossEntropyLoss()(pred, labels))
         num_correct += (pred.argmax(1) == labels).sum().item()
         num_tests += len(labels)
         if (cnt+1) %100 ==0:
@@ -175,6 +219,8 @@ def running_func(args):
     l1 = str((num_correct/num_tests)*100) + "\t" + str(BPP.numpy()/num_tests) + "\n"
     l = l0 + l1
     print_file(l, args.output_txt)
+    l = str(loss/num_tests) + "\n"
+    print_file("average loss = "+l, args.output_txt)
     
     if (count_Qmax == len(dataset)): Qmax_flag = True
     
@@ -203,4 +249,5 @@ if '__main__' == __name__:
     parser.add_argument('--colorspace', type=int, default=0, help='ColorSpace 0:YUV 1:SWX')
     parser.add_argument('--OptD', type=bool, default=False, help='OptD initialization for Quantization Table')
     args = parser.parse_args()
-    main(args)
+    # main(args)
+    main_low_rate(args)

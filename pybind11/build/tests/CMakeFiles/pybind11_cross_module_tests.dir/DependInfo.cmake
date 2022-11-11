@@ -18,7 +18,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
-  "/home/h2amer/anaconda3/include/python3.7m"
+  "/home/linuxbrew/.linuxbrew/opt/python@3.9/include/python3.9"
   "/home/h2amer/anaconda3/include"
   )
 

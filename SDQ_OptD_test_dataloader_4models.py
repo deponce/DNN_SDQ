@@ -38,7 +38,7 @@ def main(args):
     if sens == "NoModel":
         const = 10
     
-    beta_list = [0.1, 0.5, 1.0]
+    # beta_list = [0.1, 0.5, 1.0]
     dy_list = [0.01,0.05,0.01,0.01]
     dc_list = [0.01,0.037500000000000006,0.015,0.015]
     Qmaxy_list = [3,15,3,15]
@@ -179,7 +179,7 @@ def running_func(args):
                 l2 = str(BPP.numpy()/num_tests) + "\t" +  str(top1[idx].cpu().numpy()/num_tests) + "\t" + str(top5[idx].cpu().numpy()/num_tests) + "\n"
                 # l3 = str(BPP.numpy()/num_tests) + "\n"
                 # l2 = ""
-                l = l0 + l1 + l2 + l3
+                l = l0 + l1 + l2
                 print_file(l, args.output_txt)
         cnt += 1
 

@@ -1,4 +1,3 @@
-# 
 # MIT License
 
 # Copyright (c) 2022 Ahmed Hussein Salamah, Kaixiang Zheng, deponce(Linfeng Ye), University of Waterloo
@@ -35,7 +34,7 @@ class HDQ_loader(datasets.ImageNet):
     """docstring for loader"""
     def __init__(self, model, SenMap_dir, colorspace, root, QF_Y=50, QF_C=50, J=4, a=4, b=4, 
                 DT_Y=1, DT_C=1, d_waterlevel_Y=-1, d_waterlevel_C=-1, QMAX_Y=46, QMAX_C=46, 
-                split="val", resize_compress=True, OptD=False):
+                split="val", resize_compress=False, OptD=False):
         # self.transforms =  transforms.Compose([
   #                                   # transforms.Resize((256, 256)),
   #                                   transforms.Scale(256),
@@ -59,7 +58,9 @@ class HDQ_loader(datasets.ImageNet):
         if resize_compress:
             self.HDQ_preprocess = self.resize_compression
         else:
-            self.HDQ_preprocess = self.compression_resize
+            print("NORMAL RAW IMAGE ...")
+            self.HDQ_preprocess =  self.normal
+            # self.HDQ_preprocess = self.compression_resize
         
   #       classes (list): List of the class name tuples.
   #       class_to_idx (dict): Dict with items (class_name, class_index).

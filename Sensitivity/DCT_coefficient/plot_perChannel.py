@@ -7,10 +7,12 @@ import argparse
 import os
 import glob
 
-main_dir = "/home/h2amer/AhmedH.Salamah/workspace_pc15/JPEG_lin/DNN_SDQ/SenMap_All/SenMap_Scale/"
+# main_dir = "/home/h2amer/AhmedH.Salamah/workspace_pc15/JPEG_lin/DNN_SDQ/SenMap_All/SenMap_Scale/"
+
+main_dir = "/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/SenMap_All/SenMap_Scale/"
 
 
-def plot_data_bootstrap(old_channel, channel_sen_img, channel, model):
+def plot_data_bootstrap_v1(old_channel, channel_sen_img, channel, model):
     bottom_lst = []
     top_lst = []
     mean_lst = []
@@ -47,6 +49,41 @@ def plot_data_bootstrap(old_channel, channel_sen_img, channel, model):
     plt.plot(mean_lst, label="NEW")
     plt.xticks(np.arange(1,65,4))
     plt.legend()
+    plt.title(channel+'L1 sensitivity, per image')
+    plt.savefig(channel+"_new_"+model+".png", dpi=600)
+    plt.figure().clear()
+
+
+def plot_data_bootstrap_v2(channel_sen_img, channel, model):
+    bottom_lst = []
+    top_lst = []
+    mean_lst = []
+
+    file_name = main_dir+model+"_"+channel+".txt"
+    print(file_name)
+    
+    for i in tqdm(range(64)):
+        bottom, top = list(bootstrap((channel_sen_img[i],), np.mean, confidence_level=0.9,n_resamples=100).confidence_interval)
+        mean = np.mean((bottom,top))
+        bottom_lst.append(bottom)
+        top_lst.append(top)       
+        mean_lst.append(mean)
+
+    mean_lst = np.array(mean_lst)
+
+    print(channel)
+    for x in mean_lst:
+        print(x)
+
+    np.savetxt(file_name, mean_lst, "%.20e")
+
+    plt.figure(figsize=(10,8))
+    # plt.plot(top_lst, label="top")
+    # plt.plot(mean_lst, label="NEW")
+    # plt.plot(bottom_lst, label="bottom")
+    plt.plot(mean_lst)
+    plt.xticks(np.arange(1,65,4))
+    # plt.legend()
     plt.title(channel+'L1 sensitivity, per image')
     plt.savefig(channel+"_new_"+model+".png", dpi=600)
     plt.figure().clear()
@@ -121,14 +158,14 @@ read = "/home/h2amer/AhmedH.Salamah/workspace_pc15/JPEG_lin/DNN_SDQ/SenMap_All_n
 
 sen_map = []
 def main(model = 'Alexnet'):
-    files = glob.glob(read+model+"*_Cb_KLT.txt")[0]
-    old_sel_cb = np.loadtxt(files)
+    # files = glob.glob(read+model+"*_Cb_KLT.txt")[0]
+    # old_sel_cb = np.loadtxt(files)
 
-    files = glob.glob(read+model+"*_Cr_KLT.txt")[0]
-    old_sel_cr = np.loadtxt(files)
+    # files = glob.glob(read+model+"*_Cr_KLT.txt")[0]
+    # old_sel_cr = np.loadtxt(files)
 
-    files = glob.glob(read+model+"*_Y_KLT.txt")[0]
-    old_sel_y = np.loadtxt(files)
+    # files = glob.glob(read+model+"*_Y_KLT.txt")[0]
+    # old_sel_y = np.loadtxt(files)
 
 
 
@@ -140,11 +177,17 @@ def main(model = 'Alexnet'):
     # plot_data(old_channel=old_sel_cb, channel_sen_img= Cb_sen_img_M, channel_compare = Cb_sen_img_K, channel="Cb_Channel", model=model)
     # plot_data(old_channel=old_sel_cr, channel_sen_img= Cr_sen_img_M, channel_compare = Cr_sen_img_K, channel="Cr_Channel", model=model)
     
-    plot_data = plot_data_bootstrap
+    # plot_data = plot_data_bootstrap_v1
 
-    plot_data(old_channel=old_sel_y, channel_sen_img= Y_sen_img_K, channel="Y_Channel", model=model)
-    plot_data(old_channel=old_sel_cb, channel_sen_img= Cb_sen_img_K, channel="Cb_Channel", model=model)
-    plot_data(old_channel=old_sel_cr, channel_sen_img= Cr_sen_img_K, channel="Cr_Channel", model=model)
+    # plot_data(old_channel=old_sel_y, channel_sen_img= Y_sen_img_K, channel="Y_Channel", model=model)
+    # plot_data(old_channel=old_sel_cb, channel_sen_img= Cb_sen_img_K, channel="Cb_Channel", model=model)
+    # plot_data(old_channel=old_sel_cr, channel_sen_img= Cr_sen_img_K, channel="Cr_Channel", model=model)
+
+    plot_data = plot_data_bootstrap_v2
+
+    plot_data(channel_sen_img= Y_sen_img_K, channel="Y", model=model)
+    plot_data(channel_sen_img= Cb_sen_img_K, channel="Cb", model=model)
+    plot_data(channel_sen_img= Cr_sen_img_K, channel="Cr", model=model)
 
 
 if __name__ == '__main__':

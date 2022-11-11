@@ -312,10 +312,10 @@ PYBIND11_TEST_PREFIX_COMMAND:STRING=
 PYBIND11_WERROR:BOOL=OFF
 
 //Path to a program.
-PYTHON_EXECUTABLE:FILEPATH=/home/h2amer/anaconda3/bin/python
+PYTHON_EXECUTABLE:FILEPATH=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ_env/bin/python
 
 //Path to a library.
-PYTHON_LIBRARY:FILEPATH=/home/h2amer/anaconda3/lib/libpython3.7m.so
+PYTHON_LIBRARY:FILEPATH=/home/linuxbrew/.linuxbrew/opt/python@3.9/lib/libpython3.9.so
 
 //Install pybind11 headers in Python include directory instead
 // of default installation prefix
@@ -521,23 +521,23 @@ EIGEN3_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //Details about finding Boost
 FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/home/h2amer/anaconda3/lib/cmake/Boost-1.71.0/BoostConfig.cmake][c ][v1.71.0(1.56)]
 //Details about finding PYTHON
-FIND_PACKAGE_MESSAGE_DETAILS_PYTHON:INTERNAL=/home/h2amer/anaconda3/bin/python3.7.7
+FIND_PACKAGE_MESSAGE_DETAILS_PYTHON:INTERNAL=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ_env/bin/python3.9.6
 //Details about finding PythonInterp
-FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/home/h2amer/anaconda3/bin/python][v3.7.7(3.6)]
+FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ_env/bin/python][v3.9.6(3.6)]
 //Test HAS_FLTO
 HAS_FLTO:INTERNAL=1
 //ADVANCED property for variable: PYTHON_EXECUTABLE
 PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
-PYTHON_INCLUDE_DIRS:INTERNAL=/home/h2amer/anaconda3/include/python3.7m
+PYTHON_INCLUDE_DIRS:INTERNAL=/home/linuxbrew/.linuxbrew/opt/python@3.9/include/python3.9
 PYTHON_IS_DEBUG:INTERNAL=0
-PYTHON_LIBRARIES:INTERNAL=/home/h2amer/anaconda3/lib/libpython3.7m.so
+PYTHON_LIBRARIES:INTERNAL=/home/linuxbrew/.linuxbrew/opt/python@3.9/lib/libpython3.9.so
 //ADVANCED property for variable: PYTHON_LIBRARY
 PYTHON_LIBRARY-ADVANCED:INTERNAL=1
-PYTHON_MODULE_EXTENSION:INTERNAL=.cpython-37m-x86_64-linux-gnu.so
+PYTHON_MODULE_EXTENSION:INTERNAL=.cpython-39-x86_64-linux-gnu.so
 PYTHON_MODULE_PREFIX:INTERNAL=
-PYTHON_VERSION:INTERNAL=3.7.7
+PYTHON_VERSION:INTERNAL=3.9.6
 PYTHON_VERSION_MAJOR:INTERNAL=3
-PYTHON_VERSION_MINOR:INTERNAL=7
+PYTHON_VERSION_MINOR:INTERNAL=9
 Python_ADDITIONAL_VERSIONS:INTERNAL=3.11;3.10;3.9;3.8;3.7;3.6
 //Result of TRY_COMPILE
 STD_FS_NEEDS_CXXFS:INTERNAL=FALSE
@@ -553,7 +553,6 @@ boost_headers_DIR-ADVANCED:INTERNAL=1
 //Directory where pybind11 headers are located
 pybind11_INCLUDE_DIR:INTERNAL=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/include
 //Directories where pybind11 and possibly Python headers are located
-pybind11_INCLUDE_DIRS:INTERNAL=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/include;/home/h2amer/anaconda3/include/python3.7m
-pytest_FOUND:INTERNAL=YES
-pytest_VERSION:INTERNAL=4.0.2
+pybind11_INCLUDE_DIRS:INTERNAL=/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/include;/home/linuxbrew/.linuxbrew/opt/python@3.9/include/python3.9
+pytest_FOUND:INTERNAL=pytest-NOTFOUND
 

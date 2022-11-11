@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cross_module_gil_utils.dir/cross_module_gil_utils.cpp.o"
-  "cross_module_gil_utils.cpython-37m-x86_64-linux-gnu.so"
+  "cross_module_gil_utils.cpython-39-x86_64-linux-gnu.so"
   "cross_module_gil_utils.pdb"
 )
 

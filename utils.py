@@ -12,7 +12,19 @@ def load_model(Model):
         pretrained_model = models.squeezenet1_0(pretrained=True).eval()
     elif Model=="NoModel":
         pretrained_model = models.vgg11(pretrained=True).eval()
-        Model = "VGG11"
+    elif Model == 'ViT_B_16':
+        pretrained_model = models.vision_transformer.vit_b_16(pretrained=True).eval()
+    elif Model == 'Shufflenetv2':
+        pretrained_model = models.shufflenet_v2_x1_0(pretrained=True).eval()
+    elif Model == 'Regnet':
+        pretrained_model = models.regnet_x_16gf(pretrained=True).eval()
+    elif Model == 'Mnasnet':
+        pretrained_model = models.mnasnet1_0(pretrained=True).eval()
+    elif Model == 'mobilenet_v2':
+        pretrained_model = models.mobilenet_v2(pretrained=True).eval()
+    else: 
+        print("Enter a model SOS")
+        exit(0)
     return pretrained_model
 
 def accuracy(output, target, topk=(1,)):

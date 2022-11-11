@@ -11,7 +11,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/h2amer/work/workspace/JPEG_SDQ/DNN_SDQ/pybind11/build/mock_install/include"
-  "/home/h2amer/anaconda3/include/python3.7m"
+  "/home/linuxbrew/.linuxbrew/opt/python@3.9/include/python3.9"
   )
 
 # Targets to which this target links.

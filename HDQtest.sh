@@ -1,20 +1,40 @@
-export root=/home/h2amer/work/workspace/ML_TS/
+export root=/home/multicom-pc52/DATASETS/IMAGENET
 # export root="~/data/ImageNet/2012"
 # export root="/home/h2amer/AhmedH.Salamah/ilsvrc2012"
 
-# Resize then Compress
-# for model in Resnet18
+# for model in Regnet #Alexnet Resnet18 VGG11 Mnasnet
 # do
-# 	# for QF_YC in 85
-# 	for QF_YC in `seq 100 -1 1`
+# 	for QF_YC in 100
+# 	# for QF_YC in `seq 100 -1 93`
 # 	do
 # 		for colorspace in 0
 # 		do
 # 			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
-# 			export file=./Resize_Compress/HDQ/YUV420/${model}_PC52/${model}_QF${QF_YC}_YUV.txt
+# 			# export file=./Resize_Compress/HDQ/YUV444/${model}/${model}_QF${QF_YC}_YUV.txt
+# 			export file=./Raw/${model}_PC52.txt
 # 			echo ${file}
-# 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 2 --b 0 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
-# 										  -resize_compress --colorspace ${colorspace} \
+# 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+# 										  --colorspace ${colorspace} \
+# 										  --output_txt ${file} --device "cuda:0" --root ${root}
+# 		done
+# 	done
+# done
+
+
+
+# for model in Mnasnet
+# do
+# 	# for QF_YC in 85
+# 	for QF_YC in `seq 100 -1 96`
+# 	do
+# 		for colorspace in 0
+# 		do
+# 			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
+# 			export file=./Resize_Compress/HDQ/YUV444/${model}_PC52/${model}_QF${QF_YC}_YUV.txt
+# 			# export file=./Raw/${model}_PC52.txt
+# 			echo ${file}
+# 			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+# 										  --resize_compress True --colorspace ${colorspace} \
 # 										  --output_txt ${file} --device "cuda:0" --root ${root}
 # 		done
 # 	done
@@ -111,11 +131,12 @@ export root=/home/h2amer/work/workspace/ML_TS/
 # 	done
 # done
 
-export colorspace=0
+export colorspace=0	
 export sens=SenMap_Normalized
 
-for model in Resnet18 #Alexnet Resnet18 VGG11 Squeezenet
+for model in mobilenet_v2 # Resnet18 Mnasnet Regnet Alexnet Resnet18 VGG11 Mnasnet mobilenet_v2
 do
+		# export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
 		export file=./Resize_Compress/HDQ_OptD_new_senmap/${model}/YUV/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
 		export sens_dir=./SenMap_All/${sens}/${model}
 		# echo ${file}
@@ -131,7 +152,7 @@ done
 # # export sens=SenMap_Normalized
 # export sens=NoModel
 
-# for model in Resnet18
+# for model in ViT_B_16
 # do
 # 		export file=./Resize_Compress/HDQ_OptD_correct_SWX_Qmax/${model}/SWX/${model}_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
 # 		export sens_dir=./SenMap_All/${sens}/${model}

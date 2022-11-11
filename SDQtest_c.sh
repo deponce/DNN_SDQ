@@ -9,7 +9,23 @@ export root="/home/h2amer/work/workspace/ML_TS/"
 
 # export min_beta=0.5
 
-
+for model in mobilenet_v2
+do
+	# for QF_YC in 85
+	for QF_YC in `seq 100 -1 1`
+	do
+		for colorspace in 0
+		do
+			# export file=./Resize_Compress/HDQ/SWX444/${model}/${model}_QF${QF_YC}_SWX_${colorspace}.txt
+			export file=./Resize_Compress/HDQ/YUV444/${model}_PC52/${model}_QF${QF_YC}_YUV.txt
+			# export file=./Raw/${model}_PC52.txt
+			echo ${file}
+			python3 HDQtest_dataloader.py --Model ${model} --J 4 --a 4 --b 4 --QF_Y ${QF_YC} --QF_C ${QF_YC} \
+										  --resize_compress True --colorspace ${colorspace} \
+										  --output_txt ${file} --device "cuda:0" --root ${root}
+		done
+	done
+done
 
 
 # for model in Resnet18 
@@ -97,20 +113,20 @@ export root="/home/h2amer/work/workspace/ML_TS/"
 # done
 
 
-export colorspace=0
-export sens=SenMap_Normalized
-# export sens=NoModel
+# export colorspace=0
+# export sens=SenMap_Normalized
+# # export sens=NoModel
 
-for model in Alexnet
-do
-		export file=./Resize_Compress/SDQ_OptD/${model}/YUV/${model}_B%.2f_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
-		export sens_dir=./SenMap_All/${sens}/${model}
-		# echo ${file}
-		python3 SDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
-									  -resize_compress --colorspace ${colorspace} \
-									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
-									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
-									  --Beta_S 100 --Beta_W 100 --Beta_X 100 --L 1.0 \
-									  --output_txt ${file} --device "cuda:1" --root ${root} \
-									  --SenMap_dir ${sens_dir}  --OptD True
-done
+# for model in Alexnet
+# do
+# 		export file=./Resize_Compress/SDQ_OptD/${model}/YUV/${model}_B%.2f_sens_${sens}_d_water_Y%.4f_d_water_C%.4f_Q_max_Y%d_Q_max_C%d.txt
+# 		export sens_dir=./SenMap_All/${sens}/${model}
+# 		# echo ${file}
+# 		python3 SDQ_OptD_dataloader.py --Model ${model} --J 4 --a 4 --b 4 \
+# 									  -resize_compress --colorspace ${colorspace} \
+# 									  --Qmax_Y 46 --Qmax_C 46 --DT_Y 100 --DT_C 100 \
+# 									  --d_waterlevel_Y 0 --d_waterlevel_C 0  \
+# 									  --Beta_S 100 --Beta_W 100 --Beta_X 100 --L 1.0 \
+# 									  --output_txt ${file} --device "cuda:1" --root ${root} \
+# 									  --SenMap_dir ${sens_dir}  --OptD True
+# done

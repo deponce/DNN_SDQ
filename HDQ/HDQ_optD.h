@@ -245,8 +245,8 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     BPP = file_size/HDQ_OptD::img_shape_Y[0]/HDQ_OptD::img_shape_Y[1];
     delete [] seq_dct_coefs_Y; delete [] seq_dct_coefs_Cb; delete [] seq_dct_coefs_Cr;
     Dequantize(seq_dct_idxs_Y, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][64]
-    Dequantize(seq_dct_idxs_Cb, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_C);
-    Dequantize(seq_dct_idxs_Cr, HDQ_OptD::Q_table_Y, HDQ_OptD::seq_len_C);
+    Dequantize(seq_dct_idxs_Cb, HDQ_OptD::Q_table_C, HDQ_OptD::seq_len_C);
+    Dequantize(seq_dct_idxs_Cr, HDQ_OptD::Q_table_C, HDQ_OptD::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Y, blockified_img_Y, HDQ_OptD::seq_len_Y); //seq_dct_idxs_Y: [][8[8]
     seq_2_blockidct(seq_dct_idxs_Cb, blockified_img_Cb, HDQ_OptD::seq_len_C);
     seq_2_blockidct(seq_dct_idxs_Cr, blockified_img_Cr, HDQ_OptD::seq_len_C);
@@ -257,5 +257,6 @@ float HDQ_OptD::__call__(vector<vector<vector<float>>>& image){
     delete [] blockified_img_Y; delete [] blockified_img_Cb; delete [] blockified_img_Cr;
     Upsampling(image[1], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
     Upsampling(image[2], HDQ_OptD::img_shape_Y, HDQ_OptD::J, HDQ_OptD::a, HDQ_OptD::b);
+    delete[] DC_idxs_Y; delete[] DC_idxs_Cb; delete[] DC_idxs_Cr;
     return (check * BPP);
 }

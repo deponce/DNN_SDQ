@@ -1,9 +1,9 @@
 import numpy as np
+import HDQ
 import SDQ
 import torchvision.datasets as datasets
 from torchvision import transforms
 import torch
-import HDQ
 import HDQ_OptD
 import SDQ_OptD
 import matplotlib.pyplot as plt
@@ -37,13 +37,13 @@ class SDQ_transforms(torch.nn.Module):
         # print("Lambda=",Lambda)
         # exit(0)
         self.sen_map = np.ones((3,64))
-        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
-        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
-        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y.txt")
+        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb.txt")
+        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr.txt")
 
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
     def __call__(self, compressed_img):
         compressed_img = np.asarray(compressed_img)
         compressed_img = np.transpose(compressed_img, (2,0,1))
@@ -90,13 +90,13 @@ class SDQ_OptD_transforms(torch.nn.Module):
         # print("Lambda=",Lambda)
         # exit(0)
         self.sen_map = np.ones((3,64))
-        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y_KLT.txt")
-        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb_KLT.txt")
-        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr_KLT.txt")
+        # self.sen_map[0] = np.loadtxt(SenMap_dir+model+"_Y.txt")
+        # self.sen_map[1] = np.loadtxt(SenMap_dir+model+"_Cb.txt")
+        # self.sen_map[2] = np.loadtxt(SenMap_dir+model+"_Cr.txt")
 
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
     def __call__(self, compressed_img):
         compressed_img = np.asarray(compressed_img)
         compressed_img = np.transpose(compressed_img, (2,0,1))
@@ -145,9 +145,9 @@ class HDQ_OptD_transforms(torch.nn.Module):
         self.Qmax_C = Qmax_C        
 
         self.sen_map = np.ones((3,64))
-        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y_KLT.txt")
-        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb_KLT.txt")
-        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr_KLT.txt")
+        self.sen_map[0] = np.loadtxt(SenMap_dir+"_Y.txt")
+        self.sen_map[1] = np.loadtxt(SenMap_dir+"_Cb.txt")
+        self.sen_map[2] = np.loadtxt(SenMap_dir+"_Cr.txt")
 
         # print(self.sen_map)
 
