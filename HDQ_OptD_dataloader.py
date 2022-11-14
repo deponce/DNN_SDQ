@@ -3,7 +3,7 @@ import tqdm
 import torchvision.datasets as datasets
 from torchvision import transforms
 import torch
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from torchvision import models
 # from PIL import Image
 from utils import *
@@ -13,7 +13,7 @@ import random
 import warnings
 import pickle
 
-num_workers=32
+num_workers=28
 
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**num_workers
@@ -91,8 +91,8 @@ def main_low_rate(args):
     # dy_list = np.concatenate((np.arange(0.06, 0.1, 0.005), np.arange(0.1, 0.21, 0.01)))
     # dc_list = np.concatenate((np.arange(0.05, 0.1, 0.01), np.arange(0.1, 0.21, 0.01)))
 
-    dy_list = np.arange(0.01, 0.11, 0.01)
-    dc_list = np.arange(0.01, 0.11, 0.01)
+    dy_list = np.arange(0.01, 0.09, 0.01)
+    dc_list = np.arange(0.01, 0.09, 0.01)
     count = 0
     # dy_list = np.arange(0.52, 1.02, 0.05)
     # dc_list = np.arange(0.52, 1.02, 0.05)
@@ -102,18 +102,18 @@ def main_low_rate(args):
             args.d_waterlevel_Y = dy_list[idx1] * const
             args.d_waterlevel_C = dc_list[idx2] * const
 
-            for args.Qmax_Y in range(5, 21, 5):
-                for args.Qmax_C in range(args.Qmax_Y, 21, 5):
+            for args.Qmax_Y in range(5, 31, 5):
+                for args.Qmax_C in range(args.Qmax_Y, 31, 5):
                     args.output_txt = fileFormat%(args.d_waterlevel_Y, args.d_waterlevel_C, args.Qmax_Y, args.Qmax_C)
                     # print(args.output_txt)
-                    # BPP, Acc, Qmax_flag= running_func(args)
+                    BPP, Acc, Qmax_flag = running_func(args)
                     # BPP , Acc, Qmax_flag = 0 , 0
                     count += 1
-                    # key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
+                    key = str(args.d_waterlevel_Y) + "_" + str(args.d_waterlevel_C) + "_" + str(args.Qmax_Y) + "_" + str(args.Qmax_C) + "_" +str(Qmax_flag)
                     # data_all[key] = [BPP, Acc]
-                    # write_live("./RESULTS_new_senmap_low_rate/"+data_file_name, key, [BPP, Acc])
+                    write_live("./RESULTS_new_senmap_low_rate/"+data_file_name, key, [BPP, Acc])
     
-    print("Numbe of exoeriment : ", count)
+    print("Numbe of experiment : ", count)
 
 
 
@@ -181,7 +181,7 @@ def running_func(args):
                             DT_Y=DT_Y, DT_C=DT_C, d_waterlevel_Y=d_waterlevel_Y, d_waterlevel_C=d_waterlevel_C, QMAX_Y=Qmax_Y, QMAX_C=Qmax_C,
                             split="val", resize_compress=resize_compress, OptD=args.OptD)
 
-    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers)
+    test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
     # test_loader = torch.utils.data.DataLoader(dataset, batch_size=Batch_size, shuffle=True, num_workers=num_workers, worker_init_fn=seed_worker, generator=g)
     num_correct = 0
     num_tests = 0
